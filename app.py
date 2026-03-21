@@ -223,15 +223,6 @@ def analyze():
 
     if image_file.filename == '':
         return jsonify({'error': 'No image selected'}), 400
-    
-    # Check paywall
-    ip = request.remote_addr
-    with sqlite3.connect(DB_PATH) as conn:
-        row = conn.execute('SELECT count FROM free_scans WHERE ip = ?', (ip,)).fetchone()
-        scan_count = row[0] if row else 0
-    
-    if scan_count >= 5:
-        return jsonify({'error': 'paywall', 'message': 'Free scans used. Upgrade to continue.'}), 402
 
     # Read and encode image
     image_data = image_file.read()

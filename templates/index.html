@@ -1312,21 +1312,6 @@
   analyzeBtn.addEventListener('click', async () => {
     if (!selectedFile) return;
     
-    // Check free scans before proceeding
-    try {
-      const resp = await fetch('/check-free-scans');
-      const data = await resp.json();
-      if (!data.allowed) {
-        const modal = document.getElementById('paywall-modal');
-        modal.classList.remove('hidden');
-        document.getElementById('paywall-remaining-text').textContent = `0 scans remaining`;
-        return;
-      }
-    } catch(err) {
-      console.error('Could not check subscription status');
-      return;
-    }
-    
     analyzeBtn.disabled = true;
     analyzeWrap.classList.remove('ready');
     loading.style.display  = 'block';
@@ -1379,12 +1364,6 @@
       loading.style.display = 'none';
 
       if (!resp.ok || data.error) {
-        // Handle paywall
-        if (data.error === 'paywall') {
-          const modal = document.getElementById('paywall-modal');
-          modal.classList.remove('hidden');
-          return;
-        }
         showError(data.error||'Something went wrong. Please try again.');
         analyzeBtn.disabled = false;
         analyzeWrap.classList.add('ready');
