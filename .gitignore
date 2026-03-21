@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+.env.local
+*.db
+.DS_Store
+*.sqlite
+node_modules/
+.git
+scans.db
