@@ -537,6 +537,38 @@
     .cam-step-txt{font-size:14px;font-weight:900;line-height:1.35;color:rgba(18,24,34,.9);text-shadow:0 1px 0 rgba(255,255,255,.6)}
     .cam-step-tools{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-start}
     .cam-step-tools .shop-lnk{width:44px;height:28px;border-radius:12px;box-shadow:0 8px 16px rgba(18,26,42,.14), inset 0 1px 0 rgba(255,255,255,.85)}
+    .cam-step-actions{margin-top:8px;display:flex;gap:8px}
+    .cam-step-btn{
+      flex:1;
+      border:none;
+      border-radius:12px;
+      padding:9px 8px;
+      background:linear-gradient(135deg,rgba(90,110,160,.9),rgba(70,90,140,.94));
+      border:1px solid rgba(255,255,255,.55);
+      box-shadow:0 6px 14px rgba(18,26,42,.16), inset 0 1px 0 rgba(255,255,255,.4);
+      color:#F7FBFF;
+      font-size:12px;
+      font-weight:900;
+      cursor:pointer;
+    }
+    .cam-step-btn:disabled{opacity:.45;cursor:not-allowed}
+    .cam-step-check{
+      background:linear-gradient(135deg,rgba(62,138,92,.9),rgba(46,112,74,.92));
+    }
+    .cam-step-finish{
+      width:100%;
+      margin-top:8px;
+      border:none;
+      border-radius:12px;
+      padding:10px 10px;
+      background:linear-gradient(135deg,rgba(58,96,56,.94),rgba(38,76,36,.95));
+      border:1px solid rgba(255,255,255,.45);
+      color:#E8FFEE;
+      font-size:13px;
+      font-weight:1000;
+      cursor:pointer;
+      box-shadow:0 8px 16px rgba(18,26,42,.18), inset 0 1px 0 rgba(255,255,255,.35);
+    }
 
     /* Fix Mode: remove scrolling by hiding non-step sections */
     #results.fix-mode .r-hdr,
@@ -547,8 +579,20 @@
     #results.fix-mode #fold-more,
     #results.fix-mode #rst-btn,
     #results.fix-mode #no-repair-box,
-    #results.fix-mode #warn-ctr{
+    #results.fix-mode #warn-ctr,
+    #results.fix-mode #steps-card,
+    #results.fix-mode #ec{
       display:none!important;
+    }
+
+    body.fixing .hero-sec,
+    body.fixing .prompt-wrap,
+    body.fixing .scan-wrap,
+    body.fixing #results{
+      display:none!important;
+    }
+    body.fixing .cam-container{
+      max-height:min(74vh,calc(100dvh - 190px));
     }
 
     /* Finish CTA pulse */
@@ -1004,6 +1048,12 @@
       </div>
       <div class="cam-step-txt" id="cam-step-txt"></div>
       <div class="cam-step-tools" id="cam-step-tools"></div>
+      <div class="cam-step-actions">
+        <button type="button" class="cam-step-btn" id="cam-back">← Back</button>
+        <button type="button" class="cam-step-btn cam-step-check" id="cam-check">📸 Check</button>
+        <button type="button" class="cam-step-btn" id="cam-next">Next →</button>
+      </div>
+      <button type="button" class="cam-step-finish" id="cam-finish" style="display:none">✅ Finished</button>
     </div>
     <div id="xray-overlay"></div>
     <div id="live-prompt" aria-hidden="true">
@@ -1495,6 +1545,8 @@ function captureFrame(){
 
 function retakePhoto(){
   capturedBlob=null;stillEl.style.display='none';stillEl.src='';retakeBtn.style.display='none';videoEl.style.display='block';
+  document.body.classList.remove('fixing');
+  var cs=document.getElementById('cam-step');if(cs){cs.classList.remove('show');cs.classList.add('off')}
   camStatusEl.classList.add('ready');camStatusTxt.textContent=T[LANG].camReady;
   document.getElementById('results').style.display='none';document.getElementById('err-box').style.display='none';document.getElementById('hazard-banner').classList.remove('show');
   if(!camReady)enableFallbackCapture({showRetry:!cameraNeedsHttpsOnPhone()});
@@ -1545,7 +1597,7 @@ scanEgg.addEventListener('click',async function(){
   if(camReady && camStream){
     if(stillEl){stillEl.style.display='none';stillEl.src='';}
     if(retakeBtn){retakeBtn.style.display='none'}
-    startLiveScanSession(3).catch(function(e){
+    startLiveScanSession(2).catch(function(e){
       document.getElementById('err-box').textContent=(e&&e.message)||(typeof e==='string'?e:'')||'Scan failed. Try again.';
       document.getElementById('err-box').style.display='block';
     });
@@ -1624,7 +1676,7 @@ async function startLiveScanSession(viewsTarget, initialBlob){
 
   var ldMsgs=T[LANG].ldMsgs,ldI=0,ldTxtEl=document.getElementById('ld-txt');
   ldTxtEl.textContent=ldMsgs[0];
-  var LI=setInterval(function(){ldI=(ldI+1)%ldMsgs.length;ldTxtEl.textContent=ldMsgs[ldI]},1500);
+  var LI=setInterval(function(){ldI=(ldI+1)%ldMsgs.length;ldTxtEl.textContent=ldMsgs[ldI]},850);
 
   try{
     var viewIndex=1;
@@ -1685,7 +1737,7 @@ async function startLiveScanSession(viewsTarget, initialBlob){
         startHum();
         ldI=0;
         ldTxtEl.textContent=ldMsgs[0];
-        LI=setInterval(function(){ldI=(ldI+1)%ldMsgs.length;ldTxtEl.textContent=ldMsgs[ldI]},1500);
+        LI=setInterval(function(){ldI=(ldI+1)%ldMsgs.length;ldTxtEl.textContent=ldMsgs[ldI]},850);
         continue;
       }
 
@@ -1710,12 +1762,9 @@ async function startLiveScanSession(viewsTarget, initialBlob){
         var hazardFirst=renderResults(data.result);
         triggerPaywallFlow();
         document.getElementById('results').style.display='block';
-        var scrollEl=hazardFirst?document.getElementById('hazard-hero'):document.getElementById('results-summary');
-        if(scrollEl)scrollEl.scrollIntoView({behavior:'smooth',block:'start'});
-        else document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
         document.getElementById('results').querySelectorAll('.hazard-hero.show,.r-hdr,.meta-row,.ec,.warn-ctr,.card,#tip-safety,.ad-banner,.fold-more,.rst-btn,.tts-bar,.tip.pro').forEach(function(el,i){el.classList.remove('si');void el.offsetWidth;el.style.animationDelay=(i*40)+'ms';el.classList.add('si')});
         showEC();
-      },300);
+      },120);
       break;
     }
 
@@ -1828,6 +1877,9 @@ function updateWalkCardUI(){
     var backBtn=document.getElementById('walk-back');if(backBtn)backBtn.disabled=true;
     var nextBtn=document.getElementById('walk-next');if(nextBtn)nextBtn.disabled=true;
     var finishBtn=document.getElementById('walk-finish');if(finishBtn)finishBtn.style.display='none';
+    if(camBackBtn)camBackBtn.disabled=true;
+    if(camNextBtn)camNextBtn.disabled=true;
+    if(camFinishBtn)camFinishBtn.style.display='none';
     var wtr=document.getElementById('walk-tools-row');if(wtr)wtr.innerHTML='';
     return;
   }
@@ -1860,14 +1912,27 @@ function updateWalkCardUI(){
   if(backBtn)backBtn.disabled=!canBack || allDone;
   if(nextBtn)nextBtn.disabled=!canNext;
   if(finishBtn)finishBtn.style.display=allDone ? 'block' : 'none';
+  if(camBackBtn)camBackBtn.disabled=!canBack || allDone;
+  if(camNextBtn)camNextBtn.disabled=!canNext;
+  if(camFinishBtn)camFinishBtn.style.display=allDone ? 'block' : 'none';
 }
 
 var walkBackBtn=document.getElementById('walk-back'),
     walkNextBtn=document.getElementById('walk-next'),
     walkCheckBtn=document.getElementById('walk-check'),
-    walkFinishBtn=document.getElementById('walk-finish');
+    walkFinishBtn=document.getElementById('walk-finish'),
+    camBackBtn=document.getElementById('cam-back'),
+    camNextBtn=document.getElementById('cam-next'),
+    camCheckBtn=document.getElementById('cam-check'),
+    camFinishBtn=document.getElementById('cam-finish');
 if(walkBackBtn){
   walkBackBtn.addEventListener('click',function(){
+    if(curSteps.length<=0) return;
+    if(walkIdx>0){walkIdx--;hap(6);updateWalkCardUI()}
+  });
+}
+if(camBackBtn){
+  camBackBtn.addEventListener('click',function(){
     if(curSteps.length<=0) return;
     if(walkIdx>0){walkIdx--;hap(6);updateWalkCardUI()}
   });
@@ -1878,8 +1943,20 @@ if(walkNextBtn){
     if(doneSteps.has(walkIdx) && walkIdx<curSteps.length-1){walkIdx++;hap(6);updateWalkCardUI()}
   });
 }
+if(camNextBtn){
+  camNextBtn.addEventListener('click',function(){
+    if(curSteps.length<=0) return;
+    if(doneSteps.has(walkIdx) && walkIdx<curSteps.length-1){walkIdx++;hap(6);updateWalkCardUI()}
+  });
+}
 if(walkCheckBtn){
   walkCheckBtn.addEventListener('click',function(){
+    if(curSteps.length<=0) return;
+    openPM(walkIdx,curSteps[walkIdx]);
+  });
+}
+if(camCheckBtn){
+  camCheckBtn.addEventListener('click',function(){
     if(curSteps.length<=0) return;
     openPM(walkIdx,curSteps[walkIdx]);
   });
@@ -1899,6 +1976,12 @@ if(walkFinishBtn){
       }
     }catch(e){}
     hap([20,10,40]);
+  });
+}
+if(camFinishBtn){
+  camFinishBtn.addEventListener('click',function(){
+    if(walkFinishBtn){walkFinishBtn.click();return;}
+    prepareFinishCTA();
   });
 }
 
@@ -2034,6 +2117,7 @@ function renderResults(r){
   if(resultsEl){
     resultsEl.classList.toggle('fix-mode', !!repairNeeded);
   }
+  document.body.classList.toggle('fixing', !!repairNeeded);
   var costStr = (r.estimated_cost||'').toString().trim().toLowerCase();
   var hasCost = !!costStr && costStr !== 'n/a' && costStr !== 'na';
   var stepsCard = document.getElementById('steps-card');
@@ -2175,6 +2259,11 @@ function updateStepUI(){
 }
 
 function prepareFinishCTA(){
+  document.body.classList.remove('fixing');
+  var resultsEl=document.getElementById('results');
+  if(resultsEl)resultsEl.classList.remove('fix-mode');
+  var camStep=document.getElementById('cam-step');
+  if(camStep){camStep.classList.remove('show');camStep.classList.add('off')}
   var h=document.getElementById('ec-h3');
   var p=document.getElementById('ec-p');
   var btn=document.getElementById('ec-sub');
@@ -2258,12 +2347,15 @@ pmGo.addEventListener('click',async function(){
 /* RESET */
 document.getElementById('rst-btn').addEventListener('click',function(){
   clickSnd();hap(8);stopHum();stopSpeech();capturedBlob=null;
+  document.body.classList.remove('fixing');
   stillEl.style.display='none';retakeBtn.style.display='none';
   if(camStream){videoEl.style.display='block'}
   var fm=document.getElementById('fold-more');if(fm)fm.open=false;
   var hz=document.getElementById('hazard-hero');
   if(hz){hz.className='hazard-hero';var hzA=document.getElementById('hazard-hero-actions');if(hzA)hzA.classList.remove('show')}
   document.getElementById('results').style.display='none';document.getElementById('err-box').style.display='none';
+  document.getElementById('results').classList.remove('fix-mode');
+  var camStep=document.getElementById('cam-step');if(camStep){camStep.classList.remove('show');camStep.classList.add('off')}
   document.getElementById('hazard-banner').classList.remove('show');document.getElementById('q-inp').value='';
   curSteps=[];doneSteps.clear();warnCt=0;updateWarn();
   document.getElementById('all-done').style.display='none';document.getElementById('task-locked').style.display='none';
