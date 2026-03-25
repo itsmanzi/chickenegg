@@ -1,18 +1,4 @@
-"""
-chickenegg MVP — Home Installation
-===================================
-Point your camera at anything in your home.
-AI tells you exactly how to install, fix, or build it.
 
-Setup:
-    pip install flask anthropic
-
-Run:
-    python app.py
-
-Then open in your browser: http://localhost:5000
-On your phone (same WiFi): http://YOUR_PC_IP:5000
-"""
 
 import os
 import base64
