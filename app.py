@@ -2,12 +2,35 @@ import os
 import base64
 import json
 from flask import Flask, request, jsonify, render_template
-import anthropic
+from anthropic import (
+    Anthropic,
+    APIStatusError,
+    AuthenticationError,
+    BadRequestError,
+    NotFoundError,
+    PermissionDeniedError,
+    RateLimitError,
+)
 
 app = Flask(__name__)
-client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-# Vision-capable; override if your key uses a different ID (see Anthropic console).
-VISION_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-3-5-haiku-latest")
+
+# Lazy client so missing env fails on first request with a clear message, not at import.
+_client = None
+
+
+def _get_client():
+    global _client
+    if _client is None:
+        key = (os.getenv("ANTHROPIC_API_KEY") or "").strip()
+        if not key:
+            raise RuntimeError("ANTHROPIC_API_KEY is not set")
+        _client = Anthropic(api_key=key)
+    return _client
+
+
+# Vision-capable; Haiku 3.5 snapshots were retired — default to Haiku 4.5 (see Anthropic console).
+DEFAULT_VISION_MODEL = "claude-haiku-4-5-20251001"
+VISION_MODEL = os.getenv("ANTHROPIC_MODEL", DEFAULT_VISION_MODEL)
 CHECK_PROGRESS_MODEL = os.getenv("ANTHROPIC_CHECK_MODEL", VISION_MODEL)
 
 
@@ -115,35 +138,60 @@ def _normalize_result(raw):
     return normalized
 
 
-def _messages_create_with_fallback(system, messages, max_tokens, preferred_model):
-    candidates = [
+def _model_fallback_chain(preferred_model):
+    env_override = (os.getenv("ANTHROPIC_MODEL") or "").strip()
+    ordered = [
         preferred_model,
-        os.getenv("ANTHROPIC_MODEL", "").strip(),
+        env_override,
+        DEFAULT_VISION_MODEL,
+        "claude-sonnet-4-5-20250929",
+        "claude-3-5-haiku-20241022",
+        "claude-3-5-sonnet-20241022",
         "claude-3-5-haiku-latest",
-        "claude-3-5-sonnet-latest",
         "claude-3-haiku-20240307",
     ]
-    tried = set()
+    seen = set()
+    out = []
+    for m in ordered:
+        m = (m or "").strip()
+        if m and m not in seen:
+            seen.add(m)
+            out.append(m)
+    return out
+
+
+def _is_model_selection_error(exc):
+    if isinstance(exc, NotFoundError):
+        return True
+    if isinstance(exc, BadRequestError):
+        msg = str(exc).lower()
+        return any(
+            s in msg
+            for s in ("model", "model_id", "invalid model", "unknown model", "does not exist")
+        )
+    if isinstance(exc, APIStatusError) and getattr(exc, "status_code", None) == 404:
+        return True
+    msg = str(exc).lower()
+    return "model:" in msg and ("not found" in msg or "invalid" in msg)
+
+
+def _messages_create_with_fallback(system, messages, max_tokens, preferred_model):
+    cli = _get_client()
     last_error = None
-    for model_name in candidates:
-        model_name = (model_name or "").strip()
-        if not model_name or model_name in tried:
-            continue
-        tried.add(model_name)
+    for model_name in _model_fallback_chain(preferred_model):
         try:
-            return client.messages.create(
+            return cli.messages.create(
                 model=model_name,
                 max_tokens=max_tokens,
                 system=system,
                 messages=messages,
             )
+        except (AuthenticationError, PermissionDeniedError, RateLimitError):
+            raise
         except Exception as e:
             last_error = e
-            msg = str(e).lower()
-            # If model is unavailable, try next candidate.
-            if "404" in msg or "not found" in msg or "model" in msg:
+            if _is_model_selection_error(e):
                 continue
-            # Non-model errors should surface immediately.
             raise
     if last_error:
         raise last_error
@@ -161,6 +209,11 @@ def app_build():
 
 
 def _do_analyze():
+    try:
+        _get_client()
+    except RuntimeError as e:
+        return None, (str(e), 503)
+
     image_file = request.files.get("image")
     question   = request.form.get("question", "")
     language   = request.form.get("language", "nl")
@@ -269,6 +322,11 @@ def analyze_live():
 @app.route("/check-progress", methods=["POST"])
 def check_progress():
     try:
+        try:
+            _get_client()
+        except RuntimeError as e:
+            return jsonify({"success": False, "error": str(e)}), 503
+
         image_file = request.files.get("image")
         step       = request.form.get("step", "")
         task       = request.form.get("task", "")
@@ -345,8 +403,9 @@ def health():
         {
             "ok": True,
             "anthropic_api_key_configured": key_ok,
-            "default_vision_model": VISION_MODEL,
-            "default_check_model": CHECK_PROGRESS_MODEL,
+            "vision_model": VISION_MODEL,
+            "check_model": CHECK_PROGRESS_MODEL,
+            "default_vision_if_env_unset": DEFAULT_VISION_MODEL,
         }
     )
 
