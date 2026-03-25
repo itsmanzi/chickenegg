@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chickenegg</title>
+  <link rel="manifest" href="/static/manifest.json?v=6"/>
+  <link rel="icon" type="image/png" sizes="192x192" href="/static/icon-192.png?v=6"/>
+  <link rel="apple-touch-icon" href="/static/apple-touch-icon.png?v=6" sizes="180x180"/>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0a0a;
+      color: #f0f0f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      user-select: none;
+    }
+
+    /* Logo */
+    .logo-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 44px;
+    }
+    .logo-icon { width: 64px; height: 72px; animation: bob 2.2s ease-in-out infinite alternate; filter: drop-shadow(0 0 14px #f5c84244); }
+    @keyframes bob {
+      from { transform: translateY(0) rotate(-4deg); }
+      to   { transform: translateY(-5px) rotate(4deg); }
+    }
+    .logo-text { font-size: 26px; font-weight: 900; letter-spacing: -1px; }
+    .logo-text .p1 { color: #fff; }
+    .logo-text .p2 { color: #f5c842; }
+    .logo-sub { font-size: 12px; color: #444; letter-spacing: 2px; text-transform: uppercase; }
+
+    /* PIN dots */
+    .pin-dots {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 36px;
+      height: 18px;
+      align-items: center;
+    }
+    .pin-dot {
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      border: 2px solid #333;
+      background: transparent;
+      transition: all 0.15s ease;
+    }
+    .pin-dot.filled {
+      background: #f5c842;
+      border-color: #f5c842;
+      transform: scale(1.15);
+      box-shadow: 0 0 8px #f5c84288;
+    }
+    .pin-dot.error {
+      background: #e74c3c;
+      border-color: #e74c3c;
+      animation: dotShake 0.4s ease;
+    }
+    @keyframes dotShake {
+      0%,100% { transform: translateX(0); }
+      20%     { transform: translateX(-5px); }
+      40%     { transform: translateX(5px); }
+      60%     { transform: translateX(-4px); }
+      80%     { transform: translateX(4px); }
+    }
+
+    /* Error message */
+    .error-msg {
+      font-size: 13px;
+      color: #e74c3c;
+      margin-bottom: 20px;
+      height: 18px;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .error-msg.show { opacity: 1; }
+
+    /* Keypad */
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      width: 100%;
+      max-width: 300px;
+    }
+    .key {
+      background: #161616;
+      border: 1px solid #1e1e1e;
+      border-radius: 16px;
+      padding: 0;
+      height: 72px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.08s ease, background 0.1s;
+    }
+    .key:active      { transform: scale(0.92); background: #222; }
+    .key.zero        { grid-column: 2; }
+    .key.del         { grid-column: 3; }
+    .key-num         { font-size: 24px; font-weight: 700; color: #fff; line-height: 1; }
+    .key-letters     { font-size: 9px; color: #444; letter-spacing: 1.5px; margin-top: 2px; text-transform: uppercase; }
+    .key.del .key-num { font-size: 20px; color: #666; }
+    .key.empty       { background: transparent; border-color: transparent; pointer-events: none; }
+
+    /* Ripple */
+    .key-ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(245,200,66,0.2);
+      transform: scale(0);
+      animation: kRipple 0.4s ease-out forwards;
+      pointer-events: none;
+    }
+    @keyframes kRipple { to { transform: scale(4); opacity: 0; } }
+
+    /* Loading overlay */
+    .checking {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10,10,10,0.85);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      z-index: 10;
+    }
+    .checking.show { display: flex; }
+    .check-spinner {
+      width: 36px; height: 36px;
+      border: 3px solid #222;
+      border-top-color: #f5c842;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .checking p { font-size: 13px; color: #666; }
+  </style>
+</head>
+<body>
+
+<div class="logo-wrap">
+  <!-- SVG logo icon -->
+  <svg class="logo-icon" viewBox="0 0 64 72" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="pEggG" cx="38%" cy="28%" r="65%">
+        <stop offset="0%"   stop-color="#e0d8a8"/>
+        <stop offset="100%" stop-color="#7a7050"/>
+      </radialGradient>
+    </defs>
+    <path d="M32 4 C16 4, 6 24, 6 38 C6 54, 18 68, 32 68 C46 68, 58 54, 58 38 C58 24, 48 4, 32 4 Z" fill="url(#pEggG)"/>
+    <line x1="6" y1="39" x2="58" y2="39" stroke="#f5c84228" stroke-width="8"/>
+    <circle cx="20" cy="30" r="4" fill="#555" stroke="#333" stroke-width="1.5"/>
+    <line x1="18" y1="30" x2="22" y2="30" stroke="#222" stroke-width="1.5"/>
+    <line x1="20" y1="28" x2="20" y2="32" stroke="#222" stroke-width="1.5"/>
+    <circle cx="44" cy="30" r="4" fill="#555" stroke="#333" stroke-width="1.5"/>
+    <line x1="42" y1="30" x2="46" y2="30" stroke="#222" stroke-width="1.5"/>
+    <line x1="44" y1="28" x2="44" y2="32" stroke="#222" stroke-width="1.5"/>
+    <line x1="14" y1="56" x2="46" y2="14" stroke="#f5c842" stroke-width="3" stroke-linecap="round" opacity="0.85"/>
+    <circle cx="16" cy="54" r="6" fill="none" stroke="#f5c842" stroke-width="2.5"/>
+    <circle cx="44" cy="16" r="6" fill="none" stroke="#f5c842" stroke-width="2.5"/>
+  </svg>
+  <div class="logo-text"><span class="p1">chicken</span><span class="p2">egg</span></div>
+  <div class="logo-sub">Enter your PIN</div>
+</div>
+
+<div class="pin-dots">
+  <div class="pin-dot" id="d0"></div>
+  <div class="pin-dot" id="d1"></div>
+  <div class="pin-dot" id="d2"></div>
+  <div class="pin-dot" id="d3"></div>
+</div>
+
+<div class="error-msg" id="error-msg">Incorrect PIN</div>
+
+<div class="keypad" id="keypad">
+  <div class="key" data-n="1"><div class="key-num">1</div><div class="key-letters"></div></div>
+  <div class="key" data-n="2"><div class="key-num">2</div><div class="key-letters">ABC</div></div>
+  <div class="key" data-n="3"><div class="key-num">3</div><div class="key-letters">DEF</div></div>
+  <div class="key" data-n="4"><div class="key-num">4</div><div class="key-letters">GHI</div></div>
+  <div class="key" data-n="5"><div class="key-num">5</div><div class="key-letters">JKL</div></div>
+  <div class="key" data-n="6"><div class="key-num">6</div><div class="key-letters">MNO</div></div>
+  <div class="key" data-n="7"><div class="key-num">7</div><div class="key-letters">PQRS</div></div>
+  <div class="key" data-n="8"><div class="key-num">8</div><div class="key-letters">TUV</div></div>
+  <div class="key" data-n="9"><div class="key-num">9</div><div class="key-letters">WXYZ</div></div>
+  <div class="key empty"></div>
+  <div class="key zero" data-n="0"><div class="key-num">0</div><div class="key-letters"></div></div>
+  <div class="key del" id="del-btn"><div class="key-num">⌫</div></div>
+</div>
+
+<div class="checking" id="checking">
+  <div class="check-spinner"></div>
+  <p>Verifying...</p>
+</div>
+
+<script>
+  let pin = '';
+  const MAX = 4;
+  const dots    = [0,1,2,3].map(i => document.getElementById('d'+i));
+  const errorEl = document.getElementById('error-msg');
+
+  function updateDots() {
+    dots.forEach((d, i) => {
+      d.classList.toggle('filled', i < pin.length);
+      d.classList.remove('error');
+    });
+  }
+
+  function ripple(key, e) {
+    const r    = document.createElement('span');
+    const rect = key.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    r.className = 'key-ripple';
+    r.style.cssText = `width:${size}px;height:${size}px;left:${(e.clientX||rect.left+rect.width/2)-rect.left-size/2}px;top:${(e.clientY||rect.top+rect.height/2)-rect.top-size/2}px`;
+    key.appendChild(r);
+    setTimeout(() => r.remove(), 400);
+  }
+
+  function showError(msg) {
+    dots.forEach(d => d.classList.add('error'));
+    errorEl.textContent = msg || 'Incorrect PIN';
+    errorEl.classList.add('show');
+    if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
+    setTimeout(() => {
+      pin = '';
+      updateDots();
+      errorEl.classList.remove('show');
+    }, 900);
+  }
+
+  async function submitPin() {
+    document.getElementById('checking').classList.add('show');
+    try {
+      const resp = await fetch('/pin/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin })
+      });
+      const data = await resp.json();
+      if (data.success) {
+        if (navigator.vibrate) navigator.vibrate([50, 30, 100]);
+        // Flash dots green before redirect
+        dots.forEach(d => { d.style.background='#3ecf6a'; d.style.borderColor='#3ecf6a'; });
+        setTimeout(() => { window.location.href = '/'; }, 300);
+      } else {
+        document.getElementById('checking').classList.remove('show');
+        showError(data.error || 'Incorrect PIN');
+        pin = '';
+      }
+    } catch (err) {
+      document.getElementById('checking').classList.remove('show');
+      showError('Connection error');
+      pin = '';
+    }
+  }
+
+  // Key press handler
+  document.getElementById('keypad').addEventListener('pointerdown', (e) => {
+    const key = e.target.closest('.key');
+    if (!key || key.classList.contains('empty')) return;
+
+    ripple(key, e);
+    if (navigator.vibrate) navigator.vibrate(8);
+
+    if (key.id === 'del-btn') {
+      pin = pin.slice(0, -1);
+      updateDots();
+      return;
+    }
+
+    const n = key.dataset.n;
+    if (n === undefined || pin.length >= MAX) return;
+
+    pin += n;
+    updateDots();
+
+    if (pin.length === MAX) {
+      setTimeout(submitPin, 120);
+    }
+  });
+
+  // Keyboard support (desktop)
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Backspace') { pin = pin.slice(0,-1); updateDots(); return; }
+    if (!/^\d$/.test(e.key) || pin.length >= MAX) return;
+    pin += e.key;
+    updateDots();
+    if (pin.length === MAX) setTimeout(submitPin, 120);
+  });
+</script>
+</body>
+</html>
