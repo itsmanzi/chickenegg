@@ -160,6 +160,24 @@ def _model_fallback_chain(preferred_model):
     return out
 
 
+def _extract_message_text(response):
+    """Claude 4.x can return multiple blocks (e.g. non-text first). Join all text blocks."""
+    parts = []
+    for block in getattr(response, "content", None) or []:
+        btype = getattr(block, "type", None)
+        if btype == "text":
+            parts.append(getattr(block, "text", "") or "")
+    out = "".join(parts).strip()
+    if out:
+        return out
+    if getattr(response, "content", None):
+        first = response.content[0]
+        txt = getattr(first, "text", None)
+        if txt:
+            return str(txt).strip()
+    raise ValueError("AI returned no text content")
+
+
 def _is_model_selection_error(exc):
     if isinstance(exc, NotFoundError):
         return True
@@ -272,7 +290,7 @@ Rules:
         }],
     )
 
-    ai_text = response.content[0].text.strip()
+    ai_text = _extract_message_text(response)
     if ai_text.startswith("```"):
         ai_text = ai_text.split("```")[1]
         if ai_text.startswith("json"):
@@ -352,12 +370,24 @@ def check_progress():
             }],
         )
 
-        ai_text = response.content[0].text.strip()
+        ai_text = _extract_message_text(response)
         if ai_text.startswith("```"):
             ai_text = ai_text.split("```")[1]
             if ai_text.startswith("json"):
                 ai_text = ai_text[4:]
-        result = json.loads(ai_text.strip())
+        ai_text = ai_text.strip()
+        try:
+            result = json.loads(ai_text)
+        except Exception:
+            start = ai_text.find("{")
+            end = ai_text.rfind("}")
+            if start == -1 or end == -1 or end <= start:
+                raise
+            result = json.loads(ai_text[start : end + 1])
+        if "danger_level" not in result and isinstance(result, dict):
+            dl = result.get("risk") or result.get("level")
+            if dl:
+                result = {**result, "danger_level": dl}
         return jsonify({"success": True, "result": result})
 
     except Exception as e:

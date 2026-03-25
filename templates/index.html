@@ -1331,7 +1331,7 @@ if(fallbackFile){
 
 function captureFrame(){
   return new Promise(function(resolve,reject){
-    if(!camStream||!camReady){reject('No camera');return}
+    if(!camStream||!camReady){reject(new Error('No camera — use photo upload or allow camera.'));return}
     canvasEl.width=videoEl.videoWidth||1280;canvasEl.height=videoEl.videoHeight||720;
     var ctx2=canvasEl.getContext('2d');ctx2.drawImage(videoEl,0,0,canvasEl.width,canvasEl.height);
     canvasEl.toBlob(function(blob){
@@ -1344,7 +1344,7 @@ function captureFrame(){
         shutterSnd();
         var fl=document.getElementById('s-flash');fl.classList.add('fire');setTimeout(function(){fl.classList.remove('fire')},420);
         resolve(blob);
-      } else reject('Capture failed');
+      } else reject(new Error('Capture failed'));
     },'image/jpeg',0.92);
   });
 }
@@ -1367,6 +1367,7 @@ function popScanLabel(){
   el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');
 }
 
+if(scanEgg){
 scanEgg.addEventListener('pointerdown',function(){
   scanEgg.classList.add('pressed');
 });
@@ -1401,7 +1402,7 @@ scanEgg.addEventListener('click',async function(){
     if(stillEl){stillEl.style.display='none';stillEl.src='';}
     if(retakeBtn){retakeBtn.style.display='none'}
     startLiveScanSession(3).catch(function(e){
-      document.getElementById('err-box').textContent=e&&e.message?e.message:'Scan failed. Try again.';
+      document.getElementById('err-box').textContent=(e&&e.message)||(typeof e==='string'?e:'')||'Scan failed. Try again.';
       document.getElementById('err-box').style.display='block';
     });
     return;
@@ -1410,7 +1411,7 @@ scanEgg.addEventListener('click',async function(){
   // Fallback: if camera is not available, use the last captured/uploaded frame.
   if(capturedBlob){
     startLiveScanSession(1,capturedBlob).catch(function(e){
-      document.getElementById('err-box').textContent=e&&e.message?e.message:'Scan failed. Try again.';
+      document.getElementById('err-box').textContent=(e&&e.message)||(typeof e==='string'?e:'')||'Scan failed. Try again.';
       document.getElementById('err-box').style.display='block';
     });
     return;
@@ -1425,6 +1426,7 @@ scanEgg.addEventListener('click',async function(){
   document.getElementById('err-box').textContent=T[LANG].camNotReady;
   document.getElementById('err-box').style.display='block';
 });
+}
 
 var liveActive=false;
 var liveAwaitNext=false;
@@ -1579,7 +1581,7 @@ async function startLiveScanSession(viewsTarget, initialBlob){
     camOverlay.classList.remove('scanning');
     xrayOn(false);
     document.getElementById('ld').style.display='none';
-    document.getElementById('err-box').textContent=err.message||'Something went wrong. Try again.';
+    document.getElementById('err-box').textContent=(err&&err.message)||(typeof err==='string'?err:'')||'Something went wrong. Try again.';
     document.getElementById('err-box').style.display='block';
   }finally{
     liveActive=false;
@@ -1640,7 +1642,7 @@ function updateHazardHero(r){
 
 /* MIC */
 var micBtn=document.getElementById('mic-btn'),SpeechRec=window.SpeechRecognition||window.webkitSpeechRecognition,recInstance=null;
-micBtn.addEventListener('click',function(){
+if(micBtn)micBtn.addEventListener('click',function(){
   if(!SpeechRec){alert(LANG==='nl'?'Spraak niet ondersteund. Probeer Chrome.':'Speech not supported. Try Chrome.');return}
   if(recInstance){recInstance.stop();return}
   recInstance=new SpeechRec();recInstance.lang=LANG==='nl'?'nl-NL':'en-US';recInstance.continuous=false;recInstance.interimResults=false;
@@ -1737,6 +1739,10 @@ if(walkFinishBtn){
   });
 }
 
+function ceEsc(s){
+  return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function renderResults(r){
   lastScanResult=r;
   curTask=r.task||r.what_i_see||'';
@@ -1829,7 +1835,7 @@ function renderResults(r){
     allTools.forEach(function(tool){
       var e=document.createElement('div');e.className='tool-entry';
       var nr=document.createElement('div');nr.className='tool-nm-row';
-      nr.innerHTML='<div class="tool-dot"></div><div class="tool-nm">'+tool+'</div>';
+      nr.innerHTML='<div class="tool-dot"></div><div class="tool-nm">'+ceEsc(tool)+'</div>';
       var sr=document.createElement('div');sr.className='tool-shops';
       STORES.forEach(function(store){
         var a=document.createElement('a');
@@ -1853,7 +1859,7 @@ function renderResults(r){
       var colClass=STEP_COLORS[i%STEP_COLORS.length];
       var li=document.createElement('li');li.className='step-item '+colClass;li.id='si-'+i;
       var tr=document.createElement('div');tr.className='step-top';
-      tr.innerHTML='<div class="s-num '+colClass+'" id="sn-'+i+'">'+(i+1)+'</div><div class="s-txt">'+txt+'</div>';
+      tr.innerHTML='<div class="s-num '+colClass+'" id="sn-'+i+'">'+(i+1)+'</div><div class="s-txt">'+ceEsc(txt)+'</div>';
       var acts=document.createElement('div');acts.className='step-actions';
       var cb=document.createElement('button');cb.className='chk-btn';cb.id='cb-'+i;
       cb.textContent='📸 '+T[LANG].checkProgress;
@@ -1921,8 +1927,13 @@ pmGo.addEventListener('click',async function(){
   if(!pmFile2)return;clickSnd();hap([8,5,8]);pmGo.innerHTML='⏳ ...';pmGo.classList.remove('on');
   var fd=new FormData();fd.append('image',pmFile2);fd.append('step',pmTxtVal);fd.append('task',curTask);fd.append('language',LANG);
   try{
-    var resp=await fetch('/check-progress',{method:'POST',body:fd});var data=await resp.json();
+    var resp=await fetch('/check-progress',{method:'POST',body:fd});
+    var rawPm=await resp.text();
+    var data;
+    try{data=JSON.parse(rawPm);}catch(pe){throw new Error((LANG==='nl'?'Serverfoto-check mislukt. ':'Progress check failed.')+' HTTP '+resp.status)}
+    if(!resp.ok)throw new Error((data&&data.error)||rawPm.slice(0,320)||('HTTP '+resp.status));
     if(!data.success)throw new Error(data.error||'Error');
+    if(!data.result)throw new Error('No progress result');
     var res=data.result,lv=res.danger_level||'safe',t=T[LANG];
     pmRes.className='pm-res '+lv;pmRes.style.display='block';
     var icons={safe:'✅',caution:'⚠️',danger:'🚨',emergency:'🚨'};
