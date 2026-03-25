@@ -337,5 +337,19 @@ def collect_feedback():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+@app.route("/health")
+def health():
+    """Quick prod sanity check: no secrets returned."""
+    key_ok = bool(os.getenv("ANTHROPIC_API_KEY", "").strip())
+    return jsonify(
+        {
+            "ok": True,
+            "anthropic_api_key_configured": key_ok,
+            "default_vision_model": VISION_MODEL,
+            "default_check_model": CHECK_PROGRESS_MODEL,
+        }
+    )
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
