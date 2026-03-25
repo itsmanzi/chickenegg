@@ -12,22 +12,20 @@ def home():
     return render_template("index.html")
 
 
-@app.route("/analyze", methods=["POST"])
-def analyze():
-    try:
-        image_file = request.files.get("image")
-        question   = request.form.get("question", "")
-        language   = request.form.get("language", "nl")
+def _do_analyze():
+    image_file = request.files.get("image")
+    question   = request.form.get("question", "")
+    language   = request.form.get("language", "nl")
 
-        if not image_file:
-            return jsonify({"success": False, "error": "No image provided"}), 400
+    if not image_file:
+        return None, ("No image provided", 400)
 
-        image_base64 = base64.b64encode(image_file.read()).decode("utf-8")
-        mime_type    = image_file.mimetype or "image/jpeg"
+    image_base64 = base64.b64encode(image_file.read()).decode("utf-8")
+    mime_type    = image_file.mimetype or "image/jpeg"
 
-        lang_instruction = "Respond entirely in Dutch (Nederlands). Use Dutch product names (e.g. 'kraan', 'moersleutel', 'Teflon tape')." if language == "nl" else "Respond in English."
+    lang_instruction = "Respond entirely in Dutch (Nederlands). Use Dutch product names (e.g. 'kraan', 'moersleutel', 'Teflon tape')." if language == "nl" else "Respond in English."
 
-        system_prompt = f"""
+    system_prompt = f"""
 You are an expert Dutch home repair assistant. {lang_instruction}
 
 Analyse the image and return ONLY a valid JSON object — no markdown, no code fences, no explanation.
@@ -60,28 +58,51 @@ Rules:
 - Return ONLY the JSON. No extra text.
 """
 
-        response = client.messages.create(
-            model="claude-3-5-sonnet-20241022",
-            max_tokens=1500,
-            system=system_prompt,
-            messages=[{
-                "role": "user",
-                "content": [
-                    {"type": "image", "source": {"type": "base64", "media_type": mime_type, "data": image_base64}},
-                    {"type": "text", "text": f"User note: {question}" if question else "Analyseer dit probleem."},
-                ],
-            }],
-        )
+    response = client.messages.create(
+        model="claude-3-5-sonnet-20241022",
+        max_tokens=1500,
+        system=system_prompt,
+        messages=[{
+            "role": "user",
+            "content": [
+                {"type": "image", "source": {"type": "base64", "media_type": mime_type, "data": image_base64}},
+                {"type": "text", "text": f"User note: {question}" if question else "Analyseer dit probleem."},
+            ],
+        }],
+    )
 
-        ai_text = response.content[0].text.strip()
-        if ai_text.startswith("```"):
-            ai_text = ai_text.split("```")[1]
-            if ai_text.startswith("json"):
-                ai_text = ai_text[4:]
-        ai_text = ai_text.strip()
-        result = json.loads(ai_text)
-        return jsonify({"success": True, "result": result})
+    ai_text = response.content[0].text.strip()
+    if ai_text.startswith("```"):
+        ai_text = ai_text.split("```")[1]
+        if ai_text.startswith("json"):
+            ai_text = ai_text[4:]
+    ai_text = ai_text.strip()
+    result = json.loads(ai_text)
+    return {"success": True, "result": result}, None
 
+
+@app.route("/analyze", methods=["POST"])
+def analyze():
+    try:
+        payload, err = _do_analyze()
+        if err:
+            return jsonify({"success": False, "error": err[0]}), err[1]
+        return jsonify(payload)
+    except json.JSONDecodeError as e:
+        return jsonify({"success": False, "error": f"AI returned invalid JSON: {str(e)}"}), 500
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/analyze-live", methods=["POST"])
+def analyze_live():
+    """Same vision analysis as /analyze; frontend expects multi-view hints in `live`."""
+    try:
+        payload, err = _do_analyze()
+        if err:
+            return jsonify({"success": False, "error": err[0]}), err[1]
+        payload["live"] = {"needs_more_views": False, "next_prompt": ""}
+        return jsonify(payload)
     except json.JSONDecodeError as e:
         return jsonify({"success": False, "error": f"AI returned invalid JSON: {str(e)}"}), 500
     except Exception as e:
@@ -143,6 +164,16 @@ def track_click():
     try:
         data = request.json
         print(f"Store click: {data.get('store','')} for '{data.get('tool','')}'")
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/collect-feedback", methods=["POST"])
+def collect_feedback():
+    try:
+        data = request.json or {}
+        print(f"Feedback: rating={data.get('rating')} notes={data.get('notes','')[:80]!r}")
         return jsonify({"success": True})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
