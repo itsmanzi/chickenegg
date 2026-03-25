@@ -368,6 +368,12 @@
     .card::before{content:'';position:absolute;top:0;left:6%;right:6%;height:.5px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.92),transparent)}
     .card::after{content:'';position:absolute;inset:0;background:linear-gradient(148deg,rgba(255,255,255,.07) 0%,transparent 45%);pointer-events:none}
     .card-lbl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.3px;color:var(--t3);margin-bottom:11px}
+    .card-lbl{
+      background:linear-gradient(90deg,rgba(88,115,214,.95),rgba(255,174,58,.95));
+      -webkit-background-clip:text;background-clip:text;
+      -webkit-text-fill-color:transparent;
+      text-shadow:none;
+    }
     .no-repair-p{font-size:12px;color:var(--t2);line-height:1.55;margin-bottom:14px}
 
     /* TOOLS WITH LOGO CHIPS */
@@ -400,13 +406,41 @@
     .walk-pane{margin-top:6px}
     .walk-meta{font-size:10px;font-weight:900;color:var(--t3);letter-spacing:.6px;text-transform:uppercase;margin-bottom:8px}
     .walk-text{
-      background:linear-gradient(148deg,rgba(195,195,199,.38),rgba(178,178,182,.18));
-      border:.5px solid rgba(255,255,255,.28);
-      border-radius:14px;padding:12px 12px;
-      font-size:13px;line-height:1.6;color:var(--t2);
-      min-height:90px;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.55);
+      background:
+        radial-gradient(120% 120% at 18% 8%, rgba(255,174,58,.22) 0%, rgba(255,174,58,0) 45%),
+        radial-gradient(120% 120% at 84% 18%, rgba(88,115,214,.22) 0%, rgba(88,115,214,0) 46%),
+        linear-gradient(150deg, rgba(255,255,255,.62), rgba(235,240,248,.52));
+      border:1px solid rgba(255,255,255,.68);
+      border-radius:16px;
+      padding:14px 14px;
+      font-size:14px;
+      line-height:1.62;
+      color:rgba(20,28,45,.86);
+      min-height:104px;
+      box-shadow:
+        0 10px 22px rgba(22,30,48,.12),
+        inset 0 1px 0 rgba(255,255,255,.88),
+        inset 0 -1px 0 rgba(20,30,48,.06);
+      position:relative;
+      overflow:hidden;
     }
+    .walk-text::before{
+      content:'';
+      position:absolute;
+      left:0;top:0;bottom:0;
+      width:4px;
+      background:linear-gradient(180deg,rgba(255,174,58,.95),rgba(88,115,214,.85));
+      opacity:.9;
+    }
+    .walk-text::after{
+      content:'';
+      position:absolute;inset:0;
+      background:linear-gradient(180deg,rgba(255,255,255,.35),transparent 45%);
+      pointer-events:none;
+      mix-blend-mode:soft-light;
+    }
+    .walk-text.flash{animation:walkFlash .35s cubic-bezier(.34,1.2,.64,1)}
+    @keyframes walkFlash{0%{transform:translateY(2px);filter:saturate(1.05)}100%{transform:translateY(0);filter:saturate(1)}}
     .walk-nav{display:flex;gap:10px;margin-top:10px}
     .walk-nav-btn{
       flex:1;border:none;border-radius:14px;padding:12px 10px;
@@ -432,11 +466,28 @@
       font-size:12px;font-weight:900;color:var(--green);
       cursor:pointer;
     }
-    .walk-tools{margin-top:10px;padding:10px;border-radius:14px;background:linear-gradient(145deg,rgba(230,232,236,.65),rgba(208,212,220,.58));border:.5px solid rgba(0,0,0,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.55)}
-    .walk-tools-ttl{font-size:10px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;color:var(--t3);margin-bottom:8px}
+    .walk-tools{
+      margin-top:10px;
+      padding:11px 12px;
+      border-radius:16px;
+      background:
+        radial-gradient(140% 120% at 12% 0%, rgba(58,96,56,.18) 0%, rgba(58,96,56,0) 52%),
+        radial-gradient(140% 120% at 90% 20%, rgba(255,174,58,.16) 0%, rgba(255,174,58,0) 52%),
+        linear-gradient(150deg, rgba(255,255,255,.58), rgba(235,240,248,.48));
+      border:1px solid rgba(255,255,255,.66);
+      box-shadow:0 10px 20px rgba(22,30,48,.1),inset 0 1px 0 rgba(255,255,255,.82);
+    }
+    .walk-tools-ttl{
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.8px;
+      text-transform:uppercase;
+      color:rgba(40,54,82,.7);
+      margin-bottom:8px
+    }
     .walk-tools-row{display:flex;flex-direction:column;gap:10px}
     .walk-tool{display:flex;align-items:center;justify-content:space-between;gap:10px}
-    .walk-tool-nm{font-size:13px;font-weight:900;color:var(--t1);line-height:1.25}
+    .walk-tool-nm{font-size:13px;font-weight:900;color:rgba(16,22,34,.9);line-height:1.25}
     .walk-tool-shops{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
     .walk-tool-shops .shop-lnk{width:40px;height:26px;border-radius:10px;display:flex;align-items:center;justify-content:center}
     .walk-tool-empty{font-size:13px;color:var(--t2);font-weight:800}
@@ -746,8 +797,18 @@
     .card,.badges-sec,.fold-more{box-shadow:0 8px 24px rgba(23,31,47,.12),inset 0 1px 0 rgba(255,255,255,.85),inset 0 -1px 0 rgba(20,30,48,.08)}
     .chip{background:linear-gradient(135deg,rgba(234,239,248,.94),rgba(215,223,236,.94));border-color:rgba(146,160,186,.34);color:#1B2436;box-shadow:0 1px 6px rgba(39,50,73,.15),inset 0 1px 0 rgba(255,255,255,.8)}
     .r-hdr{background:linear-gradient(148deg,rgba(238,242,249,.88),rgba(220,227,238,.92));border:1px solid rgba(146,160,186,.32)}
-    .r-title{color:#151922}
-    .r-task{color:#7D510B}
+    .r-title{
+      color:#1C2638;
+      text-shadow:0 1px 0 rgba(255,255,255,.55);
+    }
+    .r-task{
+      color:#7D510B;
+    }
+    .card-lbl{
+      background:linear-gradient(90deg,rgba(90,110,160,.95),rgba(168,111,20,.95));
+      -webkit-background-clip:text;background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
     .cam-upload-btn{display:none!important}
     @media (max-width:380px){
       #app-version-pill{display:none!important}
@@ -1718,7 +1779,10 @@ function updateWalkCardUI(){
   if(wttl) wttl.textContent = (LANG==='nl'?'Gereedschap voor deze stap':'Tools for this step');
 
   var tx=document.getElementById('walk-text');
-  if(tx)tx.textContent=curSteps[walkIdx]||'';
+  if(tx){
+    tx.classList.remove('flash');void tx.offsetWidth;tx.classList.add('flash');
+    tx.textContent=curSteps[walkIdx]||'';
+  }
   renderWalkTools(curSteps[walkIdx]||'');
 
   var backBtn=document.getElementById('walk-back');
