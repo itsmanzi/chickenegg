@@ -962,25 +962,12 @@
       <button class="tts-btn" id="tts-stop" onclick="stopSpeech()" style="display:none">⏹ Stop</button>
       <div class="tts-speed" id="tts-speed-lbl">Speed: normal</div>
     </div>
-    <div class="ec ec-top" id="ec">
-      <h3 id="ec-h3">Join the Repair Pioneers</h3>
-      <p id="ec-p">Help shape chickenegg: leave a quick vibe, drop your email, get beta perks and updates.</p>
-      <div class="ec-rate" id="ec-rate">
-        <button type="button" class="ec-chip" data-rate="love">😍 Love it</button>
-        <button type="button" class="ec-chip" data-rate="good">🙂 Good</button>
-        <button type="button" class="ec-chip" data-rate="confused">🤔 Confusing</button>
-      </div>
-      <div class="ec-row"><input class="ec-inp" type="email" id="ec-inp" inputmode="email" autocomplete="email" placeholder="your@email.com"/><button type="button" class="ec-sub" id="ec-sub">Join</button></div>
-      <div class="ec-row" style="margin-top:8px"><input class="ec-inp" type="text" id="ec-note" placeholder="One thing to improve (optional)"/></div>
-      <div class="ec-skip" id="ec-skip" role="button" tabindex="0">Not now</div>
-    </div>
     <div class="warn-ctr off" id="warn-ctr">⚠️ <span id="warn-txt"></span></div>
     <div class="card" id="no-repair-box" style="display:none">
       <div class="card-lbl" id="no-repair-title">No repair needed</div>
       <p class="no-repair-p" id="no-repair-p">Enjoy your drink! No plumber needed here.</p>
       <button class="rst-btn" id="no-repair-cta" style="margin-top:4px">↩ Try another image</button>
     </div>
-    <div class="tip safety" id="tip-safety"><div class="tip-ico">⚠️</div><div><div class="tip-lbl" id="safety-lbl">Safety</div><div class="tip-txt" id="r-safety"></div></div></div>
     <div class="card" id="tools-card"><div class="card-lbl" id="tools-lbl">Tools & Materials</div><div class="tools-list" id="r-tools"></div></div>
     <a class="ad-banner" id="ad-banner" href="https://www.gamma.nl" target="_blank" rel="noopener"><div class="ad-l"><span style="font-size:18px" id="ad-ico">🏪</span><div><div class="ad-sp">Sponsored</div><div class="ad-nm" id="ad-nm">Gamma</div><div class="ad-sub" id="ad-sub-txt">Tools — same-day pickup NL</div></div></div><div class="ad-cta" id="ad-cta">Shop →</div></a>
     <div class="card" id="steps-card">
@@ -1000,7 +987,20 @@
       </div>
       <ol class="steps-list" id="r-steps"></ol>
     </div>
-    <details class="fold-more" id="fold-more">
+    <div class="tip safety" id="tip-safety"><div class="tip-ico">⚠️</div><div><div class="tip-lbl" id="safety-lbl">Safety</div><div class="tip-txt" id="r-safety"></div></div></div>
+    <div class="ec ec-top" id="ec">
+      <h3 id="ec-h3">Join the Repair Pioneers</h3>
+      <p id="ec-p">Help shape chickenegg: leave a quick vibe, drop your email, get beta perks and updates.</p>
+      <div class="ec-rate" id="ec-rate">
+        <button type="button" class="ec-chip" data-rate="love">😍 Love it</button>
+        <button type="button" class="ec-chip" data-rate="good">🙂 Good</button>
+        <button type="button" class="ec-chip" data-rate="confused">🤔 Confusing</button>
+      </div>
+      <div class="ec-row"><input class="ec-inp" type="email" id="ec-inp" inputmode="email" autocomplete="email" placeholder="your@email.com"/><button type="button" class="ec-sub" id="ec-sub">Join</button></div>
+      <div class="ec-row" style="margin-top:8px"><input class="ec-inp" type="text" id="ec-note" placeholder="One thing to improve (optional)"/></div>
+      <div class="ec-skip" id="ec-skip" role="button" tabindex="0">Not now</div>
+    </div>
+    <details class="fold-more" id="fold-more" open>
       <summary class="fold-sum" id="fold-sum">Savings, sharing &amp; extra tips</summary>
       <div class="fold-inner">
         <div class="sav" id="sav-box"><div class="sav-l">💰 <span id="sav-lbl">Saving vs plumber</span><div class="sav-lbl" id="sav-sub">why call when you can fix?</div></div><div class="sav-amt" id="sav-amt">€85</div></div>
@@ -1220,12 +1220,29 @@ var STORES=[
     logo:'<svg width="36" height="22" viewBox="0 0 72 44" xmlns="http://www.w3.org/2000/svg"><rect width="72" height="44" rx="5" fill="#004B9D"/><text x="36" y="30" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="900" fill="white">PRAXIS</text></svg>'
   },
   {
+    n:'Action',
+    u:'https://www.action.com/nl-nl/search/?q=',
+    sp:false,
+    logo:'<svg width="36" height="22" viewBox="0 0 72 44" xmlns="http://www.w3.org/2000/svg"><rect width="72" height="44" rx="5" fill="#0050AA"/><text x="36" y="30" text-anchor="middle" font-family="Arial Black,Helvetica,sans-serif" font-size="11" font-weight="900" fill="white">ACTION</text></svg>'
+  },
+  {
     n:'Bol.nl',
     u:'https://www.bol.com/nl/nl/s/?searchtext=',
     sp:false,
     logo:'<svg width="36" height="22" viewBox="0 0 72 44" xmlns="http://www.w3.org/2000/svg"><rect width="72" height="44" rx="5" fill="#0000A4"/><text x="36" y="31" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="16" font-weight="900" fill="white">bol</text></svg>'
+  },
+  {
+    n:'IKEA',
+    u:'https://www.ikea.com/nl/nl/search/?q=',
+    sp:false,
+    logo:'<svg width="36" height="22" viewBox="0 0 72 44" xmlns="http://www.w3.org/2000/svg"><rect width="72" height="44" rx="5" fill="#0058A3"/><text x="36" y="30" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="900" fill="#FFCC00">IKEA</text></svg>'
   }
 ];
+
+function shopHrefForTool(store,tool){
+  var sk=store.n==='Gamma'?'gamma':(store.n==='Praxis'?'praxis':(store.n==='Bol.nl'?'bol':null));
+  return sk?pickProductUrl(sk,tool,store.u):(store.u+encodeURIComponent(tool));
+}
 
 /* STEP COLOUR CYCLE */
 var STEP_COLORS=['col-teal','col-purple','col-amber','col-rose','col-slate'];
@@ -1498,8 +1515,16 @@ async function startLiveScanSession(viewsTarget, initialBlob){
       fd.append('views_target',String(viewsTarget));
 
       var resp=await fetch('/analyze-live',{method:'POST',body:fd});
-      var data=await resp.json();
-      if(!data.success)throw new Error(data.error||'Live analysis failed');
+      var rawText=await resp.text();
+      var data;
+      try{data=JSON.parse(rawText);}catch(parseErr){
+        throw new Error((LANG==='nl'?'Ongeldig antwoord van server (JSON). ':'Invalid server response.')+' HTTP '+resp.status);
+      }
+      if(!resp.ok){
+        throw new Error((data&&data.error)||rawText.slice(0,280)||('HTTP '+resp.status));
+      }
+      if(!data.success)throw new Error((data&&data.error)||'Live analysis failed');
+      if(!data.result)throw new Error((LANG==='nl'?'Geen analyse-resultaat. ':'No analysis result.'));
 
       clearInterval(LI);
       LI=null;
@@ -1639,7 +1664,7 @@ function updateHazardHero(r){
 
 /* MIC */
 var micBtn=document.getElementById('mic-btn'),SpeechRec=window.SpeechRecognition||window.webkitSpeechRecognition,recInstance=null;
-micBtn.addEventListener('click',function(){
+if(micBtn)micBtn.addEventListener('click',function(){
   if(!SpeechRec){alert(LANG==='nl'?'Spraak niet ondersteund. Probeer Chrome.':'Speech not supported. Try Chrome.');return}
   if(recInstance){recInstance.stop();return}
   recInstance=new SpeechRec();recInstance.lang=LANG==='nl'?'nl-NL':'en-US';recInstance.continuous=false;recInstance.interimResults=false;
@@ -1737,9 +1762,38 @@ if(walkFinishBtn){
 }
 
 function renderResults(r){
+  r=r||{};
+  function asText(v){
+    if(v===null||typeof v==='undefined')return '';
+    if(typeof v==='string')return v.trim();
+    if(typeof v==='number')return String(v);
+    if(typeof v==='object'){
+      if(typeof v.text==='string'&&v.text.trim())return v.text.trim();
+      if(typeof v.step==='string'&&v.step.trim())return v.step.trim();
+      if(typeof v.instruction==='string'&&v.instruction.trim())return v.instruction.trim();
+      if(typeof v.visual_tip==='string'&&v.visual_tip.trim())return v.visual_tip.trim();
+      if(typeof v.name==='string'&&v.name.trim())return v.name.trim();
+    }
+    return String(v).trim();
+  }
+  function asList(v){
+    if(Array.isArray(v)){
+      return v.map(asText).filter(function(x){return !!x});
+    }
+    if(typeof v==='string'){
+      return v.split(/\r?\n|,|;/).map(function(x){return x.trim()}).filter(function(x){return !!x});
+    }
+    return [];
+  }
+
   lastScanResult=r;
-  curTask=r.task||r.what_i_see||'';
-  curSteps=(r.steps||[]).map(function(s){return s.replace(/^(step|stap)\s*\d+[:\-\.]?\s*/i,'')});
+  curTask=asText(r.task)||asText(r.what_i_see)||'';
+  var rawSteps = r.steps||r.instructions||r.how_to||r.recommendation||[];
+  curSteps=asList(rawSteps).map(function(s){return s.replace(/^(step|stap)\s*\d+[:\-\.]?\s*/i,'')});
+  if(!curSteps.length){
+    var fallbackStep=asText(r.what_to_do)||asText(r.fix_plan)||asText(r.task);
+    if(fallbackStep)curSteps=[fallbackStep];
+  }
   doneSteps.clear();warnCt=0;updateWarn();
 
   var repairNeeded = curSteps.length>0 && curSteps.some(function(s){return (s||'').trim().length>0});
@@ -1764,8 +1818,8 @@ function renderResults(r){
     document.getElementById('s-tot').textContent='0';
     document.getElementById('p-fill').style.width='0%';
   }
-  document.getElementById('r-title').textContent=r.what_i_see||'';
-  document.getElementById('r-task2').textContent=r.task||'';
+  document.getElementById('r-title').textContent=asText(r.what_i_see)||asText(r.problem)||'';
+  document.getElementById('r-task2').textContent=asText(r.task)||asText(r.what_to_do)||'';
   var conf=(r.confidence_tier||'DIY-safe').toLowerCase();
   var confEl=document.getElementById('r-confidence');
   if(confEl){
@@ -1780,9 +1834,9 @@ function renderResults(r){
       confEl.textContent='✅ DIY-safe';
     }
   }
-  document.getElementById('r-time').textContent=r.time_needed||'';
-  document.getElementById('r-safety').textContent=r.safety_tip||'';
-  document.getElementById('r-pro').textContent=r.pro_tip||'';
+  document.getElementById('r-time').textContent=asText(r.time_needed)||'';
+  document.getElementById('r-safety').textContent=asText(r.safety_tip)||asText(r.safety)||'Work slowly and wear safety gear.';
+  document.getElementById('r-pro').textContent=asText(r.pro_tip)||asText(r.tip)||'';
 
   var diff=(r.difficulty||'Medium').toLowerCase();
   var dc=document.getElementById('r-diff');dc.className='chip '+diff;
@@ -1820,7 +1874,7 @@ function renderResults(r){
 
   /* Tools with logo chips */
   var te=document.getElementById('r-tools');te.innerHTML='';
-  var allTools=(r.tools_needed||[]).concat(r.materials_needed||[]);
+  var allTools=asList(r.tools_needed||r.tools).concat(asList(r.materials_needed||r.materials||r.parts_needed));
   setAdForTool(allTools[0]||'');
   if(!allTools.length){
     te.innerHTML='<div class="tool-empty">'+T[LANG].toolEmpty+'</div>';
@@ -1828,16 +1882,18 @@ function renderResults(r){
     allTools.forEach(function(tool){
       var e=document.createElement('div');e.className='tool-entry';
       var nr=document.createElement('div');nr.className='tool-nm-row';
-      nr.innerHTML='<div class="tool-dot"></div><div class="tool-nm">'+tool+'</div>';
+      var dot=document.createElement('div');dot.className='tool-dot';
+      var nm=document.createElement('div');nm.className='tool-nm';nm.textContent=tool;
+      nr.appendChild(dot);nr.appendChild(nm);
       var sr=document.createElement('div');sr.className='tool-shops';
       STORES.forEach(function(store){
         var a=document.createElement('a');
         a.className='shop-lnk';
-        a.href=pickProductUrl(store.n==='Gamma'?'gamma':(store.n==='Praxis'?'praxis':'bol'),tool,store.u);
+        a.href=shopHrefForTool(store,tool);
         a.target='_blank';a.rel='noopener';
         a.title=store.n;
         a.innerHTML=store.logo;
-        a.addEventListener('click',function(){fetch('/track-click',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({store:store.n,tools:tool})}).catch(function(){})});
+        a.addEventListener('click',function(){fetch('/track-click',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({store:store.n,tool:tool})}).catch(function(){})});
         sr.appendChild(a);
       });
       e.appendChild(nr);e.appendChild(sr);te.appendChild(e);
@@ -1852,7 +1908,9 @@ function renderResults(r){
       var colClass=STEP_COLORS[i%STEP_COLORS.length];
       var li=document.createElement('li');li.className='step-item '+colClass;li.id='si-'+i;
       var tr=document.createElement('div');tr.className='step-top';
-      tr.innerHTML='<div class="s-num '+colClass+'" id="sn-'+i+'">'+(i+1)+'</div><div class="s-txt">'+txt+'</div>';
+      var sn=document.createElement('div');sn.className='s-num '+colClass;sn.id='sn-'+i;sn.textContent=String(i+1);
+      var sx=document.createElement('div');sx.className='s-txt';sx.textContent=txt;
+      tr.appendChild(sn);tr.appendChild(sx);
       var acts=document.createElement('div');acts.className='step-actions';
       var cb=document.createElement('button');cb.className='chk-btn';cb.id='cb-'+i;
       cb.textContent='📸 '+T[LANG].checkProgress;
