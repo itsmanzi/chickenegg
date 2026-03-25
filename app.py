@@ -1,7 +1,9 @@
 import os
+import re
 import base64
 import json
 from flask import Flask, request, jsonify, render_template
+from nl_corpus import get_corpus_for_language
 from anthropic import (
     Anthropic,
     APIStatusError,
@@ -73,12 +75,20 @@ def _to_list(v):
     return []
 
 
+def _strip_step_prefix(txt):
+    s = _clean_str(txt, "")
+    if not s:
+        return ""
+    return re.sub(r"^(step|stap)\s*\d+[:\-.]?\s*", "", s, flags=re.I).strip()
+
+
 def _normalize_result(raw):
     if not isinstance(raw, dict):
         raw = {}
 
     steps_raw = (
         raw.get("steps")
+        or raw.get("step_details")
         or raw.get("instructions")
         or raw.get("how_to")
         or raw.get("step_by_step")
@@ -88,6 +98,7 @@ def _normalize_result(raw):
         or []
     )
     steps = []
+    step_details = []
     if isinstance(steps_raw, list):
         for step in steps_raw:
             if isinstance(step, dict):
@@ -95,16 +106,23 @@ def _normalize_result(raw):
                     step.get("text")
                     or step.get("step")
                     or step.get("instruction")
-                    or step.get("visual_tip")
                 )
+                txt = _strip_step_prefix(txt)
+                vt = _clean_str(step.get("visual_tip") or step.get("look_for") or step.get("verify"))
                 if txt:
                     steps.append(txt)
+                    step_details.append({"text": txt, "visual_tip": vt})
             else:
-                txt = _clean_str(step)
+                txt = _strip_step_prefix(step)
                 if txt:
                     steps.append(txt)
+                    step_details.append({"text": txt, "visual_tip": ""})
     else:
-        steps = _to_list(steps_raw)
+        for line in _to_list(steps_raw):
+            txt = _strip_step_prefix(line)
+            if txt:
+                steps.append(txt)
+                step_details.append({"text": txt, "visual_tip": ""})
 
     if not steps:
         fallback = _clean_str(
@@ -115,10 +133,61 @@ def _normalize_result(raw):
             or raw.get("what_i_see")
         )
         if fallback:
-            steps = [fallback]
+            fb = _strip_step_prefix(fallback)
+            steps = [fb]
+            step_details = [{"text": fb, "visual_tip": ""}]
 
     tools = _to_list(raw.get("tools_needed") or raw.get("tools"))
     materials = _to_list(raw.get("materials_needed") or raw.get("materials") or raw.get("parts_needed"))
+
+    qc_raw = raw.get("quick_checks") or raw.get("before_you_start") or []
+    quick_checks = []
+    if isinstance(qc_raw, list):
+        for x in qc_raw:
+            q = _clean_str(
+                x
+                if isinstance(x, str)
+                else (
+                    (x.get("text") or x.get("check"))
+                    if isinstance(x, dict)
+                    else str(x)
+                ),
+                "",
+            )
+            if q:
+                quick_checks.append(q)
+    else:
+        quick_checks = _to_list(qc_raw)
+    quick_checks = quick_checks[:4]
+
+    cat = _clean_str(
+        raw.get("job_category")
+        or raw.get("category")
+        or raw.get("domain"),
+        "",
+    )
+    uncertainty = _clean_str(
+        raw.get("uncertainty_note")
+        or raw.get("image_limitation")
+        or raw.get("confidence_caveat"),
+        "",
+    )
+    conf = _clean_str(raw.get("confidence_tier") or raw.get("confidence"), "")
+    low = conf.lower().replace("_", "-")
+    if not conf:
+        hz = _clean_str(raw.get("hazard_level"), "safe").lower()
+        if hz in ("danger",):
+            conf = "call-pro"
+        elif hz in ("warning", "caution"):
+            conf = "caution"
+        else:
+            conf = "DIY-safe"
+    elif "call" in low or low.startswith("call-") or "not-diy" in low:
+        conf = "call-pro"
+    elif "caution" in low or "careful" in low:
+        conf = "caution"
+    else:
+        conf = "DIY-safe"
 
     normalized = {
         "what_i_see": _clean_str(raw.get("what_i_see") or raw.get("problem") or raw.get("issue"), "Unknown item"),
@@ -132,8 +201,15 @@ def _normalize_result(raw):
         "tools_needed": tools,
         "materials_needed": materials,
         "steps": steps,
+        "step_details": step_details,
+        "job_category": cat,
+        "uncertainty_note": uncertainty,
+        "quick_checks": quick_checks[:4],
+        "confidence_tier": conf,
         "safety_tip": _clean_str(raw.get("safety_tip") or raw.get("safety") or raw.get("warning"), "Work slowly and wear protection."),
         "pro_tip": _clean_str(raw.get("pro_tip") or raw.get("tip"), ""),
+        "xray_readout": _clean_str(raw.get("xray_readout") or raw.get("defect_vs_cleaning"), ""),
+        "material_readout": _clean_str(raw.get("material_readout") or raw.get("materials_spotted"), ""),
     }
     return normalized
 
@@ -226,6 +302,15 @@ def app_build():
     return jsonify({"success": True, "version": os.getenv("APP_VERSION", "dev")})
 
 
+def _file_to_image_block(upload):
+    raw = upload.read()
+    if not raw:
+        return None
+    b64 = base64.b64encode(raw).decode("utf-8")
+    mime = upload.mimetype or "image/jpeg"
+    return {"type": "image", "source": {"type": "base64", "media_type": mime, "data": b64}}
+
+
 def _do_analyze():
     try:
         _get_client()
@@ -233,61 +318,109 @@ def _do_analyze():
         return None, (str(e), 503)
 
     image_file = request.files.get("image")
-    question   = request.form.get("question", "")
-    language   = request.form.get("language", "nl")
+    image_2 = request.files.get("image_2")
+    image_3 = request.files.get("image_3")
+    question = request.form.get("question", "")
+    language = request.form.get("language", "nl")
 
     if not image_file:
         return None, ("No image provided", 400)
 
-    image_base64 = base64.b64encode(image_file.read()).decode("utf-8")
-    mime_type    = image_file.mimetype or "image/jpeg"
+    view_defs = [
+        (image_file, "VIEW 1 — CONTEXT: Whole object + a bit of surroundings (orientation)."),
+        (image_2, "VIEW 2 — MATERIALS & TYPEPLATE: brands, stickers, couplings, pipe material, wire entry."),
+        (image_3, "VIEW 3 — X-RAY / PROBLEM ZONE: close-up; separate dirt/limescale from real damage or leak origin."),
+    ]
+    blocks = []
+    n_views = 0
+    for upload, caption in view_defs:
+        if not upload:
+            continue
+        img = _file_to_image_block(upload)
+        if not img:
+            continue
+        blocks.append({"type": "text", "text": caption})
+        blocks.append(img)
+        n_views += 1
 
     lang_instruction = "Respond entirely in Dutch (Nederlands). Use Dutch product names (e.g. 'kraan', 'moersleutel', 'Teflon tape')." if language == "nl" else "Respond in English."
+    corpus = get_corpus_for_language(language)
+    tri_note = ""
+    if n_views >= 3:
+        tri_note = (
+            "THREE views were taken in order. Merge them: view 1 context, view 2 materials/model, view 3 decides "
+            "cleaning/adjustment vs mechanical failure."
+        )
+    elif n_views == 2:
+        tri_note = "Two views: merge wide shot + detail."
 
     system_prompt = f"""
-You are an expert Dutch home repair assistant. {lang_instruction}
+You are the vision brain behind Chicken Egg: a camera-first app where people photograph real objects at home (or bike)
+and get safe, ordered steps to fix, clean, assemble, or simply understand what they are looking at.
 
-Analyse the image and return ONLY a valid JSON object — no markdown, no code fences, no explanation.
+Your tone: calm expert who notices details — impressive when the photo allows it, never performative or salesy.
+
+Domain: whole-home repairs — plumbing, fixtures, furniture, witgoed, walls/mounting (gips/kalkzand/beton/spouw),
+bicycles and e-bikes, typical NL/EU housing + retail (Gamma, Praxis, Karwei, IKEA, Bol).
+
+Pattern recognition targets: NL appliances (Miele/Bosch/Siemens/AEG/Beko), CV ketels, sanitaire knel/koper/PVC,
+EU Schuko low-voltage only (never advise groepenkast / mains work), fiets/e-bike wear and connectors.
+
+INTERNAL REFERENCE (use facts; do not paste this block into JSON answers):
+{corpus}
+
+{lang_instruction}
+
+{tri_note}
+
+Return ONLY valid JSON — no markdown, no code fences.
 
 JSON structure:
 {{
-  "what_i_see": "short description of what is broken",
-  "task": "concise task name e.g. Lekkende kraan repareren",
+  "job_category": "plumbing | electrical_low_voltage | furniture | appliance | walls_surface | bicycle_ebike | other",
+  "confidence_tier": "DIY-safe | caution | call-pro",
+  "material_readout": "one short sentence: materials/brands/fittings visible — or empty",
+  "xray_readout": "one short sentence: dirt vs damage vs adjustment; what the close-up shows — or best single-view",
+  "uncertainty_note": "empty or one sentence if ambiguous",
+  "quick_checks": ["max 2 short pre-flight checks or empty"],
+  "what_i_see": "2–3 short sentences. Sentence 1 = sharp, specific hook (visible brand/type/material/setting). Avoid hedgy filler.",
+  "task": "under ~10 words, verb-led, confident action title the user would tap on",
   "difficulty": "easy | medium | hard",
-  "estimated_cost": "e.g. EUR5-EUR15",
-  "time_needed": "e.g. 30 minuten",
+  "estimated_cost": "range or empty",
+  "time_needed": "duration",
   "hazard_level": "safe | caution | warning | danger",
-  "hazard_note": "one sentence hazard note or empty string",
-  "when_to_call_pro": "specific condition when user must stop and call a professional, or empty string",
-  "tools_needed": ["tool1", "tool2"],
-  "materials_needed": ["material1", "material2"],
-  "steps": [
-    {{"text": "step description", "visual_tip": "one sentence describing exactly what the user should see or look for at this step — e.g. 'The valve handle should point perpendicular to the pipe when closed'"}},
-    ...
-  ],
-  "safety_tip": "one key safety tip",
-  "pro_tip": "one practical pro tip"
+  "hazard_note": "or empty",
+  "when_to_call_pro": "licensed-work triggers",
+  "tools_needed": [],
+  "materials_needed": [],
+  "steps": [{{"text": "...", "visual_tip": "what the user should see in frame when this step is done"}}],
+  "safety_tip": "...",
+  "pro_tip": "one sharp insider tip, or empty if none"
 }}
 
-Rules:
-- Be action-oriented. Steps should tell the user EXACTLY what to do, not just explain.
-- hazard_level 'danger' only for gas, live electricity, or structural risk. Be specific in when_to_call_pro.
-- visual_tip must describe what success looks like at that step — something the user can verify visually.
-- Only list tools and materials genuinely needed. Never hallucinate.
-- Return ONLY the JSON. No extra text.
+Hard rules:
+- Steps: ordered, actionable, minimal jargon; every step MUST have visual_tip (camera check).
+- No made-up part numbers or torque specs unless readable in the image.
+- E-bike battery swollen/dented ⇒ call-pro / specialist, never open cells.
+- If the scene is ambiguous, lower confidence, fill uncertainty_note, and avoid overclaiming.
+- Return ONLY the JSON object.
 """
+
+    q = (question or "").strip()
+    suffix = f" ({n_views} beeld(en))." if language == "nl" else f" ({n_views} image(s))."
+    default_ask = (
+        "Chicken Egg: identificeer scherp wat er op de foto staat en geef het beste fix-/schoonmaak-/montageplan."
+        if language == "nl"
+        else "Chicken Egg: identify what's in the photo and give the best fix, clean, or assembly plan."
+    )
+    user_tail = {"type": "text", "text": (f"User note: {q}" if q else default_ask) + suffix}
+    user_content = blocks + [user_tail]
 
     response = _messages_create_with_fallback(
         system=system_prompt,
-        max_tokens=1500,
+        max_tokens=2800,
         preferred_model=VISION_MODEL,
-        messages=[{
-            "role": "user",
-            "content": [
-                {"type": "image", "source": {"type": "base64", "media_type": mime_type, "data": image_base64}},
-                {"type": "text", "text": f"User note: {question}" if question else "Analyseer dit probleem."},
-            ],
-        }],
+        messages=[{"role": "user", "content": user_content}],
     )
 
     ai_text = _extract_message_text(response)
@@ -357,15 +490,32 @@ def check_progress():
         mime_type    = image_file.mimetype or "image/jpeg"
         lang_instruction = "Respond in Dutch." if language == "nl" else "Respond in English."
 
+        pr_sys = f"""You are Chicken Egg's progress coach: users send a photo mid-repair while following step-by-step guidance.
+{lang_instruction}
+Compare the photo to the CURRENT STEP. Does the work-in-progress plausibly match what they should be doing right now?
+
+Return ONLY JSON:
+{{
+  "danger_level": "safe | caution | danger | emergency",
+  "step_match": "yes | no | unclear",
+  "progress_feedback": "one clear sentence — what you see and whether it matches the step",
+  "next_hint": "empty string, OR one short hint if step_match is no or unclear (what to adjust or photograph)"
+}}
+
+Rules:
+- emergency: fire, major gas, flood, exposed live conductors user could touch.
+- danger: unsafe situation that should stop work (not yet emergency).
+- step_match "yes" only if the photo is consistent with completing this step safely; "unclear" if image is too tight/blurry.
+- Be direct. No part numbers unless visible in the photo."""
         response = _messages_create_with_fallback(
             preferred_model=CHECK_PROGRESS_MODEL,
-            max_tokens=300,
-            system=f"You are a home repair safety checker. {lang_instruction} Return ONLY JSON: {{\"danger_level\": \"safe|caution|danger|emergency\", \"progress_feedback\": \"one practical sentence about what you see\"}}",
+            max_tokens=400,
+            system=pr_sys,
             messages=[{
                 "role": "user",
                 "content": [
                     {"type": "image", "source": {"type": "base64", "media_type": mime_type, "data": image_base64}},
-                    {"type": "text", "text": f"Task: {task}. Current step: {step}"},
+                    {"type": "text", "text": f"Task: {task}\nCurrent step (full text): {step}"},
                 ],
             }],
         )
@@ -420,6 +570,19 @@ def collect_feedback():
     try:
         data = request.json or {}
         print(f"Feedback: rating={data.get('rating')} notes={data.get('notes','')[:80]!r}")
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/track-event", methods=["POST"])
+def track_event():
+    try:
+        data = request.json or {}
+        event = data.get("event", "")
+        meta = data.get("meta", {}) or {}
+        lang = data.get("language", "")
+        print(f"Event: {event} lang={lang} meta={json.dumps(meta)[:300]}")
         return jsonify({"success": True})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
