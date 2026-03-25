@@ -432,6 +432,21 @@
       font-size:12px;font-weight:900;color:var(--green);
       cursor:pointer;
     }
+    .walk-tools{margin-top:10px;padding:10px;border-radius:14px;background:linear-gradient(145deg,rgba(230,232,236,.65),rgba(208,212,220,.58));border:.5px solid rgba(0,0,0,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.55)}
+    .walk-tools-ttl{font-size:10px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;color:var(--t3);margin-bottom:8px}
+    .walk-tools-row{display:flex;flex-direction:column;gap:10px}
+    .walk-tool{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .walk-tool-nm{font-size:13px;font-weight:900;color:var(--t1);line-height:1.25}
+    .walk-tool-shops{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .walk-tool-shops .shop-lnk{width:40px;height:26px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+    .walk-tool-empty{font-size:13px;color:var(--t2);font-weight:800}
+
+    /* Walkthrough-only: keep full list hidden to avoid scrolling */
+    #r-steps{display:none!important}
+
+    /* Finish CTA pulse */
+    .ec.ec-top.ce-pulse{animation:cePulse 1.05s ease-in-out 0s 2}
+    @keyframes cePulse{0%{transform:translateY(0)}50%{transform:translateY(-2px)}100%{transform:translateY(0)}}
     .step-item.col-teal{background:linear-gradient(135deg,rgba(78,162,170,.14),rgba(58,142,150,.06));border-left-color:#3E9298}
     .step-item.col-purple{background:linear-gradient(135deg,rgba(114,84,192,.14),rgba(94,64,172,.06));border-left-color:#6244B0}
     .step-item.col-amber{background:linear-gradient(135deg,rgba(192,120,36,.14),rgba(172,100,16,.06));border-left-color:#A86818}
@@ -991,6 +1006,10 @@
           <span id="walk-step-num">1</span> / <span id="walk-step-tot">0</span>
         </div>
         <div class="walk-text" id="walk-text"></div>
+        <div class="walk-tools" id="walk-tools">
+          <div class="walk-tools-ttl" id="walk-tools-ttl">Tools for this step</div>
+          <div class="walk-tools-row" id="walk-tools-row"></div>
+        </div>
         <div class="walk-nav">
           <button class="walk-nav-btn" id="walk-back" type="button" disabled>← Back</button>
           <button class="walk-nav-btn" id="walk-next" type="button" disabled>Next →</button>
@@ -1684,6 +1703,7 @@ function updateWalkCardUI(){
     var backBtn=document.getElementById('walk-back');if(backBtn)backBtn.disabled=true;
     var nextBtn=document.getElementById('walk-next');if(nextBtn)nextBtn.disabled=true;
     var finishBtn=document.getElementById('walk-finish');if(finishBtn)finishBtn.style.display='none';
+    var wtr=document.getElementById('walk-tools-row');if(wtr)wtr.innerHTML='';
     return;
   }
   if(walkIdx<0)walkIdx=0;
@@ -1694,8 +1714,12 @@ function updateWalkCardUI(){
   if(num)num.textContent=(walkIdx+1);
   if(tt)tt.textContent=tot;
 
+  var wttl=document.getElementById('walk-tools-ttl');
+  if(wttl) wttl.textContent = (LANG==='nl'?'Gereedschap voor deze stap':'Tools for this step');
+
   var tx=document.getElementById('walk-text');
   if(tx)tx.textContent=curSteps[walkIdx]||'';
+  renderWalkTools(curSteps[walkIdx]||'');
 
   var backBtn=document.getElementById('walk-back');
   var nextBtn=document.getElementById('walk-next');
@@ -1733,14 +1757,96 @@ if(walkCheckBtn){
 }
 if(walkFinishBtn){
   walkFinishBtn.addEventListener('click',function(){
-    var el=document.getElementById('all-done');
-    if(el){el.scrollIntoView({behavior:'smooth'})}
-    hap(15);
+    try{
+      var ec=document.getElementById('ec');
+      if(ec){
+        prepareFinishCTA();
+        ec.classList.remove('ce-pulse');void ec.offsetWidth;ec.classList.add('ce-pulse');
+        ec.scrollIntoView({behavior:'smooth',block:'start'});
+        setTimeout(function(){
+          var inp=document.getElementById('ec-inp');
+          if(inp){inp.focus({preventScroll:true});}
+        },420);
+      }
+    }catch(e){}
+    hap([20,10,40]);
   });
 }
 
 function ceEsc(s){
   return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function normTokens(s){
+  return String(s||'')
+    .toLowerCase()
+    .replace(/[^a-z0-9\u00C0-\u024F\s\-]/g,' ')
+    .split(/\s+/)
+    .filter(Boolean);
+}
+
+function toolScoreForStep(stepText, toolName){
+  var st = normTokens(stepText);
+  var tl = normTokens(toolName);
+  if(!st.length || !tl.length) return 0;
+  var score = 0;
+  var set = {};
+  st.forEach(function(t){set[t]=true});
+  tl.forEach(function(t){
+    if(set[t]) score += 2;
+  });
+  var raw = (stepText||'').toLowerCase();
+  var tn  = (toolName||'').toLowerCase();
+  if(raw.includes('tighten')||raw.includes('aandraaien')) if(tn.includes('wrench')||tn.includes('moersleutel')) score += 2;
+  if(raw.includes('screw')||raw.includes('schroef')) if(tn.includes('schroef')||tn.includes('screw')) score += 2;
+  if(raw.includes('seal')||raw.includes('kit')||raw.includes('teflon')) if(tn.includes('teflon')||tn.includes('ptfe')||tn.includes('kit')) score += 2;
+  return score;
+}
+
+function storesForTool(tool){
+  var wrap=document.createElement('div');
+  wrap.className='walk-tool-shops';
+  STORES.forEach(function(store){
+    var a=document.createElement('a');
+    a.className='shop-lnk';
+    a.href=pickProductUrl(store.n==='Gamma'?'gamma':(store.n==='Praxis'?'praxis':'bol'),tool,store.u);
+    a.target='_blank';a.rel='noopener';
+    a.title=store.n;
+    a.innerHTML=store.logo;
+    a.addEventListener('click',function(){fetch('/track-click',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({store:store.n,tool:tool})}).catch(function(){})});
+    wrap.appendChild(a);
+  });
+  return wrap;
+}
+
+function renderWalkTools(stepText){
+  var row=document.getElementById('walk-tools-row');
+  if(!row) return;
+  row.innerHTML='';
+  var r=lastScanResult||{};
+  var allTools=(r.tools_needed||[]).concat(r.materials_needed||[]);
+  if(!allTools.length){
+    var em=document.createElement('div');
+    em.className='walk-tool-empty';
+    em.textContent=T[LANG].toolEmpty||'No tools needed for this one.';
+    row.appendChild(em);
+    return;
+  }
+  var scored = allTools.map(function(t){
+    return {t:t, s:toolScoreForStep(stepText,t)};
+  }).sort(function(a,b){return b.s-a.s});
+  var picks = scored.filter(function(x){return x.s>0}).slice(0,3).map(function(x){return x.t});
+  if(!picks.length) picks = allTools.slice(0,3);
+  picks.forEach(function(tool){
+    var it=document.createElement('div');
+    it.className='walk-tool';
+    var nm=document.createElement('div');
+    nm.className='walk-tool-nm';
+    nm.textContent=tool;
+    it.appendChild(nm);
+    it.appendChild(storesForTool(tool));
+    row.appendChild(it);
+  });
 }
 
 function renderResults(r){
@@ -1854,20 +1960,9 @@ function renderResults(r){
   /* Colourful step cards */
   if(repairNeeded){
     updateStepUI();
-    var sl=document.getElementById('r-steps');sl.innerHTML='';
-    curSteps.forEach(function(txt,i){
-      var colClass=STEP_COLORS[i%STEP_COLORS.length];
-      var li=document.createElement('li');li.className='step-item '+colClass;li.id='si-'+i;
-      var tr=document.createElement('div');tr.className='step-top';
-      tr.innerHTML='<div class="s-num '+colClass+'" id="sn-'+i+'">'+(i+1)+'</div><div class="s-txt">'+ceEsc(txt)+'</div>';
-      var acts=document.createElement('div');acts.className='step-actions';
-      var cb=document.createElement('button');cb.className='chk-btn';cb.id='cb-'+i;
-      cb.textContent='📸 '+T[LANG].checkProgress;
-      (function(idx,stepTxt){cb.addEventListener('click',function(){openPM(idx,stepTxt)})})(i,txt);
-      var rb=document.createElement('button');rb.className='read-btn';rb.textContent='🔊 '+T[LANG].readStep;
-      (function(idx,stepTxt){rb.addEventListener('click',function(){readStep(stepTxt,idx);hap(15)})})(i,txt);
-      acts.appendChild(cb);acts.appendChild(rb);li.appendChild(tr);li.appendChild(acts);li.addEventListener('click',function(e){if(e.target.closest('button'))return;document.querySelectorAll('.step-item').forEach(function(n){n.classList.remove('active-step')});li.classList.add('active-step');showStepOnIsland(txt,i);hap(6)});sl.appendChild(li);
-    });
+    // Walkthrough-only UI: no long scrolling list.
+    var sl=document.getElementById('r-steps');
+    if(sl) sl.innerHTML='';
     walkIdx=0;
     updateWalkCardUI();
     document.getElementById('tts-bar').classList.add('show');
@@ -1889,9 +1984,33 @@ function updateStepUI(){
       document.getElementById('all-done').style.display='block';
       fanfare();hap([50,30,80,30,120]);confetti();
       setTimeout(function(){speak(LANG==='nl'?'Gefeliciteerd! Je hebt de klus geklaard!':'Congratulations! Job done!',LANG)},800);
+      try{
+        var ec=document.getElementById('ec');
+        if(ec){
+          prepareFinishCTA();
+          ec.classList.remove('ce-pulse');void ec.offsetWidth;ec.classList.add('ce-pulse')
+        }
+      }catch(e){}
     },400);
   }
   updateWalkCardUI();
+}
+
+function prepareFinishCTA(){
+  var h=document.getElementById('ec-h3');
+  var p=document.getElementById('ec-p');
+  var btn=document.getElementById('ec-sub');
+  var skip=document.getElementById('ec-skip');
+  if(h) h.textContent = (LANG==='nl'?'Klaar! Wil je updates?':'Done! Want updates?');
+  if(p) p.textContent = (LANG==='nl'
+    ?'Laat 1 klik feedback achter en vul je e-mail in — dan stuur ik early access + nieuwe features. (5 seconden)'
+    :'Tap one vibe and add your email — I’ll send early access + new features. (5 seconds)');
+  if(btn) btn.textContent = (LANG==='nl'?'Stuur mij updates':'Send me updates');
+  if(skip) skip.textContent = (LANG==='nl'?'Overslaan':'Skip');
+  var inp=document.getElementById('ec-inp');
+  if(inp) inp.placeholder = (LANG==='nl'?'jij@voorbeeld.nl':'your@email.com');
+  var note=document.getElementById('ec-note');
+  if(note) note.placeholder = (LANG==='nl'?'1 ding dat beter kan (optioneel)':'One thing to improve (optional)');
 }
 
 function updateWarn(){
