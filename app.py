@@ -6,10 +6,158 @@ import anthropic
 
 app = Flask(__name__)
 client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+# Vision-capable; override if your key uses a different ID (see Anthropic console).
+VISION_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-3-5-haiku-latest")
+CHECK_PROGRESS_MODEL = os.getenv("ANTHROPIC_CHECK_MODEL", VISION_MODEL)
+
+
+def _clean_str(v, fallback=""):
+    if v is None:
+        return fallback
+    s = str(v).strip()
+    return s if s else fallback
+
+
+def _item_to_str(item):
+    if item is None:
+        return ""
+    if isinstance(item, dict):
+        return _clean_str(
+            item.get("name")
+            or item.get("tool")
+            or item.get("item")
+            or item.get("text")
+            or item.get("description")
+        )
+    return _clean_str(item)
+
+
+def _to_list(v):
+    if isinstance(v, list):
+        out = []
+        for item in v:
+            s = _item_to_str(item)
+            if s:
+                out.append(s)
+        return out
+    if isinstance(v, str):
+        s = v.strip()
+        if not s:
+            return []
+        parts = [p.strip(" -•\t\r\n") for p in s.replace("\r", "\n").split("\n")]
+        parts = [p for p in parts if p]
+        return parts if parts else [s]
+    return []
+
+
+def _normalize_result(raw):
+    if not isinstance(raw, dict):
+        raw = {}
+
+    steps_raw = (
+        raw.get("steps")
+        or raw.get("instructions")
+        or raw.get("how_to")
+        or raw.get("step_by_step")
+        or raw.get("repair_steps")
+        or raw.get("steps_to_fix")
+        or raw.get("recommendation")
+        or []
+    )
+    steps = []
+    if isinstance(steps_raw, list):
+        for step in steps_raw:
+            if isinstance(step, dict):
+                txt = _clean_str(
+                    step.get("text")
+                    or step.get("step")
+                    or step.get("instruction")
+                    or step.get("visual_tip")
+                )
+                if txt:
+                    steps.append(txt)
+            else:
+                txt = _clean_str(step)
+                if txt:
+                    steps.append(txt)
+    else:
+        steps = _to_list(steps_raw)
+
+    if not steps:
+        fallback = _clean_str(
+            raw.get("what_to_do")
+            or raw.get("fix_plan")
+            or raw.get("recommendation")
+            or raw.get("task")
+            or raw.get("what_i_see")
+        )
+        if fallback:
+            steps = [fallback]
+
+    tools = _to_list(raw.get("tools_needed") or raw.get("tools"))
+    materials = _to_list(raw.get("materials_needed") or raw.get("materials") or raw.get("parts_needed"))
+
+    normalized = {
+        "what_i_see": _clean_str(raw.get("what_i_see") or raw.get("problem") or raw.get("issue"), "Unknown item"),
+        "task": _clean_str(raw.get("task") or raw.get("what_to_do") or raw.get("fix"), "Fix task"),
+        "difficulty": _clean_str(raw.get("difficulty"), "medium"),
+        "estimated_cost": _clean_str(raw.get("estimated_cost"), ""),
+        "time_needed": _clean_str(raw.get("time_needed"), ""),
+        "hazard_level": _clean_str(raw.get("hazard_level"), "safe").lower(),
+        "hazard_note": _clean_str(raw.get("hazard_note"), ""),
+        "when_to_call_pro": _clean_str(raw.get("when_to_call_pro"), ""),
+        "tools_needed": tools,
+        "materials_needed": materials,
+        "steps": steps,
+        "safety_tip": _clean_str(raw.get("safety_tip") or raw.get("safety") or raw.get("warning"), "Work slowly and wear protection."),
+        "pro_tip": _clean_str(raw.get("pro_tip") or raw.get("tip"), ""),
+    }
+    return normalized
+
+
+def _messages_create_with_fallback(system, messages, max_tokens, preferred_model):
+    candidates = [
+        preferred_model,
+        os.getenv("ANTHROPIC_MODEL", "").strip(),
+        "claude-3-5-haiku-latest",
+        "claude-3-5-sonnet-latest",
+        "claude-3-haiku-20240307",
+    ]
+    tried = set()
+    last_error = None
+    for model_name in candidates:
+        model_name = (model_name or "").strip()
+        if not model_name or model_name in tried:
+            continue
+        tried.add(model_name)
+        try:
+            return client.messages.create(
+                model=model_name,
+                max_tokens=max_tokens,
+                system=system,
+                messages=messages,
+            )
+        except Exception as e:
+            last_error = e
+            msg = str(e).lower()
+            # If model is unavailable, try next candidate.
+            if "404" in msg or "not found" in msg or "model" in msg:
+                continue
+            # Non-model errors should surface immediately.
+            raise
+    if last_error:
+        raise last_error
+    raise RuntimeError("No valid Anthropic model could be selected.")
 
 @app.route("/")
 def home():
     return render_template("index.html")
+
+
+@app.route("/app-build")
+def app_build():
+    """Optional: frontend uses this to show deploy version in UI."""
+    return jsonify({"success": True, "version": os.getenv("APP_VERSION", "dev")})
 
 
 def _do_analyze():
@@ -58,10 +206,10 @@ Rules:
 - Return ONLY the JSON. No extra text.
 """
 
-    response = client.messages.create(
-        model="claude-3-5-sonnet-20241022",
-        max_tokens=1500,
+    response = _messages_create_with_fallback(
         system=system_prompt,
+        max_tokens=1500,
+        preferred_model=VISION_MODEL,
         messages=[{
             "role": "user",
             "content": [
@@ -77,7 +225,16 @@ Rules:
         if ai_text.startswith("json"):
             ai_text = ai_text[4:]
     ai_text = ai_text.strip()
-    result = json.loads(ai_text)
+    try:
+        parsed = json.loads(ai_text)
+    except Exception:
+        # Try to recover if the model wrapped JSON with extra text.
+        start = ai_text.find("{")
+        end = ai_text.rfind("}")
+        if start == -1 or end == -1 or end <= start:
+            raise
+        parsed = json.loads(ai_text[start : end + 1])
+    result = _normalize_result(parsed)
     return {"success": True, "result": result}, None
 
 
@@ -124,8 +281,8 @@ def check_progress():
         mime_type    = image_file.mimetype or "image/jpeg"
         lang_instruction = "Respond in Dutch." if language == "nl" else "Respond in English."
 
-        response = client.messages.create(
-            model="claude-3-5-sonnet-20241022",
+        response = _messages_create_with_fallback(
+            preferred_model=CHECK_PROGRESS_MODEL,
             max_tokens=300,
             system=f"You are a home repair safety checker. {lang_instruction} Return ONLY JSON: {{\"danger_level\": \"safe|caution|danger|emergency\", \"progress_feedback\": \"one practical sentence about what you see\"}}",
             messages=[{
@@ -163,7 +320,8 @@ def collect_email():
 def track_click():
     try:
         data = request.json
-        print(f"Store click: {data.get('store','')} for '{data.get('tool','')}'")
+        tool = data.get("tool") or data.get("tools") or ""
+        print(f"Store click: {data.get('store','')} for '{tool}'")
         return jsonify({"success": True})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
