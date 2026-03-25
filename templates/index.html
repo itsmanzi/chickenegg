@@ -24,6 +24,7 @@
       --org:#FF9247;
       --t1:#F4F7FF;--t2:rgba(227,235,255,.78);--t3:rgba(192,205,245,.55);--t4:rgba(192,205,245,.28);
       --rxl:20px;--rlg:14px;--rmd:10px;--rsm:6px;
+      --orb-glx:0px;--orb-gly:6px;--think-dur:1.32s;
     }
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
     html{
@@ -99,6 +100,37 @@
       background:rgba(255,255,255,.18);color:#F3F8FF;font-size:11px;font-weight:900;cursor:pointer;font-family:inherit;
       box-shadow:inset 0 1px 0 rgba(255,255,255,.18);
     }
+    .lang-fab{
+      position:fixed;
+      top:max(10px,env(safe-area-inset-top));
+      right:max(10px,env(safe-area-inset-right));
+      z-index:520;
+      display:flex;
+      gap:4px;
+      padding:4px;
+      border-radius:999px;
+      background:rgba(8,12,24,.62);
+      border:1px solid rgba(255,255,255,.22);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+    }
+    .lang-fab-btn{
+      min-width:48px;
+      min-height:34px;
+      border:none;
+      border-radius:999px;
+      background:transparent;
+      color:rgba(236,243,255,.8);
+      font-size:12px;
+      font-weight:900;
+      cursor:pointer;
+      font-family:inherit;
+    }
+    .lang-fab-btn.on{
+      background:#fff;
+      color:#0f172a;
+      box-shadow:0 3px 10px rgba(0,0,0,.24);
+    }
 
     .wrap{max-width:480px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-left)) max(48px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-right));position:relative;z-index:1;width:100%}
     /* First screen: keep scan egg visible without scrolling */
@@ -153,19 +185,84 @@
     @keyframes xrayDrift{from{transform:translateY(-1px)}to{transform:translateY(2px)}}
     .xray-on #xray-overlay{display:block}
     .xray-on #cam-video{filter:contrast(1.6) saturate(.28) brightness(1.2) grayscale(.05)}
+    .xray-deep #xray-overlay{
+      opacity:1!important;
+      background:
+        radial-gradient(ellipse 100% 60% at 50% 45%, rgba(0,255,230,.18) 0%, transparent 55%),
+        repeating-linear-gradient(90deg, rgba(120,240,255,.22) 0px, rgba(120,240,255,.22) 1px, transparent 2px, transparent 5px),
+        repeating-linear-gradient(0deg, rgba(100,220,255,.14) 0px, rgba(100,220,255,.14) 1px, transparent 2px, transparent 6px)!important;
+      mix-blend-mode:screen;
+      animation:xrayDrift 1.8s ease-in-out infinite alternate;
+    }
+    .xray-deep.xray-on #cam-video{filter:contrast(1.92) saturate(.22) brightness(1.08) grayscale(.12)}
 
-    /* LIVE PROMPT */
-    #live-prompt{position:absolute;left:10px;right:90px;top:10px;z-index:50;display:none;
-      background:rgba(8,14,28,.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-      border:.5px solid rgba(137,166,255,.34);border-radius:14px;padding:8px 10px;
-      box-shadow:0 10px 24px rgba(0,0,0,.4);
+    /* LIVE PROMPT — premium glass stack */
+    #live-prompt{
+      position:absolute;
+      left:50%;
+      right:auto;
+      width:min(86vw,380px);
+      transform:translate(-50%,-50%);
+      top:50%;
+      bottom:auto;
+      z-index:50;
+      display:none;
       pointer-events:none;
     }
-    #live-prompt.show{display:block}
-    #live-prompt.mini{right:12px;padding:7px 10px}
-    #live-prompt-ttl{font-size:10px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;color:rgba(157,215,255,.95);margin-bottom:4px}
-    #live-prompt-txt{font-size:11px;color:#E7EDF8;font-weight:800;line-height:1.35;margin-bottom:0}
-    #live-prompt.mini #live-prompt-txt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    #live-prompt.show{display:block;animation:glassIn .45s cubic-bezier(.28,1.2,.45,1)}
+    #live-prompt.show .glass-scan{animation:glassAlive 3.2s ease-in-out infinite}
+    @keyframes glassAlive{
+      0%,100%{transform:translateY(0);box-shadow:0 20px 50px rgba(0,0,0,.45),0 0 0 1px rgba(80,160,255,.12)}
+      50%{transform:translateY(-2px);box-shadow:0 24px 56px rgba(0,0,0,.48),0 0 20px rgba(131,56,236,.12)}
+    }
+    @keyframes glassIn{
+      from{opacity:0;transform:translate(-50%,-48%)}
+      to{opacity:1;transform:translate(-50%,-50%)}
+    }
+    .glass-scan{
+      position:relative;
+      padding:14px 14px 12px;
+      border-radius:20px;
+      background:linear-gradient(145deg,rgba(255,255,255,.14),rgba(255,255,255,.05));
+      backdrop-filter:blur(22px) saturate(1.35);
+      -webkit-backdrop-filter:blur(22px) saturate(1.35);
+      border:1px solid rgba(255,255,255,.38);
+      box-shadow:
+        0 4px 1px rgba(255,255,255,.12) inset,
+        0 20px 50px rgba(0,0,0,.45),
+        0 0 0 1px rgba(80,160,255,.12);
+    }
+    .glass-scan::before{
+      content:'';position:absolute;inset:0;border-radius:20px;padding:1px;
+      background:linear-gradient(135deg,rgba(180,230,255,.5),rgba(255,255,255,0),rgba(120,200,255,.25));
+      -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+      -webkit-mask-composite:xor;mask-composite:exclude;
+      pointer-events:none;
+    }
+    .glass-scan-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px}
+    .glass-brand{font-size:9px;font-weight:900;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.45)}
+    #glass-xray-badge{
+      font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;
+      padding:5px 10px;border-radius:999px;
+      background:linear-gradient(135deg,rgba(0,220,200,.35),rgba(60,130,255,.25));
+      border:1px solid rgba(180,240,255,.45);
+      color:#e8fffc;
+      box-shadow:0 0 20px rgba(0,200,255,.15);
+    }
+    .glass-phase-dots{display:flex;gap:6px;margin-bottom:10px}
+    .glass-phase-dots .gpd{
+      flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.14);
+      transition:background .25s, box-shadow .25s;
+    }
+    .glass-phase-dots .gpd.on{
+      background:linear-gradient(90deg,rgba(0,255,220,.65),rgba(100,180,255,.85));
+      box-shadow:0 0 12px rgba(0,220,255,.35);
+    }
+    #live-prompt-ttl{font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:rgba(126,255,166,.98);margin-bottom:6px;line-height:1.25;text-shadow:0 0 10px rgba(70,255,130,.25)}
+    #live-prompt-txt{font-size:14px;color:#caffdb;font-weight:880;line-height:1.4;margin-bottom:10px;text-shadow:0 0 12px rgba(70,255,130,.28),0 1px 8px rgba(0,0,0,.35)}
+    #glass-hint{font-size:11px;font-weight:850;color:rgba(108,255,154,.9);letter-spacing:.02em}
+    #live-prompt.mini{opacity:.92}
+    #live-prompt.mini #live-prompt-txt{font-size:12px}
     #live-next-btn{
       position:absolute;right:-80px;bottom:0;
       width:72px;height:72px;border:none;border-radius:50%;padding:8px;
@@ -191,15 +288,93 @@
     .scan-corner.br{bottom:10px;right:10px;border-width:0 2px 2px 0}
     .scan-lbl{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:9px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:rgba(200,178,108,.85);display:none;animation:lb 1.4s ease-in-out infinite}
     .cam-overlay.scanning .scan-lbl{display:block}
+    .cam-overlay .obj-highlight-flash{
+      position:absolute;inset:0;border-radius:18px;pointer-events:none;z-index:52;opacity:0;
+      box-shadow:inset 0 0 0 2px rgba(255,255,255,.9),inset 0 0 48px rgba(130,200,255,.35);
+    }
+    .cam-overlay .obj-highlight-flash.fire{
+      animation:objHiFlash .16s ease-out forwards;
+    }
+    @keyframes objHiFlash{
+      0%{opacity:0}
+      25%{opacity:1}
+      100%{opacity:0}
+    }
+    .scan-ritual-wave{
+      position:absolute;left:50%;bottom:32%;width:24px;height:24px;margin-left:-12px;margin-bottom:-12px;
+      border-radius:50%;pointer-events:none;z-index:61;
+      border:2px solid rgba(141,232,255,.55);
+      box-shadow:0 0 26px rgba(100,180,255,.35);
+      opacity:0;transform:scale(.15);
+    }
+    .scan-ritual-wave.fire{
+      animation:scanWaveOut .88s cubic-bezier(.2,1,.36,1) forwards;
+    }
+    @keyframes scanWaveOut{
+      0%{opacity:.85;transform:scale(.2)}
+      100%{opacity:0;transform:scale(22)}
+    }
+    .scan-heatwave-el{
+      position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:54;opacity:0;
+      background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,220,160,.07) 2px,rgba(255,220,160,.07) 3px);
+      mix-blend-mode:overlay;
+    }
+    .cam-container.scan-heatwave .scan-heatwave-el{
+      animation:heatwaveShim .5s ease-out forwards;
+    }
+    @keyframes heatwaveShim{
+      0%{opacity:0;transform:translateY(8px) scale(1.01)}
+      35%{opacity:1}
+      100%{opacity:0;transform:translateY(-10px) scale(1.04)}
+    }
     @keyframes lb{0%,100%{opacity:.3}50%{opacity:1}}
     .s-flash{position:absolute;inset:0;background:rgba(255,255,255,.82);opacity:0;pointer-events:none;border-radius:18px}
     .s-flash.fire{animation:shutterFlash .4s ease-out forwards}
     @keyframes shutterFlash{0%{opacity:.9}35%{opacity:.5}100%{opacity:0}}
-    .cam-status{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);border:.5px solid rgba(255,255,255,.25);border-radius:20px;padding:3px 10px;font-size:9px;font-weight:700;color:rgba(255,255,255,.85);display:flex;align-items:center;gap:4px;letter-spacing:.3px}
-    .cam-dot{width:6px;height:6px;border-radius:50%;background:#ff4444;animation:dp 1.2s ease-in-out infinite}
+    .cam-status{
+      position:fixed;left:50%;transform:translateX(-50%);
+      top:auto;bottom:calc(234px + env(safe-area-inset-bottom));
+      z-index:240;min-width:152px;max-width:min(84vw,360px);
+      justify-content:center;text-align:center;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.24) 0%, rgba(255,255,255,.09) 16%, rgba(8,12,20,.46) 100%);
+      backdrop-filter:blur(16px) saturate(1.16);-webkit-backdrop-filter:blur(16px) saturate(1.16);
+      border:1px solid rgba(255,255,255,.28);border-radius:18px;padding:9px 14px;
+      font-size:15px;font-weight:920;line-height:1.35;color:rgba(248,252,255,.98);
+      display:flex;align-items:center;gap:8px;letter-spacing:.01em;
+      box-shadow:0 14px 36px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(255,255,255,.08);
+      opacity:0;transition:opacity .24s ease, transform .24s ease;pointer-events:none;overflow:hidden;
+    }
+    .cam-status::before{
+      content:'';position:absolute;left:10px;right:10px;top:2px;height:44%;border-radius:13px;
+      background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,0));pointer-events:none;opacity:.6;
+    }
+    .cam-status::after{
+      content:'';position:absolute;inset:0;border-radius:18px;pointer-events:none;opacity:.3;mix-blend-mode:screen;
+      background:repeating-linear-gradient(0deg, rgba(255,255,255,.012) 0px, rgba(255,255,255,.012) 1px, transparent 2px, transparent 3px);
+    }
+    .cam-status.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .cam-status.label-swap{animation:camStatusSwap .28s cubic-bezier(.28,1.2,.45,1)}
+    @keyframes camStatusSwap{
+      0%{opacity:.6;transform:translateX(-50%) translateY(6px) scale(.985)}
+      60%{opacity:1;transform:translateX(-50%) translateY(-1px) scale(1.01)}
+      100%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}
+    }
+    .cam-status.sys{opacity:.95}
+    body.fixing .cam-status,
+    body.ce-step-active .cam-status,
+    body.result-open .cam-status{opacity:0!important;transform:translateX(-50%) translateY(6px)}
+    .cam-dot{width:8px;height:8px;border-radius:50%;background:#ff4444;animation:dp 1.2s ease-in-out infinite;box-shadow:0 0 12px rgba(255,68,68,.42)}
+    body.cam-tiktok .cam-status{
+      top:auto!important;
+      bottom:calc(244px + env(safe-area-inset-bottom))!important;
+      left:50%!important;
+      transform:translateX(-50%)!important;
+    }
     @keyframes dp{0%,100%{opacity:.5}50%{opacity:1}}
     .cam-status.ready .cam-dot{background:#44cc44;animation:none;opacity:1}
-    .retake-btn{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);border:.5px solid rgba(255,255,255,.25);border-radius:20px;padding:4px 12px;font-size:9px;font-weight:700;color:rgba(255,255,255,.85);cursor:pointer;display:none;font-family:inherit}
+    .retake-btn{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);border:.5px solid rgba(255,255,255,.25);border-radius:20px;padding:4px 12px;font-size:9px;font-weight:700;color:rgba(255,255,255,.85);cursor:pointer;display:none;font-family:inherit;transition:transform .2s ease,background .2s ease,box-shadow .2s ease}
+    .retake-btn:active{transform:scale(.96)}
     .cam-retry-btn{
       position:absolute;left:50%;bottom:10px;transform:translateX(-50%);
       background:rgba(0,0,0,.62);backdrop-filter:blur(8px);
@@ -215,15 +390,31 @@
       font-size:15px;font-weight:900;color:var(--t1);cursor:pointer;font-family:inherit;
       box-shadow:0 4px 18px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.65);
       display:none;align-items:center;justify-content:center;z-index:55;white-space:nowrap;
+      transition:transform .22s cubic-bezier(.34,1.4,.64,1),box-shadow .22s ease,filter .22s ease;
     }
-    .cam-upload-btn:active{transform:translateX(-50%) scale(.98)}
+    .cam-upload-btn:active{transform:translateX(-50%) scale(.97)}
 
     /* HAZARD */
-    .hazard-banner{border-radius:var(--rmd);padding:9px 13px;margin-bottom:10px;display:none;align-items:center;gap:8px;font-size:12px;font-weight:700}
+    .hazard-banner{
+      border-radius:16px;
+      padding:11px 14px;
+      margin-bottom:10px;
+      display:none;
+      align-items:center;
+      gap:9px;
+      font-size:14px;
+      font-weight:850;
+      line-height:1.35;
+      background:rgba(8,12,20,.44);
+      border:1px solid rgba(255,255,255,.2);
+      box-shadow:0 10px 30px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.08);
+      backdrop-filter:blur(10px) saturate(1.08);
+      -webkit-backdrop-filter:blur(10px) saturate(1.08);
+    }
     .hazard-banner.show{display:flex}
-    .hazard-banner.caution{background:rgba(180,120,20,.1);border:.5px solid rgba(180,120,20,.28);color:#7A5010}
-    .hazard-banner.warning{background:rgba(160,80,20,.1);border:.5px solid rgba(160,80,20,.28);color:#703010}
-    .hazard-banner.danger{background:rgba(160,50,40,.12);border:1px solid rgba(160,50,40,.38);color:#802818;animation:dangerPulse .8s ease-in-out infinite alternate}
+    .hazard-banner.caution{background:rgba(66,48,16,.52);border:1px solid rgba(220,170,70,.4);color:#FFDFA4}
+    .hazard-banner.warning{background:rgba(74,40,18,.54);border:1px solid rgba(232,136,72,.42);color:#FFD0AE}
+    .hazard-banner.danger{background:rgba(84,28,26,.58);border:1px solid rgba(255,102,102,.48);color:#FFD0D0;animation:dangerPulse .8s ease-in-out infinite alternate}
     @keyframes dangerPulse{from{box-shadow:none}to{box-shadow:0 0 12px rgba(160,50,40,.2)}}
 
     /* HAZARD HERO (in results — danger / emergency is primary) */
@@ -234,6 +425,27 @@
     @keyframes hazardPulseCard{from{box-shadow:0 8px 28px rgba(160,50,40,.12)}to{box-shadow:0 10px 34px rgba(160,50,40,.22)}}
     .hazard-hero--warn{background:rgba(160,80,20,.08);border:1px solid rgba(160,80,20,.35)}
     .hazard-hero--caution{background:rgba(180,120,20,.09);border:1px solid rgba(180,120,20,.32)}
+    .hazard-hero.hazard-mood-critical.show{
+      animation:hazardCriticalBreath 2.6s ease-in-out infinite;
+    }
+    @keyframes hazardCriticalBreath{
+      0%,100%{box-shadow:0 8px 28px rgba(120,30,24,.18)}
+      50%{box-shadow:0 14px 44px rgba(160,50,40,.32)}
+    }
+    .hazard-hero.hazard-mood-warn.show .hazard-hero-ttl{
+      animation:hazardTxtGravity 2.2s ease-in-out infinite;
+    }
+    @keyframes hazardTxtGravity{
+      0%,100%{letter-spacing:-.4px;opacity:1}
+      50%{letter-spacing:-.15px;opacity:.92}
+    }
+    .hazard-hero.hazard-mood-soft.show .hazard-hero-note{
+      animation:hazardSoftFade 2s ease-in-out infinite;
+    }
+    @keyframes hazardSoftFade{
+      0%,100%{opacity:1}
+      50%{opacity:.88}
+    }
     .hazard-hero-badge{font-size:10px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px}
     .hazard-hero--critical .hazard-hero-badge{color:#802818}
     .hazard-hero--warn .hazard-hero-badge{color:#703010}
@@ -292,6 +504,40 @@
       z-index:5;
       transition:transform .07s cubic-bezier(.34,1.4,.64,1),box-shadow .07s ease;
     }
+    .scan-egg .egg-eye{
+      position:absolute;
+      top:39%;
+      left:49%;
+      width:13px;
+      height:13px;
+      border-radius:50%;
+      transform:translate(-50%,-50%);
+      background:radial-gradient(circle at 35% 35%,#c9ecff 0%,#89d2ff 42%,#2b3f78 100%);
+      box-shadow:0 0 0 1px rgba(255,255,255,.56),0 0 12px rgba(106,214,255,.55);
+      z-index:8;
+      pointer-events:none;
+    }
+    .scan-egg .egg-laser{
+      position:absolute;
+      top:39%;
+      left:52%;
+      width:0;
+      height:2px;
+      border-radius:999px;
+      background:linear-gradient(90deg,rgba(255,66,118,.95),rgba(255,66,118,0));
+      box-shadow:0 0 9px rgba(255,66,118,.75);
+      z-index:7;
+      opacity:0;
+      pointer-events:none;
+    }
+    .scan-egg.vibrating .egg-laser{
+      animation:eggLaserPulse .42s ease-out forwards;
+    }
+    @keyframes eggLaserPulse{
+      0%{width:0;opacity:.2}
+      25%{width:30px;opacity:1}
+      100%{width:0;opacity:0}
+    }
     .scan-egg:focus-visible{outline:2px solid rgba(100,140,220,.55);outline-offset:4px}
     .scan-egg::after{
       content:'';
@@ -324,7 +570,115 @@
       100%{transform:scale(1)}
     }
     .scan-egg svg{display:block}
-    .slbl{font-size:8px;font-weight:800;color:var(--t3);letter-spacing:2.5px;text-transform:uppercase;margin-top:2px}
+    /* ─── Living alien orb: always breathing, alive ─── */
+    .scan-egg:not(.pressed):not(.thinking){
+      animation:eggAlienBreath var(--idle-breath,3.2s) ease-in-out infinite;
+    }
+    @keyframes eggAlienBreath{
+      0%,100%{transform:translateY(0) scale(1);filter:drop-shadow(calc(6px + var(--orb-glx)) calc(12px + var(--orb-gly)) 16px rgba(100,200,255,.24))}
+      50%{transform:translateY(-2px) scale(1.035);filter:drop-shadow(calc(10px + var(--orb-glx)) calc(18px + var(--orb-gly)) 24px rgba(180,120,255,.38))}
+    }
+    .scan-egg .egg-ripple{
+      position:absolute;inset:-8px;border-radius:50%;
+      pointer-events:none;opacity:0;
+      border:2px solid rgba(141,232,255,.55);
+      box-shadow:0 0 24px rgba(131,56,236,.35);
+    }
+    .scan-egg.egg-rippling .egg-ripple{
+      animation:eggRippleOut .65s cubic-bezier(.22,1,.36,1) forwards;
+    }
+    @keyframes eggRippleOut{
+      0%{transform:scale(.75);opacity:.85}
+      100%{transform:scale(2.1);opacity:0}
+    }
+    .scan-egg .egg-swirl{
+      position:absolute;inset:-8px;border-radius:50%;
+      pointer-events:none;z-index:4;opacity:0;
+      background:conic-gradient(from 210deg,transparent 0deg,rgba(131,56,236,.42) 55deg,transparent 110deg,rgba(90,200,255,.38) 185deg,transparent 260deg,rgba(200,120,255,.28) 320deg,transparent 360deg);
+      filter:blur(5px);
+      mix-blend-mode:soft-light;
+      animation:eggSwirlDrift 3.2s ease-in-out infinite;
+    }
+    @keyframes eggSwirlDrift{
+      0%,100%{transform:rotate(0deg) scale(1)}
+      50%{transform:rotate(180deg) scale(1.04)}
+    }
+    .scan-egg.thinking:not(.pressed) .egg-swirl{
+      opacity:.72;
+      animation:eggSwirlThink 1.8s linear infinite;
+    }
+    @keyframes eggSwirlThink{
+      to{transform:rotate(360deg)}
+    }
+    .scan-egg.thinking:not(.pressed){
+      animation:eggThinkPulse var(--think-dur,1.32s) ease-in-out infinite!important;
+      transform-origin:center center;
+    }
+    @keyframes eggThinkPulse{
+      0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(131,56,236,.22),0 10px 28px rgba(28,38,58,.2)}
+      28%{transform:scale(1.06);box-shadow:0 0 0 8px rgba(131,56,236,.08),0 14px 34px rgba(58,134,255,.28)}
+      48%{transform:scale(1.02)}
+      72%{transform:scale(1.09);box-shadow:0 0 0 12px rgba(131,56,236,0),0 18px 44px rgba(58,134,255,.38)}
+    }
+    .scan-egg.perception-hot:not(.pressed):not(.thinking):not(.orb-lock-focused){
+      animation:eggAlienBreath 1.55s ease-in-out infinite;
+    }
+    .scan-egg.scan-precharge:not(.pressed){
+      animation:none!important;
+      transform:scale(.9)!important;
+      filter:brightness(1.09) drop-shadow(calc(4px + var(--orb-glx)) calc(10px + var(--orb-gly)) 28px rgba(120,210,255,.62))!important;
+      box-shadow:
+        0 2px 0 rgba(255,255,255,.92) inset,
+        0 0 0 2px rgba(130,200,255,.5),
+        0 14px 32px rgba(58,100,200,.28),
+        0 5px 0 rgba(130,142,168,.55)!important;
+      transition:transform .14s ease,filter .14s ease,box-shadow .14s ease;
+    }
+    .scan-egg.scan-pull-in:not(.pressed){
+      animation:none!important;
+      transform:scale(.9)!important;
+      transition:transform .16s cubic-bezier(.34,1.25,.64,1);
+    }
+    .scan-egg.scan-release:not(.pressed){
+      animation:none!important;
+      transform:scale(1.05)!important;
+      transition:transform .12s ease-out;
+    }
+    .scan-egg.orb-lock-focused:not(.pressed):not(.thinking){
+      animation:eggLockBreath var(--idle-breath,3.45s) ease-in-out infinite!important;
+    }
+    @keyframes eggLockBreath{
+      0%,100%{transform:translateY(0) scale(1);filter:drop-shadow(calc(5px + var(--orb-glx)) calc(11px + var(--orb-gly)) 20px rgba(110,200,255,.38)) brightness(1.03)}
+      50%{transform:translateY(-1px) scale(1.022);filter:drop-shadow(calc(8px + var(--orb-glx)) calc(15px + var(--orb-gly)) 26px rgba(140,220,255,.5)) brightness(1.05)}
+    }
+    .cam-container.ce-lock-on .cam-overlay{
+      animation:lockShimmer 2.6s ease-in-out infinite;
+    }
+    @keyframes lockShimmer{
+      0%,100%{box-shadow:inset 0 0 0 2px rgba(120,200,255,.5),inset 0 0 48px rgba(60,130,255,.1)}
+      45%{box-shadow:inset 0 0 0 2px rgba(200,240,255,.88),inset 0 0 56px rgba(100,180,255,.2)}
+    }
+    .scan-egg.orb-motion-flinch{
+      animation:orbFlinch .22s ease-out!important;
+    }
+    @keyframes orbFlinch{
+      0%{transform:scale(1) rotate(0)}
+      45%{transform:scale(1.035) rotate(1.1deg)}
+      100%{transform:scale(1) rotate(0)}
+    }
+    .scan-egg.step-confirm-nudge:not(.pressed){
+      animation:stepConfirmNudge .4s ease-out!important;
+    }
+    @keyframes stepConfirmNudge{
+      0%{filter:brightness(1)}
+      35%{filter:brightness(1.1) drop-shadow(0 0 18px rgba(98,213,143,.45))}
+      100%{filter:brightness(1)}
+    }
+    .slbl{font-size:8px;font-weight:800;color:var(--t3);letter-spacing:2.5px;text-transform:uppercase;margin-top:2px;transition:opacity .22s ease,transform .22s ease}
+    body.ce-ai-thinking .cam-dock .slbl{
+      animation:slblPulse 1.4s ease-in-out infinite;
+    }
+    @keyframes slblPulse{0%,100%{opacity:.75}50%{opacity:1}}
     .slbl.pop{animation:none}
 
     /* TTS BAR */
@@ -335,7 +689,7 @@
     .tts-btn.speak{background:linear-gradient(135deg,rgba(58,96,56,.15),rgba(38,76,36,.08));border-color:rgba(58,96,56,.28);color:var(--green)}
     .tts-speed{font-size:9px;font-weight:700;color:var(--t3);margin-left:auto}
 
-    /* LOADING */
+    /* LOADING (TikTok/full-camera: veil + orb-only — see body.cam-tiktok #ld) */
     .ld{display:none;text-align:center;padding:40px 0}
     .ld-orb{width:64px;height:64px;margin:0 auto 20px;position:relative}
     .oc{width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#D0C090,#907018);box-shadow:0 0 22px rgba(144,112,24,.5);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);animation:orbP 1.6s ease-in-out infinite}
@@ -348,9 +702,76 @@
 
     /* RESULTS */
     #results{display:none}
+    #results-screen-bar{
+      display:none;
+      position:sticky;
+      top:0;
+      z-index:6;
+      padding:10px 2px 12px;
+      margin:0 0 10px;
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+      background:linear-gradient(180deg,rgba(14,18,30,.94),rgba(14,18,30,.72));
+      border-bottom:1px solid rgba(150,172,236,.22);
+    }
+    .results-back{
+      min-height:42px;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.34);
+      background:rgba(14,18,30,.66);
+      color:#EFF4FF;
+      font-size:14px;
+      font-weight:900;
+      font-family:inherit;
+      cursor:pointer;
+      box-shadow:0 6px 18px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.2);
+    }
+    .results-back:active{transform:scale(.97)}
+    #results-title{
+      margin-top:7px;
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.65px;
+      text-transform:uppercase;
+      color:rgba(216,228,255,.86);
+    }
     .r-hdr{margin-bottom:14px;padding-bottom:12px;border-bottom:.5px solid rgba(0,0,0,.07)}
     .r-title{font-size:21px;font-weight:900;letter-spacing:-.5px;line-height:1.2;margin-bottom:4px;color:var(--t1)}
     .r-task{font-size:13px;color:var(--gold);font-weight:700;margin-bottom:9px}
+    .chip.off{display:none!important}
+    .edge-strip{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin-bottom:8px}
+    .edge-pill{font-size:8px;font-weight:900;letter-spacing:.055em;text-transform:uppercase;color:rgba(49,46,129,.88);background:linear-gradient(135deg,rgba(99,102,241,.14),rgba(34,211,238,.1));border:1px solid rgba(99,102,241,.22);border-radius:999px;padding:4px 8px}
+    .edge-dot{color:rgba(99,102,241,.4);font-weight:900;font-size:10px}
+    .uncertainty-banner{display:flex;gap:10px;align-items:flex-start;padding:9px 11px;border-radius:12px;margin-bottom:10px;background:linear-gradient(135deg,rgba(251,191,36,.16),rgba(254,243,199,.2));border:1px solid rgba(245,158,11,.38)}
+    .uncertainty-banner.off{display:none}
+    .ub-ico{flex-shrink:0;font-size:16px;line-height:1}
+    .ub-lbl{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.6px;color:#92400e;margin-bottom:2px}
+    .ub-txt{font-size:12px;font-weight:700;line-height:1.45;color:#78350f}
+    .quick-checks{margin-bottom:10px;padding:8px 10px;border-radius:12px;background:rgba(238,242,255,.75);border:1px solid rgba(99,102,241,.18)}
+    .quick-checks.off{display:none}
+    .qc-ttl{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.55px;color:#4338ca;margin-bottom:5px}
+    .qc-list{margin:0;padding-left:18px;font-size:11px;font-weight:700;color:#312e81;line-height:1.4}
+    .qc-list li{margin:2px 0}
+    .walk-look{margin-top:8px;padding:9px 11px;border-radius:12px;background:linear-gradient(135deg,rgba(204,251,241,.5),rgba(224,242,254,.55));border:1px solid rgba(20,184,166,.3);box-shadow:0 4px 14px rgba(13,148,136,.07)}
+    .walk-look.off{display:none}
+    .walk-look-lbl{font-size:9px;font-weight:900;letter-spacing:.55px;text-transform:uppercase;color:#0f766e;margin-bottom:4px}
+    .walk-look-txt{font-size:12px;font-weight:800;line-height:1.45;color:#115e59}
+    .readout-glass{margin-bottom:12px;padding:1px;border-radius:16px;
+      background:linear-gradient(135deg,rgba(99,102,241,.35),rgba(34,211,238,.22),rgba(245,158,11,.2));
+      box-shadow:0 12px 32px rgba(15,23,42,.12);}
+    .readout-glass.off{display:none}
+    .readout-glass-inner{
+      border-radius:15px;padding:11px 12px;
+      background:linear-gradient(165deg,rgba(15,23,42,.86),rgba(30,27,75,.78));
+      border:1px solid rgba(165,180,252,.22);
+    }
+    .rg-row{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+    .rg-row:last-child{border-bottom:none;padding-bottom:0}
+    .rg-xray-row .rg-txt{color:#a5f3fc!important}
+    .rg-ico{font-size:16px;line-height:1.2;flex-shrink:0}
+    .rg-lbl{font-size:8px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;color:rgba(226,232,255,.55);margin-bottom:3px}
+    .rg-txt{font-size:12px;font-weight:750;line-height:1.4;color:rgba(238,242,255,.92)}
     .meta-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
     .chip{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,rgba(215,215,219,.9),rgba(196,196,200,.9));border:.5px solid rgba(255,255,255,.7);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:#3A3826;box-shadow:0 1px 3px rgba(0,0,0,.11),inset 0 1px 0 rgba(255,255,255,.62)}
     .chip.easy{background:rgba(58,96,56,.1);border-color:rgba(58,96,56,.25);color:var(--green)}
@@ -501,20 +922,21 @@
       left:10px;right:10px;
       bottom:10px;
       z-index:7;
-      padding:12px 12px;
+      padding:13px 14px;
       border-radius:18px;
       background:
-        radial-gradient(120% 120% at 16% 10%, rgba(255,174,58,.22) 0%, rgba(255,174,58,0) 46%),
-        radial-gradient(120% 120% at 84% 14%, rgba(88,115,214,.22) 0%, rgba(88,115,214,0) 50%),
-        linear-gradient(150deg, rgba(255,255,255,.72), rgba(236,242,252,.58));
-      border:1px solid rgba(255,255,255,.75);
-      box-shadow:0 18px 42px rgba(18,26,42,.18), inset 0 1px 0 rgba(255,255,255,.9);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+        linear-gradient(180deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.05) 16%, rgba(6,10,18,.4) 100%),
+        radial-gradient(130% 120% at 16% 8%, rgba(120,186,255,.16) 0%, rgba(120,186,255,0) 54%),
+        radial-gradient(130% 120% at 86% 12%, rgba(255,174,58,.12) 0%, rgba(255,174,58,0) 56%),
+        rgba(6,10,18,.46);
+      border:1px solid rgba(255,255,255,.22);
+      box-shadow:0 16px 38px rgba(8,12,22,.42), inset 0 1px 0 rgba(255,255,255,.08);
+      backdrop-filter: blur(14px) saturate(1.12);
+      -webkit-backdrop-filter: blur(14px) saturate(1.12);
       transform:translateY(10px);
       opacity:0;
       transition:transform .22s cubic-bezier(.34,1.2,.64,1), opacity .22s ease;
-      overflow:hidden;
+      overflow:visible;
     }
     .cam-step::before{
       content:'';
@@ -522,19 +944,58 @@
       background:linear-gradient(180deg,rgba(255,174,58,.95),rgba(88,115,214,.9));
       opacity:.95;
     }
+    .cam-step::after{
+      content:'';
+      position:absolute;
+      left:-14px;right:-14px;top:-16px;bottom:-22px;
+      background:radial-gradient(72% 56% at 50% 40%, rgba(0,0,0,.34) 0%, rgba(0,0,0,.16) 52%, rgba(0,0,0,0) 100%);
+      pointer-events:none;
+      z-index:-1;
+      opacity:0;
+      transition:opacity .24s ease;
+    }
+    .cam-step.show::after{opacity:1}
     .cam-step.show{opacity:1;transform:translateY(0)}
     .cam-step.off{display:none}
-    .cam-step-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+    .cam-step-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;position:relative}
+    .cam-step-top::before{
+      content:'';position:absolute;left:10px;right:10px;top:0;height:36%;
+      border-radius:12px;pointer-events:none;opacity:.42;
+      background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0));
+    }
     .cam-step-badge{
       font-size:10px;font-weight:1000;letter-spacing:.8px;text-transform:uppercase;
-      color:rgba(40,54,82,.75);
-      background:rgba(255,255,255,.55);
-      border:1px solid rgba(255,255,255,.7);
+      color:rgba(232,241,255,.92);
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.24);
       border-radius:999px;
       padding:4px 10px;
     }
-    .cam-step-ct{font-size:10px;font-weight:900;color:rgba(40,54,82,.65)}
-    .cam-step-txt{font-size:14px;font-weight:900;line-height:1.35;color:rgba(18,24,34,.9);text-shadow:0 1px 0 rgba(255,255,255,.6)}
+    .cam-step-ct{font-size:11px;font-weight:900;color:rgba(216,230,255,.8)}
+    .cam-step-txt{
+      font-size:16px;
+      font-weight:940;
+      line-height:1.44;
+      max-width:30ch;
+      text-wrap:pretty;
+      overflow-wrap:break-word;
+      color:rgba(248,252,255,.97);
+      text-shadow:0 2px 12px rgba(0,0,0,.55)
+    }
+    @keyframes ceStepLine{
+      from{opacity:.4;transform:translateY(5px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+    .cam-step-txt.cam-step-txt--enter{animation:ceStepLine .44s cubic-bezier(.25,1,.45,1) both}
+    .cam-step.show .cam-step-txt{animation:ceStepFocusPop .3s cubic-bezier(.34,1.2,.64,1) both}
+    @keyframes ceStepFocusPop{
+      0%{transform:scale(1);opacity:.9}
+      45%{transform:scale(1.02);opacity:1}
+      100%{transform:scale(1);opacity:1}
+    }
+    .walk-text.walk-text-enter{animation:ceStepLine .48s cubic-bezier(.25,1,.45,1) both}
+    .cam-step.step-advance-nudge{animation:camStepNudge .4s cubic-bezier(.34,1.2,.64,1)}
+    @keyframes camStepNudge{0%{transform:translateY(0)}45%{transform:translateY(-5px)}100%{transform:translateY(0)}}
     .cam-step-tools{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-start}
     .cam-step-tools .shop-lnk{width:44px;height:28px;border-radius:12px;box-shadow:0 8px 16px rgba(18,26,42,.14), inset 0 1px 0 rgba(255,255,255,.85)}
     .cam-step-actions{margin-top:8px;display:flex;gap:8px}
@@ -569,6 +1030,725 @@
       cursor:pointer;
       box-shadow:0 8px 16px rgba(18,26,42,.18), inset 0 1px 0 rgba(255,255,255,.35);
     }
+    .cam-step-hint{
+      margin-top:10px;
+      font-size:12px;
+      font-weight:820;
+      color:rgba(218,231,255,.72);
+      text-align:center;
+      line-height:1.35;
+    }
+
+    /* Mailbox scrim (Snapchat-style sheet) */
+    .mailbox-scrim{display:none}
+    body.mailbox-open .mailbox-scrim{
+      display:block;
+      position:fixed;
+      inset:0;
+      z-index:398;
+      background:rgba(4,8,18,.52);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+    }
+    body.mailbox-open #results{
+      display:block!important;
+    }
+    body.mailbox-open #results > *:not(#ec):not(.mailbox-scrim){
+      display:none!important;
+    }
+    body.mailbox-open #ec{pointer-events:auto}
+    body.mailbox-open .cam-dock{display:none!important}
+    .ec.ec-sheet{
+      position:fixed!important;
+      left:max(0px,env(safe-area-inset-left))!important;
+      right:max(0px,env(safe-area-inset-right))!important;
+      bottom:0!important;
+      z-index:450!important;
+      margin:0!important;
+      max-height:min(82vh,820px);
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+      border-radius:22px 22px 0 0!important;
+      padding:12px 18px calc(24px + env(safe-area-inset-bottom))!important;
+      background:linear-gradient(180deg,rgba(40,28,55,.97) 0%,rgba(14,16,28,.96) 18%,rgba(12,14,24,.96) 100%)!important;
+      border:1px solid rgba(255,255,255,.14)!important;
+      border-bottom:none!important;
+      box-shadow:0 -32px 64px rgba(0,0,0,.58),inset 0 1px 0 rgba(255,255,255,.1)!important;
+      backdrop-filter:blur(24px) saturate(1.15)!important;
+      -webkit-backdrop-filter:blur(24px) saturate(1.15)!important;
+      animation:ecSheetIn .42s cubic-bezier(.28,1.24,.46,1);
+    }
+    .ec.ec-sheet::before{
+      content:'';
+      position:absolute;
+      left:0;right:0;top:0;
+      height:4px;
+      border-radius:22px 22px 0 0;
+      background:linear-gradient(90deg,#FF006E,#8338EC,#3A86FF,#FFFC00);
+      pointer-events:none;
+    }
+    .ec.ec-sheet h3{color:#F4F7FF!important}
+    .ec.ec-sheet p{color:rgba(226,234,255,.86)!important}
+    @keyframes ecSheetIn{
+      from{transform:translateY(105%);opacity:.75}
+      to{transform:translateY(0);opacity:1}
+    }
+    .ec-handle{
+      width:36px;height:5px;border-radius:100px;
+      background:rgba(255,255,255,.32);
+      margin:8px auto 14px;
+      box-shadow:0 1px 0 rgba(255,255,255,.2) inset;
+      position:relative;
+      z-index:1;
+    }
+    .ec.ec-sheet .ec-chip.on{
+      border-color:rgba(255,252,0,.75)!important;
+      box-shadow:0 0 0 2px rgba(255,252,0,.35),0 8px 22px rgba(131,56,236,.2)!important;
+    }
+    .ec.ec-sheet .ec-sub{
+      background:linear-gradient(135deg,#FFFC00,#FFE135)!important;
+      color:#111!important;
+      font-weight:900!important;
+      box-shadow:0 6px 20px rgba(255,252,0,.25)!important;
+    }
+
+    /* Snapchat-style: rounded viewfinder + dock + caption cards */
+    body.cam-tiktok .hdr{display:none!important}
+    body.cam-tiktok .wrap{
+      max-width:100%;
+      padding:0;
+      padding-top:0;
+      padding-bottom:0;
+      min-height:100dvh;
+    }
+    body.cam-tiktok .ce-landing{
+      min-height:100dvh;
+      position:relative;
+    }
+    body.cam-tiktok .dyn-island,
+    body.cam-tiktok .hero-sec{
+      display:none!important;
+    }
+    body.cam-tiktok .cam-container{
+      position:fixed!important;
+      left:0;
+      right:0;
+      top:0;
+      bottom:0;
+      margin:0!important;
+      border-radius:0!important;
+      overflow:hidden!important;
+      max-height:none!important;
+      min-height:0!important;
+      width:auto!important;
+      z-index:1;
+      border:none!important;
+      box-shadow:none!important;
+    }
+    body.cam-tiktok .cam-container::after{
+      border-radius:0!important;
+      box-shadow:none!important;
+      border:none!important;
+    }
+    body.cam-tiktok #cam-video,
+    body.cam-tiktok #still-img{
+      border-radius:0!important;
+    }
+    body.cam-tiktok .cam-overlay,
+    body.cam-tiktok .s-flash,
+    body.cam-tiktok #xray-overlay{
+      border-radius:0!important;
+    }
+    body.cam-tiktok .prompt-wrap{display:none!important}
+    body.cam-tiktok #hazard-banner{
+      position:fixed;
+      top:calc(56px + env(safe-area-inset-top));
+      left:max(16px,env(safe-area-inset-left));
+      right:max(16px,env(safe-area-inset-right));
+      z-index:150;
+      margin:0!important;
+      border-radius:16px!important;
+    }
+    .cam-dock{
+      position:fixed;
+      left:0;right:0;bottom:0;
+      z-index:300;
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+      gap:0;
+      padding:10px 0 calc(16px + env(safe-area-inset-bottom));
+      background:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.35) 40%,rgba(0,0,0,.82) 100%);
+      pointer-events:none;
+    }
+    .cam-dock > *{pointer-events:auto}
+    .dock-side{display:none!important}
+    .dock-mid{
+      flex:0 0 auto;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:2px;
+    }
+    .snap-shutter-ring{
+      padding:4px;
+      border-radius:999px;
+      background:conic-gradient(from 220deg,#FFFC00 0%,#FF006E 33%,#8338EC 66%,#3A86FF 100%,#FFFC00 100%);
+      box-shadow:
+        0 8px 28px rgba(0,0,0,.45),
+        0 0 0 2px rgba(255,255,255,.22) inset,
+        0 0 20px rgba(255,252,0,.2);
+      animation:snapRingGlow 2.8s ease-in-out infinite;
+    }
+    @keyframes snapRingGlow{
+      0%,100%{filter:brightness(1) saturate(1);transform:scale(1)}
+      50%{filter:brightness(1.08) saturate(1.15);transform:scale(1.03)}
+    }
+    body.fixing .snap-shutter-ring{
+      animation:snapRingCalm 2.2s ease-in-out infinite;
+      background:linear-gradient(145deg,#FFFC00 0%,#FFD60A 40%,#FFF8B8 100%);
+    }
+    @keyframes snapRingCalm{
+      0%,100%{box-shadow:0 8px 28px rgba(0,0,0,.4),0 0 0 2px rgba(255,255,255,.2) inset}
+      50%{box-shadow:0 10px 32px rgba(255,252,0,.25),0 0 0 2px rgba(255,255,255,.35) inset}
+    }
+    .dock-pill{
+      min-width:78px;
+      padding:12px 16px;
+      border-radius:999px;
+      border:2px solid rgba(0,0,0,.12);
+      background:rgba(255,255,255,.94);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+      color:#111;
+      font-size:15px;
+      font-weight:900;
+      letter-spacing:-.2px;
+      cursor:pointer;
+      font-family:inherit;
+      box-shadow:0 8px 22px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.85);
+      transition:transform .1s cubic-bezier(.34,1.4,.64,1),box-shadow .15s,filter .15s;
+    }
+    .dock-pill:active:not(:disabled){
+      transform:scale(.94);
+      box-shadow:0 4px 14px rgba(0,0,0,.18);
+    }
+    .dock-pill:disabled{
+      opacity:.38;
+      cursor:not-allowed;
+      filter:grayscale(.25);
+    }
+    /* Orb-only navigation — dock pills removed from UI */
+    .dock-pill{display:none!important}
+    .perception-layer{
+      position:fixed;left:50%;transform:translateX(-50%);
+      bottom:calc(234px + env(safe-area-inset-bottom));
+      z-index:238;max-width:min(92vw,390px);pointer-events:none;text-align:center;padding:0 14px;
+      transition:opacity .26s ease, transform .26s ease;
+    }
+    .perception-layer::before{
+      content:'';
+      position:absolute;
+      left:-12px;right:-12px;top:-12px;bottom:-12px;
+      border-radius:18px;
+      background:radial-gradient(76% 68% at 50% 45%, rgba(0,0,0,.34) 0%, rgba(0,0,0,.18) 58%, rgba(0,0,0,0) 100%);
+      opacity:0;
+      transition:opacity .24s ease;
+    }
+    .perception-hint{
+      margin:0;
+      display:inline-block;
+      max-width:min(82vw,34ch);
+      padding:10px 13px;
+      border-radius:15px;
+      background:linear-gradient(180deg, rgba(255,255,255,.2) 0%, rgba(255,255,255,.06) 14%, rgba(6,10,18,.42) 100%);
+      border:1px solid rgba(255,255,255,.2);
+      box-shadow:0 12px 34px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.2), inset 0 -1px 0 rgba(255,255,255,.05);
+      backdrop-filter:blur(15px) saturate(1.12);
+      -webkit-backdrop-filter:blur(15px) saturate(1.12);
+      font-size:clamp(14px,3.9vw,17px);
+      font-weight:830;
+      line-height:1.42;
+      text-wrap:pretty;
+      overflow-wrap:break-word;
+      color:rgba(248,252,255,.97);
+      text-shadow:0 2px 10px rgba(0,0,0,.55),0 0 14px rgba(80,130,255,.16);
+      letter-spacing:.02em;
+      opacity:0;transform:translateY(8px) scale(.98);
+      transition:opacity .5s cubic-bezier(.25,1,.45,1),transform .5s cubic-bezier(.25,1,.45,1);
+    }
+    .perception-hint.show{
+      opacity:1;transform:translateY(0) scale(1);
+    }
+    .perception-layer.active::before{opacity:1}
+    body.cam-tiktok .snap-shutter-ring .scan-egg{
+      min-width:82px;
+      min-height:82px;
+      padding:7px 9px 10px;
+    }
+    body.cam-tiktok .cam-dock .slbl{
+      font-size:9px;
+      font-weight:900;
+      letter-spacing:3px;
+      color:rgba(255,255,255,.95);
+      text-shadow:0 2px 12px rgba(0,0,0,.6);
+      margin-top:2px;
+    }
+    body.cam-tiktok .scan-egg.vibrating{
+      animation:eggClickPulse .26s cubic-bezier(.34,1.45,.64,1) forwards, snapEggBounce .32s cubic-bezier(.34,1.55,.64,1)!important;
+    }
+    @keyframes snapEggBounce{
+      0%{transform:scale(1)}
+      40%{transform:scale(1.06)}
+      100%{transform:scale(1)}
+    }
+    body.cam-tiktok .cam-step{
+      left:max(10px,env(safe-area-inset-left))!important;
+      right:max(10px,env(safe-area-inset-right))!important;
+      top:auto!important;
+      bottom:calc(226px + env(safe-area-inset-bottom))!important;
+      max-height:min(44vh,360px)!important;
+      overflow-y:auto!important;
+      -webkit-overflow-scrolling:touch;
+      padding:16px 15px 13px!important;
+      border-radius:20px!important;
+      background:
+        radial-gradient(130% 130% at 16% 12%, rgba(80,140,255,.16) 0%, rgba(80,140,255,0) 56%),
+        radial-gradient(120% 120% at 86% 12%, rgba(255,174,58,.12) 0%, rgba(255,174,58,0) 56%),
+        rgba(8,12,22,.5)!important;
+      border:1px solid rgba(255,255,255,.24)!important;
+      box-shadow:
+        0 18px 40px rgba(0,0,0,.46),
+        0 0 0 1px rgba(255,252,0,.12),
+        inset 0 1px 0 rgba(255,255,255,.12)!important;
+      backdrop-filter:blur(11px) saturate(1.14)!important;
+      -webkit-backdrop-filter:blur(11px) saturate(1.14)!important;
+      transition:none;
+    }
+    body.cam-tiktok .cam-step{display:none!important}
+    body.cam-tiktok .cam-step::before{
+      width:5px;
+      background:linear-gradient(180deg,#FF006E,#8338EC,#3A86FF,#FFFC00)!important;
+      border-radius:4px 0 0 4px;
+    }
+    body.cam-tiktok .cam-step.show{
+      display:block!important;
+      animation:snapCaptionIn .42s cubic-bezier(.25,1.35,.45,1) both;
+    }
+    @keyframes snapCaptionIn{
+      0%{opacity:0;transform:translateY(22px) scale(.94)}
+      70%{opacity:1;transform:translateY(-3px) scale(1.02)}
+      100%{opacity:1;transform:translateY(0) scale(1)}
+    }
+    body.cam-tiktok .cam-step-txt{
+      font-size:clamp(20px,5.5vw,26px)!important;
+      font-weight:900!important;
+      line-height:1.4!important;
+      max-width:24ch;
+      text-wrap:pretty;
+      overflow-wrap:break-word;
+      color:#fff!important;
+      text-shadow:0 2px 16px rgba(0,0,0,.55)!important;
+    }
+    body.cam-tiktok .cam-step-badge{
+      font-size:11px!important;
+      font-weight:1000!important;
+      color:#111!important;
+      background:#FFFC00!important;
+      border:none!important;
+      box-shadow:0 4px 12px rgba(255,252,0,.25)!important;
+    }
+    body.cam-tiktok .cam-step-ct{
+      font-size:12px!important;
+      font-weight:900!important;
+      color:rgba(255,255,255,.72)!important;
+    }
+    body.cam-tiktok .cam-step-hint{
+      color:rgba(236,244,255,.7)!important;
+      font-weight:800!important;
+      font-size:12px!important;
+      letter-spacing:.2px;
+    }
+    body.fixing .perception-layer,
+    body.ce-step-active .perception-layer{
+      opacity:0!important;
+      transform:translateX(-50%) translateY(6px);
+      pointer-events:none;
+    }
+    body.cam-tiktok .cam-step-tools .shop-lnk{
+      width:50px!important;height:34px!important;
+      box-shadow:0 6px 14px rgba(0,0,0,.3)!important;
+    }
+    body.cam-tiktok #ld{
+      position:fixed!important;
+      inset:0!important;
+      z-index:280!important;
+      padding:0!important;
+      align-items:center!important;
+      justify-content:flex-end!important;
+      flex-direction:column!important;
+      background:rgba(0,0,0,.28)!important;
+      backdrop-filter:blur(14px) saturate(1.2)!important;
+      -webkit-backdrop-filter:blur(14px) saturate(1.2)!important;
+      pointer-events:none!important;
+    }
+    body.cam-tiktok #ld .ld-orb,
+    body.cam-tiktok #ld .ld-txt,
+    body.cam-tiktok #ld .ld-sub{display:none!important}
+    body.cam-tiktok.ce-ai-thinking #ld{
+      background:rgba(0,0,0,.42)!important;
+      animation:ceVeilBreathe 2.4s ease-in-out infinite;
+    }
+    @keyframes ceVeilBreathe{
+      0%,100%{background:rgba(0,0,0,.38)!important}
+      50%{background:rgba(12,8,28,.52)!important}
+    }
+    body.cam-tiktok #ld[style*="block"]{
+      display:flex!important;
+    }
+    body.cam-tiktok.ce-ai-thinking .snap-shutter-ring{
+      animation:alienRingThink 1s ease-in-out infinite!important;
+      filter:drop-shadow(0 0 20px rgba(131,56,236,.55));
+    }
+    @keyframes alienRingThink{
+      0%,100%{transform:scale(1);opacity:1}
+      50%{transform:scale(1.06);opacity:.92}
+    }
+    body.cam-tiktok #results{
+      position:fixed;
+      left:0;
+      right:0;
+      top:28vh;
+      bottom:0;
+      z-index:340;
+      display:block;
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+      padding:0 max(14px,env(safe-area-inset-left)) calc(18px + env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-right));
+      padding-top:6px;
+      max-height:100%;
+      border-radius:22px 22px 0 0;
+      background:linear-gradient(180deg,rgba(252,253,255,.94) 0%,rgba(241,245,251,.97) 48%,rgba(248,250,252,.98) 100%);
+      box-shadow:0 -12px 48px rgba(15,23,42,.12),0 -1px 0 rgba(99,102,241,.1);
+      backdrop-filter:blur(18px) saturate(1.15);
+      -webkit-backdrop-filter:blur(18px) saturate(1.15);
+      transform:translateY(108%) scale(1);
+      opacity:0;
+      pointer-events:none;
+      transition:transform .48s cubic-bezier(.28,1.08,.38,1),opacity .3s ease,filter .4s ease;
+    }
+    body.cam-tiktok #results::before{
+      content:'';display:block;height:5px;width:40px;border-radius:999px;
+      background:rgba(15,23,42,.12);margin:-2px auto 10px;
+    }
+    body.cam-tiktok #results-screen-bar{display:block}
+    body.result-open.cam-tiktok .ce-landing{
+      perspective:1280px;
+    }
+    body.result-open.cam-tiktok #results{
+      transform:translateY(0) scale(0.96);
+      opacity:1;
+      pointer-events:auto;
+      transform-style:preserve-3d;
+    }
+    body.result-open.cam-tiktok #results.ce-stagger-reveal{
+      transition:none;
+      animation:ceResultsSettleScale .76s cubic-bezier(.22,1,.36,1) forwards;
+    }
+    @keyframes ceResultsSettleScale{
+      0%{transform:translateY(11px) scale(0.965);box-shadow:0 -6px 26px rgba(15,23,42,.06),0 -1px 0 rgba(99,102,241,.06)}
+      100%{transform:translateY(0) scale(1);box-shadow:0 -12px 48px rgba(15,23,42,.12),0 -1px 0 rgba(99,102,241,.1)}
+    }
+    body.result-open.cam-tiktok .cam-container{
+      animation:camReadoutDeepen 1.08s ease-out forwards;
+    }
+    @keyframes camReadoutDeepen{
+      0%{filter:blur(5px) brightness(.57) saturate(.94);transform:scale(1.01)}
+      100%{filter:blur(15px) brightness(.45) saturate(.87);transform:scale(1.04)}
+    }
+    body.result-open.cam-tiktok .perception-layer{
+      opacity:0!important;pointer-events:none;
+      transition:opacity .25s ease;
+    }
+    @keyframes ceStaggerItem{
+      from{opacity:0;transform:translateY(14px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) #ce-conf-signal,
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) #r-title,
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) #r-task2,
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) #results-summary .edge-strip,
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) #uncertainty-banner:not(.off),
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) #quick-checks:not(.off),
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) #readout-glass:not(.off),
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) #r-confidence,
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) .meta-row,
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) #cost-row:not([style*="display: none"]),
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) .tts-bar,
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) #warn-ctr:not(.off),
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) #tip-safety,
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) #tools-card,
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) #steps-card .walk-meta,
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) #steps-card .walk-text,
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) #steps-card .walk-look:not(.off),
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) #steps-card .walk-tools,
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) #steps-card .walk-nav,
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) #steps-card .walk-check-btn,
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) #steps-card .prog-track,
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) #steps-card .steps-top,
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) #no-repair-box:not([style*="display: none"]),
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) .hazard-hero.show,
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) #ec,
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) .ad-banner,
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) .fold-more,
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) .rst-btn{
+      opacity:0;transform:translateY(14px);
+    }
+    .ce-conf-signal{font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:rgba(55,65,81,.68);margin:8px 2px 0;line-height:1.25;min-height:14px;opacity:.95}
+    .ce-conf-signal.ce-conf-high{color:rgba(21,128,61,.9)}
+    .ce-conf-signal.ce-conf-mid{color:rgba(194,65,12,.92)}
+    .ce-conf-signal.ce-conf-low{color:rgba(153,27,27,.93)}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #ce-conf-signal{animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:28ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #r-title{animation:ceStaggerItem .52s cubic-bezier(.25,1,.45,1) both;animation-delay:0ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #r-task2{animation:ceStaggerItem .52s cubic-bezier(.25,1,.45,1) both;animation-delay:85ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #results-summary .edge-strip{animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:45ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #uncertainty-banner:not(.off){animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:120ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #quick-checks:not(.off){animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:150ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #readout-glass:not(.off){animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:175ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #r-confidence{animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:195ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal .meta-row{animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:215ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #cost-row{animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:235ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal .tts-bar{animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:255ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #warn-ctr:not(.off){animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:275ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #tip-safety{animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:295ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal .hazard-hero.show{animation:ceStaggerItem .55s cubic-bezier(.25,1,.45,1) both;animation-delay:60ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #tools-card{animation:ceStaggerItem .52s cubic-bezier(.25,1,.45,1) both;animation-delay:320ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #steps-card .steps-top{animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:360ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #steps-card .prog-track{animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:380ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #steps-card .walk-meta{animation:ceStaggerItem .5s cubic-bezier(.25,1,.45,1) both;animation-delay:400ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #steps-card .walk-text{animation:ceStaggerItem .55s cubic-bezier(.25,1,.45,1) both;animation-delay:430ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #steps-card .walk-look:not(.off){animation:ceStaggerItem .5s cubic-bezier(.25,1,.45,1) both;animation-delay:460ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #steps-card .walk-tools{animation:ceStaggerItem .5s cubic-bezier(.25,1,.45,1) both;animation-delay:490ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #steps-card .walk-nav{animation:ceStaggerItem .5s cubic-bezier(.25,1,.45,1) both;animation-delay:520ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #steps-card .walk-check-btn{animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:550ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #no-repair-box{animation:ceStaggerItem .52s cubic-bezier(.25,1,.45,1) both;animation-delay:280ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #ec{animation:ceStaggerItem .52s cubic-bezier(.25,1,.45,1) both;animation-delay:590ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal .ad-banner{animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:340ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal .fold-more{animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:620ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal .rst-btn{animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:640ms}
+
+
+    body.result-open.cam-tiktok .cam-dock,
+    body.result-open.cam-tiktok .prompt-wrap,
+    body.result-open.cam-tiktok .hazard-banner,
+    body.result-open.cam-tiktok .cam-step{
+      display:none!important;
+    }
+    body.result-open.cam-tiktok #results{
+      color:#111827;
+    }
+    body.result-open.cam-tiktok #results-screen-bar{
+      background:rgba(255,255,255,.72);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      border-bottom:1px solid rgba(99,102,241,.12);
+      padding-top:2px;
+    }
+    body.result-open.cam-tiktok .results-back{
+      background:#f3f4f6;
+      color:#111827;
+      border:1px solid #d1d5db;
+      box-shadow:none;
+    }
+    body.result-open.cam-tiktok #results-title{
+      color:#374151;
+    }
+    body.result-open.cam-tiktok .r-hdr{
+      background:linear-gradient(145deg,rgba(238,242,255,.95),rgba(250,245,255,.88))!important;
+      border:1px solid rgba(99,102,241,.16)!important;
+      box-shadow:0 10px 28px rgba(79,70,229,.07)!important;
+      color:#111827!important;
+    }
+    body.result-open.cam-tiktok .edge-pill{
+      color:#312e81!important;
+      background:linear-gradient(135deg,rgba(99,102,241,.11),rgba(34,211,238,.07))!important;
+      border-color:rgba(99,102,241,.2)!important;
+    }
+    body.result-open.cam-tiktok .uncertainty-banner .ub-txt{color:#78350f!important}
+    body.result-open.cam-tiktok .quick-checks{background:rgba(238,242,255,.92)!important;border-color:rgba(99,102,241,.18)!important}
+    body.result-open.cam-tiktok .walk-look{
+      background:linear-gradient(135deg,rgba(204,251,241,.4),rgba(224,242,254,.55))!important;
+      border-color:rgba(13,148,136,.3)!important;
+    }
+    body.result-open.cam-tiktok .walk-look-lbl{color:#0f766e!important}
+    body.result-open.cam-tiktok .walk-look-txt{color:#134e4a!important}
+    body.result-open.cam-tiktok .card,
+    body.result-open.cam-tiktok .tip,
+    body.result-open.cam-tiktok .tts-bar,
+    body.result-open.cam-tiktok .warn-ctr,
+    body.result-open.cam-tiktok .ad-banner,
+    body.result-open.cam-tiktok #all-done,
+    body.result-open.cam-tiktok #task-locked,
+    body.result-open.cam-tiktok .fold-more{
+      background:rgba(255,255,255,.88)!important;
+      border:1px solid rgba(99,102,241,.1)!important;
+      box-shadow:0 8px 22px rgba(15,23,42,.06)!important;
+      color:#111827!important;
+    }
+    body.result-open.cam-tiktok .readout-glass{
+      background:linear-gradient(135deg,rgba(99,102,241,.22),rgba(34,211,238,.14),rgba(245,158,11,.16))!important;
+      box-shadow:0 10px 26px rgba(15,23,42,.08)!important;
+    }
+    body.result-open.cam-tiktok .readout-glass-inner{
+      background:linear-gradient(165deg,rgba(248,250,252,.94),rgba(241,245,249,.92))!important;
+      border:1px solid rgba(99,102,241,.18)!important;
+    }
+    body.result-open.cam-tiktok .rg-lbl{color:#4338ca!important}
+    body.result-open.cam-tiktok .rg-txt{color:#1e1b4b!important}
+    body.result-open.cam-tiktok .rg-xray-row .rg-txt{color:#0e7490!important}
+    body.result-open.cam-tiktok #tools-card{
+      background:linear-gradient(160deg,rgba(255,247,237,.94),rgba(255,253,248,.9))!important;
+      border-color:rgba(245,158,11,.22)!important;
+    }
+    body.result-open.cam-tiktok .r-title,
+    body.result-open.cam-tiktok .r-task,
+    body.result-open.cam-tiktok .tip-txt,
+    body.result-open.cam-tiktok .tool-nm,
+    body.result-open.cam-tiktok .walk-tool-nm{
+      color:#111827!important;
+      text-shadow:none!important;
+    }
+    body.result-open.cam-tiktok .chip{
+      background:#f3f4f6!important;
+      border:1px solid #d1d5db!important;
+      color:#111827!important;
+      box-shadow:none!important;
+    }
+    body.result-open.cam-tiktok #r-steps{display:none!important}
+    body.result-open.cam-tiktok #steps-card{
+      background:linear-gradient(155deg,rgba(240,253,250,.75),rgba(255,255,255,.92))!important;
+      border-color:rgba(16,185,129,.18)!important;
+    }
+    body.result-open.cam-tiktok .walk-pane{
+      display:block!important;
+      margin-top:8px;
+      border:1px solid rgba(99,102,241,.14);
+      border-radius:16px;
+      background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(247,250,255,.75));
+      padding:10px 10px 8px;
+    }
+    body.result-open.cam-tiktok .walk-meta{
+      color:#4338ca;
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.06em;
+      margin-bottom:6px;
+    }
+    body.result-open.cam-tiktok .walk-text{
+      background:linear-gradient(165deg,rgba(224,231,255,.55),rgba(255,255,255,.92))!important;
+      border:1px solid rgba(99,102,241,.22)!important;
+      box-shadow:0 6px 20px rgba(79,70,229,.09),inset 0 1px 0 rgba(255,255,255,.8)!important;
+      color:#0f172a!important;
+      font-size:16px!important;
+      font-weight:800!important;
+      line-height:1.45!important;
+      text-shadow:none!important;
+      min-height:0;
+      padding:11px 12px!important;
+      border-radius:14px!important;
+    }
+    body.result-open.cam-tiktok .walk-text::before{
+      background:linear-gradient(180deg,#6366f1,#22d3ee)!important;
+    }
+    body.result-open.cam-tiktok .walk-tools{
+      border:1px solid rgba(245,158,11,.25);
+      border-radius:12px;
+      padding:7px 8px;
+      background:linear-gradient(155deg,rgba(254,243,199,.5),rgba(255,251,235,.85));
+      margin-top:8px;
+    }
+    body.result-open.cam-tiktok .walk-tools-ttl{
+      color:#b45309;
+      margin-bottom:4px;
+      font-size:9px!important;
+    }
+    body.result-open.cam-tiktok .walk-tool{
+      border-bottom:1px solid rgba(251,191,36,.25);
+      padding-bottom:6px;
+      margin-bottom:6px;
+      flex-direction:column;
+      align-items:stretch!important;
+      gap:5px!important;
+    }
+    body.result-open.cam-tiktok .walk-tool:last-child{
+      border-bottom:none;
+      margin-bottom:0;
+      padding-bottom:0;
+    }
+    body.result-open.cam-tiktok .walk-tool-nm{
+      color:#78350f!important;
+      font-size:12px!important;
+      line-height:1.3!important;
+    }
+    body.result-open.cam-tiktok .walk-nav{
+      margin-top:8px;
+      display:flex;
+      gap:8px;
+    }
+    body.result-open.cam-tiktok .walk-nav-btn{
+      flex:1;
+      min-height:44px;
+      border-radius:12px;
+      border:1px solid rgba(99,102,241,.2);
+      background:linear-gradient(180deg,#fff,rgba(238,242,255,.95));
+      color:#1e1b4b;
+      font-size:14px;
+      font-weight:900;
+      box-shadow:0 4px 12px rgba(79,70,229,.08);
+    }
+    body.result-open.cam-tiktok .walk-nav-btn:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+    }
+    body.result-open.cam-tiktok .walk-tool-shops{
+      gap:6px;
+      justify-content:flex-start;
+      width:100%;
+      margin-top:0;
+      flex-wrap:wrap;
+    }
+    body.result-open.cam-tiktok .walk-tool-shops .shop-lnk.shop-lnk--mini{
+      width:38px!important;
+      height:30px!important;
+      min-height:30px!important;
+      border-radius:9px;
+      padding:4px!important;
+      display:inline-flex!important;
+      align-items:center;
+      justify-content:center;
+      border:1px solid rgba(99,102,241,.2);
+      background:rgba(255,255,255,.95)!important;
+      box-shadow:0 2px 6px rgba(15,23,42,.06)!important;
+    }
+    body.result-open.cam-tiktok .walk-tool-shops .shop-lnk.shop-lnk--mini svg{
+      width:26px!important;height:15px!important;flex-shrink:0;
+    }
+    body.result-open.cam-tiktok .shop-txt{display:none}
+    body.result-open.cam-tiktok .walk-check-btn{
+      display:block!important;
+      margin-top:8px!important;
+      padding:9px 10px!important;
+      font-size:11px!important;
+      min-height:0!important;
+      border-radius:11px!important;
+    }
+    body.result-open.cam-tiktok .walk-finish-btn{display:none!important}
+    body.result-open.cam-tiktok .walk-finish-btn.walk-finish--on{
+      display:block!important;
+      margin-top:8px!important;
+      padding:9px 10px!important;
+      font-size:12px!important;
+    }
 
     /* Fix Mode: remove scrolling by hiding non-step sections */
     #results.fix-mode .r-hdr,
@@ -593,6 +1773,10 @@
     }
     body.fixing .cam-container{
       max-height:min(74vh,calc(100dvh - 190px));
+    }
+    body.fixing.cam-tiktok .cam-container{
+      max-height:none!important;
+      bottom:calc(118px + env(safe-area-inset-bottom))!important;
     }
 
     /* Finish CTA pulse */
@@ -702,6 +1886,69 @@
     .ec-item{display:flex;justify-content:space-between;font-size:13px;color:var(--t1);padding:4px 0;border-bottom:.5px solid rgba(0,0,0,.07)}
     .ec-item:last-child{border-bottom:none}
     .ec-item a{color:var(--gold);text-decoration:none}
+    body.result-open.cam-tiktok .ec.ec-top:not(.ec-sheet){
+      margin-top:12px;
+      border-radius:18px!important;
+      background:linear-gradient(165deg,rgba(30,27,75,.92),rgba(17,24,39,.94))!important;
+      border:1px solid rgba(165,180,252,.28)!important;
+      box-shadow:0 18px 40px rgba(15,23,42,.2),inset 0 1px 0 rgba(255,255,255,.1)!important;
+    }
+    body.result-open.cam-tiktok .ec.ec-top:not(.ec-sheet) h3{color:#e0e7ff!important}
+    body.result-open.cam-tiktok .ec.ec-top:not(.ec-sheet) p{color:rgba(226,232,240,.9)!important}
+    body.result-open.cam-tiktok .tools-list{gap:7px!important}
+    body.result-open.cam-tiktok .tool-entry{gap:4px!important;margin-bottom:2px!important}
+    body.result-open.cam-tiktok .tool-nm{font-size:12px!important}
+    body.result-open.cam-tiktok .tool-shops{
+      padding-left:0!important;
+      gap:5px!important;
+      flex-wrap:wrap!important;
+    }
+    body.result-open.cam-tiktok .tool-shops .shop-lnk{
+      width:40px!important;height:28px!important;
+      border-radius:9px!important;padding:3px!important;
+    }
+    body.result-open.cam-tiktok .tool-shops .shop-lnk svg{width:28px!important;height:16px!important}
+
+    #done-screen{
+      position:fixed;
+      inset:0;
+      z-index:920;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      background:radial-gradient(120% 120% at 50% 10%,rgba(85,152,255,.22) 0%,rgba(7,10,20,.95) 55%,rgba(4,8,16,.98) 100%);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+    }
+    #done-screen.show{display:flex;animation:doneIn .38s cubic-bezier(.28,1.22,.44,1)}
+    @keyframes doneIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+    .done-card{
+      width:min(420px,100%);
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.26);
+      background:linear-gradient(160deg,rgba(20,30,52,.88),rgba(10,16,30,.94));
+      box-shadow:0 28px 60px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.18);
+      padding:22px 18px;
+      text-align:center;
+      color:#eef4ff;
+    }
+    .done-card h2{font-size:28px;font-weight:1000;letter-spacing:-.8px;margin-bottom:8px}
+    .done-card p{font-size:15px;color:rgba(229,238,255,.84);line-height:1.45;margin-bottom:14px}
+    .done-go{
+      width:100%;
+      min-height:52px;
+      border:none;
+      border-radius:14px;
+      background:linear-gradient(135deg,#FFFC00,#FFE66A);
+      color:#111827;
+      font-size:16px;
+      font-weight:1000;
+      font-family:inherit;
+      cursor:pointer;
+      box-shadow:0 8px 20px rgba(255,252,0,.28);
+    }
+    .done-go:active{transform:scale(.98)}
 
     /* AGREEMENT */
     #ag-modal{position:fixed;inset:0;background:var(--bg);z-index:998;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;padding:28px max(18px,env(safe-area-inset-right)) 52px max(18px,env(safe-area-inset-left));padding-top:max(28px,env(safe-area-inset-top));max-width:100%;box-sizing:border-box}
@@ -729,7 +1976,7 @@
     .pm-sheet{background:linear-gradient(148deg,#C8C8CC,#B2B2B6);border-radius:24px 24px 0 0;padding:22px 18px 36px;width:100%;max-width:480px;border-top:.5px solid rgba(255,255,255,.6);box-shadow:0 -16px 48px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.55)}
     .pm-handle{width:34px;height:3px;background:rgba(0,0,0,.15);border-radius:2px;margin:0 auto 18px}
     .pm-ttl{font-size:16px;font-weight:700;margin-bottom:3px}
-    .pm-step{font-size:11px;color:var(--t2);margin-bottom:14px;line-height:1.5}
+    .pm-step{font-size:11px;color:var(--t2);margin-bottom:14px;line-height:1.5;white-space:pre-line}
     .pm-upload{background:linear-gradient(145deg,rgba(180,180,184,.8),rgba(162,162,166,.8));border:1.5px dashed rgba(0,0,0,.15);border-radius:var(--rlg);padding:26px;text-align:center;cursor:pointer;position:relative;margin-bottom:12px}
     .pm-upload input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
     .pm-upload p{font-size:12px;color:var(--t2);margin-top:5px}
@@ -916,7 +2163,7 @@
     }
   </style>
 </head>
-<body>
+<body class="cam-tiktok">
 
 <!-- AGREEMENT -->
 <div id="ag-modal" class="off">
@@ -1015,6 +2262,10 @@
   <div class="lang-tip-text" id="lang-tip-text">Tip: switch EN/NL here any time.</div>
   <button type="button" class="lang-tip-btn" id="lang-tip-btn">Got it</button>
 </div>
+<div class="lang-fab" id="lang-fab">
+  <button class="lang-fab-btn on" id="btn-en-fab" type="button">EN</button>
+  <button class="lang-fab-btn" id="btn-nl-fab" type="button">NL</button>
+</div>
 
 <div class="wrap">
   <div class="ce-landing">
@@ -1040,6 +2291,7 @@
       <div class="scan-corner tl"></div><div class="scan-corner tr"></div>
       <div class="scan-corner bl"></div><div class="scan-corner br"></div>
       <div class="scan-lbl" id="scan-lbl">Analysing...</div>
+      <div class="obj-highlight-flash" id="obj-highlight-flash" aria-hidden="true"></div>
     </div>
     <div class="cam-step off" id="cam-step" aria-live="polite">
       <div class="cam-step-top">
@@ -1048,12 +2300,7 @@
       </div>
       <div class="cam-step-txt" id="cam-step-txt"></div>
       <div class="cam-step-tools" id="cam-step-tools"></div>
-      <div class="cam-step-actions">
-        <button type="button" class="cam-step-btn" id="cam-back">← Back</button>
-        <button type="button" class="cam-step-btn cam-step-check" id="cam-check">📸 Check</button>
-        <button type="button" class="cam-step-btn" id="cam-next">Next →</button>
-      </div>
-      <button type="button" class="cam-step-finish" id="cam-finish" style="display:none">✅ Finished</button>
+      <div class="cam-step-hint" id="cam-step-hint">Double-tap step for photo check</div>
     </div>
     <div id="xray-overlay"></div>
     <div id="live-prompt" aria-hidden="true">
@@ -1066,10 +2313,13 @@
     <button class="retake-btn" id="retake-btn" onclick="retakePhoto()">↩ Retake</button>
     <button type="button" class="cam-upload-btn" id="cam-upload-btn"><span id="cam-upload-lbl">Choose photo</span></button>
     <button class="cam-retry-btn" id="cam-retry-btn" onclick="startCamera()">Enable camera</button>
+    <div class="scan-heatwave-el" id="scan-heatwave-el" aria-hidden="true"></div>
+    <div class="scan-ritual-wave" id="scan-ritual-wave" aria-hidden="true"></div>
   </div>
 
   <!-- HAZARD BANNER -->
   <div class="hazard-banner" id="hazard-banner"></div>
+  <div id="perception-layer" class="perception-layer" aria-hidden="true"><p id="perception-hint" class="perception-hint"></p></div>
 
   <!-- PROMPT -->
   <div class="prompt-wrap">
@@ -1077,9 +2327,18 @@
     <button class="mic-btn" id="mic-btn" title="Voice input">🎙️</button>
   </div>
 
-  <!-- EGG SCAN BUTTON — same mark as header; physical press + alien click SFX -->
-  <div class="scan-wrap">
-    <div class="scan-egg" id="scan-egg" role="button" tabindex="0" aria-label="Scan with camera">
+  <!-- Bottom dock: Back + scan egg + Next (TikTok-style) -->
+  <div class="cam-dock" id="cam-dock">
+    <div class="dock-side dock-side--l">
+      <button type="button" class="dock-pill" id="dock-back" disabled>Back</button>
+    </div>
+    <div class="dock-mid">
+      <div class="snap-shutter-ring" id="snap-shutter-ring" aria-hidden="true">
+      <div class="scan-egg" id="scan-egg" role="button" tabindex="0" aria-label="Scan with camera">
+      <span class="egg-ripple" aria-hidden="true"></span>
+      <span class="egg-swirl" aria-hidden="true"></span>
+      <span class="egg-eye" aria-hidden="true"></span>
+      <span class="egg-laser" aria-hidden="true"></span>
       <svg width="50" height="60" viewBox="0 0 64 76" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
           <radialGradient id="scm" cx="28%" cy="14%" r="74%" fx="24%" fy="10%">
@@ -1113,8 +2372,13 @@
         </g>
         <path d="M32 3C18 3 5 24 5 41C5 59 17 72 32 72C47 72 59 59 59 41C59 24 46 3 32 3Z" fill="none" stroke="rgba(56,70,96,.58)" stroke-width="1.2"/>
       </svg>
+      </div>
+      </div>
+      <div class="slbl" id="scan-lbl-text">Scan</div>
     </div>
-    <div class="slbl" id="scan-lbl-text">Scan</div>
+    <div class="dock-side dock-side--r">
+      <button type="button" class="dock-pill" id="dock-next" disabled>Next</button>
+    </div>
   </div>
   </div>
 
@@ -1124,9 +2388,22 @@
     <div class="ld-sub" id="ld-sub">Reading every detail</div>
   </div>
   <div class="err-box" id="err-box"></div>
+  <div id="done-screen" aria-live="polite">
+    <div class="done-card">
+      <h2 id="done-screen-ttl">You did it ⚡</h2>
+      <p id="done-screen-sub">Task complete. Drop your email and feedback so we can ship your next upgrade first.</p>
+      <button type="button" class="done-go" id="done-go-btn">Continue</button>
+    </div>
+  </div>
 
   <!-- RESULTS — summary + signup first; extras in one fold -->
   <div id="results">
+    <div id="mailbox-scrim" class="mailbox-scrim" aria-hidden="true"></div>
+    <div id="results-screen-bar">
+      <button type="button" class="results-back" id="results-back-btn">← Camera</button>
+      <div id="results-title">Scan Results</div>
+      <div class="ce-conf-signal" id="ce-conf-signal" aria-live="polite"></div>
+    </div>
     <div id="all-done"><div class="de">🏆</div><h3 id="done-h3">Job Done!</h3><p id="done-p">You fixed it yourself. That win lasts for days.</p><div class="done-xp">⚡ +50 XP</div></div>
     <div id="task-locked"><h3>⛔ <span id="locked-ttl">Task Locked</span></h3><p id="locked-p">3 danger warnings triggered. Stop and contact a professional.</p><div class="ec-contacts"><p>Emergency (NL)</p><div class="ec-item"><span>Emergency</span><a href="tel:112">112</a></div><div class="ec-item"><span>Gas</span><a href="tel:0800-9009">0800-9009</a></div><div class="ec-item"><span>Water</span><a href="tel:0900-9994">0900-9994</a></div></div></div>
     <div class="hazard-hero" id="hazard-hero" aria-live="polite">
@@ -1141,28 +2418,25 @@
       </div>
     </div>
     <div class="r-hdr" id="results-summary">
+      <div class="edge-strip" id="edge-strip" aria-label="Product strengths"><span class="edge-pill" id="edge-a"></span><span class="edge-dot">·</span><span class="edge-pill" id="edge-b"></span><span class="edge-dot">·</span><span class="edge-pill" id="edge-c"></span></div>
       <div class="r-title" id="r-title"></div>
       <div class="r-task" id="r-task2"></div>
+      <div class="uncertainty-banner off" id="uncertainty-banner"><span class="ub-ico">👁</span><div><div class="ub-lbl" id="ub-lbl">Verify</div><div class="ub-txt" id="ub-txt"></div></div></div>
+      <div class="quick-checks off" id="quick-checks"><div class="qc-ttl" id="qc-ttl">Before you start</div><ul class="qc-list" id="qc-list"></ul></div>
+      <div class="readout-glass off" id="readout-glass">
+        <div class="readout-glass-inner">
+          <div class="rg-row"><span class="rg-ico" aria-hidden="true">🔧</span><div class="rg-body"><div class="rg-lbl" id="rg-mat-lbl">Materials & type</div><div class="rg-txt" id="readout-mat"></div></div></div>
+          <div class="rg-row rg-xray-row"><span class="rg-ico" aria-hidden="true">⚡</span><div class="rg-body"><div class="rg-lbl" id="rg-xray-lbl">X-ray read</div><div class="rg-txt" id="readout-xray"></div></div></div>
+        </div>
+      </div>
       <div class="conf-tier safe" id="r-confidence">✅ DIY-safe</div>
-      <div class="meta-row"><div class="chip" id="r-diff"></div><div class="chip">⏱ <span id="r-time"></span></div></div>
+      <div class="meta-row"><div class="chip" id="r-diff"></div><div class="chip">⏱ <span id="r-time"></span></div><div class="chip off" id="r-cat-chip">📁 <span id="r-cat"></span></div></div>
       <div class="cost-row" id="cost-row" style="display:none">💶 <span id="cost-lbl">Estimated cost:</span> <span class="cost-amt" id="r-cost"></span></div>
     </div>
     <div class="tts-bar" id="tts-bar">
       <button class="tts-btn speak" id="tts-read-all" onclick="readAllSteps()">🔊 <span id="tts-read-lbl">Read all steps</span></button>
       <button class="tts-btn" id="tts-stop" onclick="stopSpeech()" style="display:none">⏹ Stop</button>
       <div class="tts-speed" id="tts-speed-lbl">Speed: normal</div>
-    </div>
-    <div class="ec ec-top" id="ec">
-      <h3 id="ec-h3">Join the Repair Pioneers</h3>
-      <p id="ec-p">Help shape chickenegg: leave a quick vibe, drop your email, get beta perks and updates.</p>
-      <div class="ec-rate" id="ec-rate">
-        <button type="button" class="ec-chip" data-rate="love">😍 Love it</button>
-        <button type="button" class="ec-chip" data-rate="good">🙂 Good</button>
-        <button type="button" class="ec-chip" data-rate="confused">🤔 Confusing</button>
-      </div>
-      <div class="ec-row"><input class="ec-inp" type="email" id="ec-inp" inputmode="email" autocomplete="email" placeholder="your@email.com"/><button type="button" class="ec-sub" id="ec-sub">Join</button></div>
-      <div class="ec-row" style="margin-top:8px"><input class="ec-inp" type="text" id="ec-note" placeholder="One thing to improve (optional)"/></div>
-      <div class="ec-skip" id="ec-skip" role="button" tabindex="0">Not now</div>
     </div>
     <div class="warn-ctr off" id="warn-ctr">⚠️ <span id="warn-txt"></span></div>
     <div class="card" id="no-repair-box" style="display:none">
@@ -1181,6 +2455,7 @@
           <span id="walk-step-num">1</span> / <span id="walk-step-tot">0</span>
         </div>
         <div class="walk-text" id="walk-text"></div>
+        <div class="walk-look off" id="walk-look"><div class="walk-look-lbl" id="walk-look-lbl">What you should see</div><div class="walk-look-txt" id="walk-look-txt"></div></div>
         <div class="walk-tools" id="walk-tools">
           <div class="walk-tools-ttl" id="walk-tools-ttl">Tools for this step</div>
           <div class="walk-tools-row" id="walk-tools-row"></div>
@@ -1193,6 +2468,20 @@
         <button class="walk-finish-btn" id="walk-finish" type="button" style="display:none">✅ Finished</button>
       </div>
       <ol class="steps-list" id="r-steps"></ol>
+    </div>
+    <div class="ec ec-top" id="ec">
+      <div class="ec-handle" id="ec-handle" aria-hidden="true"></div>
+      <h3 id="ec-h3">Join the Repair Pioneers</h3>
+      <p id="ec-p">Help shape chickenegg: leave a quick vibe, drop your email, get beta perks and updates.</p>
+      <div class="ec-rate" id="ec-rate">
+        <button type="button" class="ec-chip" data-rate="love">😍 Love it</button>
+        <button type="button" class="ec-chip" data-rate="good">🙂 Good</button>
+        <button type="button" class="ec-chip" data-rate="confused">🤔 Confusing</button>
+      </div>
+      <div class="ec-row"><input class="ec-inp" type="email" id="ec-inp" inputmode="email" autocomplete="email" placeholder="your@email.com"/><button type="button" class="ec-sub" id="ec-sub">Join</button></div>
+      <div class="ec-row" style="margin-top:8px"><input class="ec-inp" type="text" id="ec-note" placeholder="One thing to improve (optional)"/></div>
+      <div class="ec-row" style="margin-top:8px"><button type="button" class="ec-sub" id="ec-feedback-send" style="width:100%">Send feedback</button></div>
+      <div class="ec-skip" id="ec-skip" role="button" tabindex="0">Not now</div>
     </div>
     <details class="fold-more" id="fold-more">
       <summary class="fold-sum" id="fold-sum">Savings, sharing &amp; extra tips</summary>
@@ -1211,14 +2500,17 @@
 <script>
 var LANG='en';
 var T={
-  en:{heroP:'Photo anything at home — get exact step-by-step instructions',scanLbl:'Scan',ldSub:'Reading every detail',toolsLbl:'Tools & Materials',stepsLbl:'Step by Step',doneLbl:'done',safetyLbl:'Safety',proLbl:'Pro Tip',savLbl:'Saving vs plumber',savSub:'why call when you can fix?',shaWa:'Share on WhatsApp',shCopy:'Copy link',costLbl:'Estimated cost:',readAll:'Read all steps',ttsStop:'Stop',ttsSpeed:'Speed: normal',doneH:'Job Done!',doneP:'You fixed it yourself. That win lasts for days.',lockedTtl:'Task Locked',lockedP:'3 danger warnings triggered. Stop and contact a professional.',whenProLbl:'When to call a professional:',rstLbl:'Scan something else',adCta:'Shop →',pmTtl:'Check Your Progress',pmUpLbl:'Take a photo of your progress',pmGo:'Analyse My Progress',pmCancel:'Cancel',checkProgress:'Check progress',readStep:'Read',agTtl:'Before you start fixing',agSub:'Quick read — keeps you safe.',agLimLbl:'AI Limitations',agLim:'chickenegg uses AI vision to identify objects and generate repair instructions. AI can make mistakes. Always use your own judgment.',agNotLbl:'Do NOT use for',agNot:'<li>Electrical panel or live wire work</li><li>Gas line installation or repair</li><li>Load-bearing structural work</li><li>Any work requiring a licensed professional</li>',agProLbl:'How we protect you',agPro:'AI checks your progress photos at each step. 3 danger warnings locks the task for your safety.',agResLbl:'Your responsibility',agRes:'By using chickenegg you confirm you are 18+ and accept full responsibility for any repairs.',agAgreeLbl:"I've read this and accept I am responsible for my own safety and any repairs I carry out.",agBtn:"I Agree — Let's Fix Things 🔧",epTitle:'This is your moment',epBody:'Start free: <strong>3 repairs/month</strong>. Upgrade to <strong>Pro €4.99/month</strong> for unlimited repair sessions.',epPerksTtl:'What Pro unlocks',epPerks:'✓ Unlimited repairs &nbsp;✓ Priority AI checks &nbsp;✓ Advanced safety triage',epSkip:"No thanks, I will stay on free for now",warnTxt:'danger warning',camReady:'Ready — tap egg',camStarting:'Starting camera...',camFail:'Camera error — use button below',camHttpBlocked:'This address is not secure (http). Phones only allow live camera on https. Tap “Choose photo” below, or use ngrok HTTPS.',camUploadLbl:'📷 Choose photo',camNotReady:'Choose a photo first (button above), then tap the egg.',heroCtaScan:'Start Live Scan',heroCtaDemo:'Use Photo Instead',hazardCaution:'⚠️ Caution: ',hazardWarning:'⚠️ Warning: ',hazardDanger:'🚨 DANGER: ',ldMsgs:['Scanning image...','Identifying object...','Checking repair method...','Building your guide...','Almost ready...'],pmSafe:'Looks good!',pmCaution:'Minor issue noted',pmDanger:'Stop — fix this first',pmEmergency:'STOP IMMEDIATELY',noRepairTitle:'No repair needed',noRepairP:'Enjoy your drink! No plumber needed here.',noRepairCta:'↩ Try another image',toolEmpty:'No tools needed for this one.',ecH3:'Join the Repair Pioneers',ecP:'How was this? Add your email for updates — or tap Not now. Tools and steps are right below.',ecSubBtn:'Join',ecSkip:'Not now',ecEmailPh:'your@email.com',ecNotePh:'One thing to improve (optional)',foldMoreLbl:'Savings, sharing & extra tips — tap to open',badgesLbl:'Achievements',langTip:'Tip: switch EN/NL here any time.',langTipBtn:'Got it',hazardHeroDangerBadge:'Serious hazard',hazardHeroEmergBadge:'Emergency',hazardHeroDangerTtl:'High risk — pause and get help if unsure',hazardHeroEmergTtl:'Possible emergency — call for help',hazardHeroNoDetail:'Our AI thinks this may be unsafe to handle alone. If you smell gas, see sparks or fire, or have major flooding, use the numbers below.',hazardHeroCallSub:'Netherlands — tap to call:',hazardHeroWarnBadge:'Warning',hazardHeroWarnTtl:'Read this before you start',hazardHeroCautBadge:'Caution',hazardHeroCautTtl:'Be careful with this job',hCall112:'112 — Emergency',hCallGas:'0800-9009 — Gas smell / leak',hCallWater:'0900-9994 — Water damage line'},
-  nl:{heroP:'Foto alles thuis — krijg exacte stap-voor-stap instructies',scanLbl:'Scan',ldSub:'Elk detail lezen',toolsLbl:'Gereedschap & Materialen',stepsLbl:'Stap voor Stap',doneLbl:'gedaan',safetyLbl:'Veiligheid',proLbl:'Pro Tip',savLbl:'Besparing vs loodgieter',savSub:'waarom bellen als je het zelf kunt?',shaWa:'Deel via WhatsApp',shCopy:'Link kopiëren',costLbl:'Geschatte kosten:',readAll:'Alle stappen voorlezen',ttsStop:'Stoppen',ttsSpeed:'Snelheid: normaal',doneH:'Klaar!',doneP:'Je hebt het zelf gerepareerd. Die overwinning vergeet je niet.',lockedTtl:'Taak Vergrendeld',lockedP:'3 gevaarswaarschuwingen. Stop en bel een professional.',whenProLbl:'Wanneer een professional bellen:',rstLbl:'Iets anders scannen',adCta:'Winkel →',pmTtl:'Controleer je voortgang',pmUpLbl:'Maak een foto van je voortgang',pmGo:'Analyseer mijn voortgang',pmCancel:'Annuleren',checkProgress:'Voortgang controleren',readStep:'Voorlezen',agTtl:'Voordat je begint',agSub:'Snel lezen — houdt je veilig.',agLimLbl:'AI Beperkingen',agLim:'chickenegg gebruikt AI-visie om objecten te identificeren. AI kan fouten maken. Gebruik altijd je eigen oordeel.',agNotLbl:'NIET gebruiken voor',agNot:'<li>Groepenkast of spanningsvoerende draden</li><li>Gasleiding installatie of reparatie</li><li>Constructief draagwerk</li><li>Werk waarvoor een vergunning vereist is</li>',agProLbl:'Hoe we je beschermen',agPro:"AI controleert je voortgangsfoto's bij elke stap. 3 gevaarswaarschuwingen vergrendelt de taak.",agResLbl:'Jouw verantwoordelijkheid',agRes:'Door chickenegg te gebruiken bevestig je dat je 18+ bent en volledige verantwoordelijkheid accepteert voor reparaties.',agAgreeLbl:'Ik heb dit gelezen en accepteer dat ik verantwoordelijk ben voor mijn eigen veiligheid en reparaties.',agBtn:'Ik ga akkoord — Laten we iets repareren 🔧',epTitle:'Dit is jouw moment',epBody:'Start gratis: <strong>3 reparaties/maand</strong>. Upgrade naar <strong>Pro €4,99/maand</strong> voor onbeperkte reparaties.',epPerksTtl:'Wat Pro ontgrendelt',epPerks:'✓ Onbeperkte reparaties &nbsp;✓ Prioriteit AI-checks &nbsp;✓ Geavanceerde veiligheids-triage',epSkip:'Nee bedankt, ik blijf voorlopig gratis',warnTxt:'gevaarswaarschuwing',camReady:'Klaar — tik op ei',camStarting:'Camera starten...',camFail:'Camera-fout — gebruik knop hieronder',camHttpBlocked:'Dit adres is niet beveiligd (http). Op je telefoon werkt live camera alleen via https. Tik “Kies foto” hieronder, of gebruik ngrok (https).',camUploadLbl:'📷 Kies foto',camNotReady:'Kies eerst een foto (knop hierboven), tik dan op het ei.',heroCtaScan:'Start Live Scan',heroCtaDemo:'Foto Uploaden',hazardCaution:'⚠️ Let op: ',hazardWarning:'⚠️ Waarschuwing: ',hazardDanger:'🚨 GEVAAR: ',ldMsgs:['Afbeelding scannen...','Object identificeren...','Reparatiemethode controleren...','Gids bouwen...','Bijna klaar...'],pmSafe:'Ziet er goed uit!',pmCaution:'Klein probleem opgemerkt',pmDanger:'Stop — herstel dit eerst',pmEmergency:'STOP ONMIDDELLIJK',noRepairTitle:'Geen reparatie nodig',noRepairP:'Geniet van je drankje! Geen loodgieter nodig.',noRepairCta:'↩ Probeer opnieuw',toolEmpty:'Geen gereedschap nodig voor dit.',ecH3:'Word Repair Pioneer',ecP:'Hoe was dit? E-mail voor updates — of tik Niet nu. Gereedschap en stappen staan hieronder.',ecSubBtn:'Aanmelden',ecSkip:'Niet nu',ecEmailPh:'jij@voorbeeld.nl',ecNotePh:'Iets om te verbeteren (optioneel)',foldMoreLbl:'Besparing, delen & extra tips — tik om te openen',badgesLbl:'Prestaties',langTip:'Tip: wissel hier tussen EN/NL.',langTipBtn:'Begrepen',hazardHeroDangerBadge:'Ernstig gevaar',hazardHeroEmergBadge:'Noodgeval',hazardHeroDangerTtl:'Hoog risico — twijfel je? Bel hulp',hazardHeroEmergTtl:'Mogelijk noodgeval — bel hulp',hazardHeroNoDetail:'De AI denkt dat je dit beter niet alleen doet. Ruik je gas, zie je vuur/vonk of veel water? Gebruik de nummers hieronder.',hazardHeroCallSub:'Nederland — tik om te bellen:',hazardHeroWarnBadge:'Waarschuwing',hazardHeroWarnTtl:'Lees dit voordat je begint',hazardHeroCautBadge:'Let op',hazardHeroCautTtl:'Wees voorzichtig met deze klus',hCall112:'112 — Noodnummer',hCallGas:'0800-9009 — Gaslucht / gaslek',hCallWater:'0900-9994 — Waterschade melden'}
+  en:{heroP:'Photo anything at home — get exact step-by-step instructions',scanLbl:'Scan',ldSub:'Reading every detail',toolsLbl:'Tools & Materials',stepsLbl:'Step by Step',doneLbl:'done',safetyLbl:'Safety',proLbl:'Pro Tip',savLbl:'Saving vs plumber',savSub:'why call when you can fix?',shaWa:'Share on WhatsApp',shCopy:'Copy link',costLbl:'Estimated cost:',readAll:'Read all steps',ttsStop:'Stop',ttsSpeed:'Speed: normal',doneH:'Job Done!',doneP:'You fixed it yourself. That win lasts for days.',lockedTtl:'Task Locked',lockedP:'3 danger warnings triggered. Stop and contact a professional.',whenProLbl:'When to call a professional:',rstLbl:'Scan something else',adCta:'Shop →',pmTtl:'Check Your Progress',pmUpLbl:'Take a photo of your progress',pmGo:'Analyse My Progress',pmCancel:'Cancel',checkProgress:'Check progress',readStep:'Read',dockBack:'Back',dockNext:'Next',dockDone:'Done',stepPhotoHint:'Double-tap this card for photo check',eggNavHint:'Tap egg — next · Hold egg — back',edgeA:'Camera-first',edgeB:'Photo-checked steps',edgeC:'Whole home — not just gadgets',ubLbl:'Verify first',qcTtl:'Before you start',walkLookLbl:'What you should see',pmStepMismatch:'Not a match for this step yet',glassBadge1:'CONTEXT',glassBadge2:'MATERIALS',glassBadge3:'X-RAY',scanPhase1Ttl:'Scan 1 — Room context',scanPhase1Txt:'Frame the whole object plus a slice of the room: floor/wall, power cable, water path, and what it connects to.',scanPhase2Ttl:'Scan 2 — Materials & typeplate',scanPhase2Txt:'Closer: brand or model sticker, joints (compression/copper/PVC), hose colours, screw heads, serial plates — anything that IDs the hardware.',scanPhase3Ttl:'Scan 3 — X-ray on the defect',scanPhase3Txt:'Macro on the fault: leak origin vs splash stain, crack vs scratch, belt wear, corrosion, loose junction — dirt/limescale vs real failure.',glassHint1:'Hold steady — capturing context…',glassHint2:'Re-frame, then tap the egg to capture',glassHint3:'Tap the egg — X-ray pass',readoutMatLbl:'Materials & type',readoutXrayLbl:'X-ray read',agTtl:'Before you start fixing',agSub:'Quick read — keeps you safe.',agLimLbl:'AI Limitations',agLim:'chickenegg uses AI vision to identify objects and generate repair instructions. AI can make mistakes. Always use your own judgment.',agNotLbl:'Do NOT use for',agNot:'<li>Electrical panel or live wire work</li><li>Gas line installation or repair</li><li>Load-bearing structural work</li><li>Any work requiring a licensed professional</li>',agProLbl:'How we protect you',agPro:'AI checks your progress photos at each step. 3 danger warnings locks the task for your safety.',agResLbl:'Your responsibility',agRes:'By using chickenegg you confirm you are 18+ and accept full responsibility for any repairs.',agAgreeLbl:"I've read this and accept I am responsible for my own safety and any repairs I carry out.",agBtn:"I Agree — Let's Fix Things 🔧",epTitle:'This is your moment',epBody:'Start free: <strong>3 repairs/month</strong>. Upgrade to <strong>Pro €4.99/month</strong> for unlimited repair sessions.',epPerksTtl:'What Pro unlocks',epPerks:'✓ Unlimited repairs &nbsp;✓ Priority AI checks &nbsp;✓ Advanced safety triage',epSkip:"No thanks, I will stay on free for now",warnTxt:'danger warning',camReady:'Ready — tap egg',camStarting:'Starting camera...',camFail:'Camera error — use button below',camHttpBlocked:'This address is not secure (http). Phones only allow live camera on https. Tap “Choose photo” below, or use ngrok HTTPS.',camUploadLbl:'📷 Choose photo',camNotReady:'Choose a photo first (button above), then tap the egg.',heroCtaScan:'Start Live Scan',heroCtaDemo:'Use Photo Instead',hazardCaution:'⚠️ Caution: ',hazardWarning:'⚠️ Warning: ',hazardDanger:'🚨 DANGER: ',ldMsgs:['Scanning image...','Identifying object...','Checking repair method...','Building your guide...','Almost ready...'],pmSafe:'Looks good!',pmCaution:'Minor issue noted',pmDanger:'Stop — fix this first',pmEmergency:'STOP IMMEDIATELY',noRepairTitle:'No repair needed',noRepairP:'Enjoy your drink! No plumber needed here.',noRepairCta:'↩ Try another image',toolEmpty:'No tools needed for this one.',ecH3:'Join the Repair Pioneers',ecP:'How was this? Add your email for updates — or tap Not now. Tools and steps are right below.',ecSubBtn:'Join',ecSkip:'Not now',ecEmailPh:'your@email.com',ecNotePh:'One thing to improve (optional)',foldMoreLbl:'Savings, sharing & extra tips — tap to open',badgesLbl:'Achievements',langTip:'Tip: switch EN/NL here any time.',langTipBtn:'Got it',hazardHeroDangerBadge:'Serious hazard',hazardHeroEmergBadge:'Emergency',hazardHeroDangerTtl:'High risk — pause and get help if unsure',hazardHeroEmergTtl:'Possible emergency — call for help',hazardHeroNoDetail:'Our AI thinks this may be unsafe to handle alone. If you smell gas, see sparks or fire, or have major flooding, use the numbers below.',hazardHeroCallSub:'Netherlands — tap to call:',hazardHeroWarnBadge:'Warning',hazardHeroWarnTtl:'Read this before you start',hazardHeroCautBadge:'Caution',hazardHeroCautTtl:'Be careful with this job',hCall112:'112 — Emergency',hCallGas:'0800-9009 — Gas smell / leak',hCallWater:'0900-9994 — Water damage line'},
+  nl:{heroP:'Foto alles thuis — krijg exacte stap-voor-stap instructies',scanLbl:'Scan',ldSub:'Elk detail lezen',toolsLbl:'Gereedschap & Materialen',stepsLbl:'Stap voor Stap',doneLbl:'gedaan',safetyLbl:'Veiligheid',proLbl:'Pro Tip',savLbl:'Besparing vs loodgieter',savSub:'waarom bellen als je het zelf kunt?',shaWa:'Deel via WhatsApp',shCopy:'Link kopiëren',costLbl:'Geschatte kosten:',readAll:'Alle stappen voorlezen',ttsStop:'Stoppen',ttsSpeed:'Snelheid: normaal',doneH:'Klaar!',doneP:'Je hebt het zelf gerepareerd. Die overwinning vergeet je niet.',lockedTtl:'Taak Vergrendeld',lockedP:'3 gevaarswaarschuwingen. Stop en bel een professional.',whenProLbl:'Wanneer een professional bellen:',rstLbl:'Iets anders scannen',adCta:'Winkel →',pmTtl:'Controleer je voortgang',pmUpLbl:'Maak een foto van je voortgang',pmGo:'Analyseer mijn voortgang',pmCancel:'Annuleren',checkProgress:'Voortgang controleren',readStep:'Voorlezen',dockBack:'Terug',dockNext:'Volgende',dockDone:'Klaar',stepPhotoHint:'Dubbeltik op deze kaart voor fotocontrole',eggNavHint:'Tik ei — volgende · Vasthouden — terug',edgeA:'Camera eerst',edgeB:'Stap-foto controle',edgeC:'Heel het huis — niet alleen gadgets',ubLbl:'Eerst checken',qcTtl:'Voordat je start',walkLookLbl:'Wat je zou moeten zien',pmStepMismatch:'Nog geen match met deze stap',glassBadge1:'CONTEXT',glassBadge2:'MATERIAAL',glassBadge3:'X-RAY',scanPhase1Ttl:'Scan 1 — Omgeving',scanPhase1Txt:'Het hele object + stukje ruimte: vloer/muur, snoer, leiding, en waar het op aansluit.',scanPhase2Ttl:'Scan 2 — Materiaal & typenummer',scanPhase2Txt:'Dichterbij: merk/modelsticker, koppelstukken (knel/koper/PVC), slangkleur, schroefkoppen, plaatjes — alles wat onderdelen identificeert.',scanPhase3Ttl:'Scan 3 — X-ray op de fout',scanPhase3Txt:'Zeer dichtbij het probleem: lekbron vs spat, scheur vs kras, slijtage, corrosie, losse verbinding — kalk/vuil versus echte breuk.',glassHint1:'Houd vast — context vastleggen…',glassHint2:'Herkader, tik dan op het ei',glassHint3:'Tik op het ei — X-ray scan',readoutMatLbl:'Materiaal & type',readoutXrayLbl:'X-ray uitlees',agTtl:'Voordat je begint',agSub:'Snel lezen — houdt je veilig.',agLimLbl:'AI Beperkingen',agLim:'chickenegg gebruikt AI-visie om objecten te identificeren. AI kan fouten maken. Gebruik altijd je eigen oordeel.',agNotLbl:'NIET gebruiken voor',agNot:'<li>Groepenkast of spanningsvoerende draden</li><li>Gasleiding installatie of reparatie</li><li>Constructief draagwerk</li><li>Werk waarvoor een vergunning vereist is</li>',agProLbl:'Hoe we je beschermen',agPro:"AI controleert je voortgangsfoto's bij elke stap. 3 gevaarswaarschuwingen vergrendelt de taak.",agResLbl:'Jouw verantwoordelijkheid',agRes:'Door chickenegg te gebruiken bevestig je dat je 18+ bent en volledige verantwoordelijkheid accepteert voor reparaties.',agAgreeLbl:'Ik heb dit gelezen en accepteer dat ik verantwoordelijk ben voor mijn eigen veiligheid en reparaties.',agBtn:'Ik ga akkoord — Laten we iets repareren 🔧',epTitle:'Dit is jouw moment',epBody:'Start gratis: <strong>3 reparaties/maand</strong>. Upgrade naar <strong>Pro €4,99/maand</strong> voor onbeperkte reparaties.',epPerksTtl:'Wat Pro ontgrendelt',epPerks:'✓ Onbeperkte reparaties &nbsp;✓ Prioriteit AI-checks &nbsp;✓ Geavanceerde veiligheids-triage',epSkip:'Nee bedankt, ik blijf voorlopig gratis',warnTxt:'gevaarswaarschuwing',camReady:'Klaar — tik op ei',camStarting:'Camera starten...',camFail:'Camera-fout — gebruik knop hieronder',camHttpBlocked:'Dit adres is niet beveiligd (http). Op je telefoon werkt live camera alleen via https. Tik “Kies foto” hieronder, of gebruik ngrok (https).',camUploadLbl:'📷 Kies foto',camNotReady:'Kies eerst een foto (knop hierboven), tik dan op het ei.',heroCtaScan:'Start Live Scan',heroCtaDemo:'Foto Uploaden',hazardCaution:'⚠️ Let op: ',hazardWarning:'⚠️ Waarschuwing: ',hazardDanger:'🚨 GEVAAR: ',ldMsgs:['Afbeelding scannen...','Object identificeren...','Reparatiemethode controleren...','Gids bouwen...','Bijna klaar...'],pmSafe:'Ziet er goed uit!',pmCaution:'Klein probleem opgemerkt',pmDanger:'Stop — herstel dit eerst',pmEmergency:'STOP ONMIDDELLIJK',noRepairTitle:'Geen reparatie nodig',noRepairP:'Geniet van je drankje! Geen loodgieter nodig.',noRepairCta:'↩ Probeer opnieuw',toolEmpty:'Geen gereedschap nodig voor dit.',ecH3:'Word Repair Pioneer',ecP:'Hoe was dit? E-mail voor updates — of tik Niet nu. Gereedschap en stappen staan hieronder.',ecSubBtn:'Aanmelden',ecSkip:'Niet nu',ecEmailPh:'jij@voorbeeld.nl',ecNotePh:'Iets om te verbeteren (optioneel)',foldMoreLbl:'Besparing, delen & extra tips — tik om te openen',badgesLbl:'Prestaties',langTip:'Tip: wissel hier tussen EN/NL.',langTipBtn:'Begrepen',hazardHeroDangerBadge:'Ernstig gevaar',hazardHeroEmergBadge:'Noodgeval',hazardHeroDangerTtl:'Hoog risico — twijfel je? Bel hulp',hazardHeroEmergTtl:'Mogelijk noodgeval — bel hulp',hazardHeroNoDetail:'De AI denkt dat je dit beter niet alleen doet. Ruik je gas, zie je vuur/vonk of veel water? Gebruik de nummers hieronder.',hazardHeroCallSub:'Nederland — tik om te bellen:',hazardHeroWarnBadge:'Waarschuwing',hazardHeroWarnTtl:'Lees dit voordat je begint',hazardHeroCautBadge:'Let op',hazardHeroCautTtl:'Wees voorzichtig met deze klus',hCall112:'112 — Noodnummer',hCallGas:'0800-9009 — Gaslucht / gaslek',hCallWater:'0900-9994 — Waterschade melden'}
 };
 
 function setLang(l){
   LANG=l;
   document.getElementById('btn-en').classList.toggle('on',l==='en');
   document.getElementById('btn-nl').classList.toggle('on',l==='nl');
+  var bef=document.getElementById('btn-en-fab'),bnf=document.getElementById('btn-nl-fab');
+  if(bef)bef.classList.toggle('on',l==='en');
+  if(bnf)bnf.classList.toggle('on',l==='nl');
   var t=T[l];
   var ids={
     'hero-p':'heroP','scan-lbl-text':'scanLbl','ld-sub':'ldSub','tools-lbl':'toolsLbl',
@@ -1236,6 +2528,7 @@ function setLang(l){
     'ec-h3':'ecH3','ec-p':'ecP','ec-sub':'ecSubBtn','ec-skip':'ecSkip','fold-sum':'foldMoreLbl','badges-lbl':'badgesLbl',
     'lang-tip-text':'langTip','lang-tip-btn':'langTipBtn',
     'cam-upload-lbl':'camUploadLbl',
+    'cam-step-hint':'stepPhotoHint',
     'cam-status-txt':camReady?'camReady':'camStarting'
   };
   Object.keys(ids).forEach(function(id){
@@ -1245,6 +2538,12 @@ function setLang(l){
   var ecInp=document.getElementById('ec-inp'),ecNoteInp=document.getElementById('ec-note');
   if(ecInp)ecInp.placeholder=t.ecEmailPh||'';
   if(ecNoteInp)ecNoteInp.placeholder=t.ecNotePh||'';
+  var doneT=document.getElementById('done-screen-ttl'),doneS=document.getElementById('done-screen-sub'),doneB=document.getElementById('done-go-btn');
+  if(doneT)doneT.textContent=(l==='nl'?'Klus geklaard ⚡':'You did it ⚡');
+  if(doneS)doneS.textContent=(l==='nl'?'Klaar. Laat je e-mail en feedback achter voor early access en upgrades.':'Task complete. Drop your email and feedback for early access and upgrades.');
+  if(doneB)doneB.textContent=(l==='nl'?'Ga naar early access':'Go to early access');
+  var fbBtn=document.getElementById('ec-feedback-send');
+  if(fbBtn)fbBtn.textContent=(l==='nl'?'Feedback sturen':'Send feedback');
   var innerHTML_ids={'ag-not':'agNot','ep-body':'epBody','ep-perks':'epPerks','pm-go':'pmGo'};
   Object.keys(innerHTML_ids).forEach(function(id){
     var el=document.getElementById(id);
@@ -1253,7 +2552,27 @@ function setLang(l){
       else el.innerHTML=t[innerHTML_ids[id]]||'';
     }
   });
+  var rb=document.getElementById('results-back-btn');
+  if(rb)rb.textContent=(l==='nl'?'← Camera':'← Camera');
+  var rt=document.getElementById('results-title');
+  if(rt)rt.textContent=(l==='nl'?'Scan Resultaten':'Scan Results');
+  var ea=document.getElementById('edge-a'),eb=document.getElementById('edge-b'),ecEdge=document.getElementById('edge-c');
+  if(ea)ea.textContent=t.edgeA||'';
+  if(eb)eb.textContent=t.edgeB||'';
+  if(ecEdge)ecEdge.textContent=t.edgeC||'';
+  var qcT=document.getElementById('qc-ttl');
+  if(qcT)qcT.textContent=t.qcTtl||'';
+  var ubl=document.getElementById('ub-lbl');
+  if(ubl)ubl.textContent=t.ubLbl||'';
+  var wll=document.getElementById('walk-look-lbl');
+  if(wll)wll.textContent=t.walkLookLbl||'';
+  var rgm=document.getElementById('rg-mat-lbl'),rgx=document.getElementById('rg-xray-lbl');
+  if(rgm)rgm.textContent=t.readoutMatLbl||'';
+  if(rgx)rgx.textContent=t.readoutXrayLbl||'';
   if(lastScanResult&&document.getElementById('results').style.display!=='none')updateHazardHero(lastScanResult);
+  if(typeof updateWalkCardUI==='function')try{updateWalkCardUI()}catch(e){}
+  if(typeof camReady!=='undefined'&&camReady&&typeof schedulePerception==='function') schedulePerception();
+  trackEvent('language_changed',{language:l});
 }
 
 /* AUDIO */
@@ -1317,6 +2636,31 @@ function alienEggClickSnd(){
 function shutterSnd(){try{var c=ctx(),now=c.currentTime;var buf=c.createBuffer(1,Math.floor(c.sampleRate*.08),c.sampleRate),d=buf.getChannelData(0);for(var i=0;i<d.length;i++){var t2=i/c.sampleRate;d[i]=(Math.random()*2-1)*(t2<0.005?t2/0.005:Math.pow(1-(t2-0.005)/0.075,2))*.9}var src=c.createBufferSource(),lp=c.createBiquadFilter(),g2=c.createGain();lp.type='lowpass';lp.frequency.value=1800;g2.gain.value=1.2;src.buffer=buf;src.connect(lp);lp.connect(g2);g2.connect(c.destination);src.start(now);tone(80,.06,'sine',.18,0);tone(120,.04,'sine',.12,.01)}catch(e){}}
 function scanStart(){tone(660,.09,'sine',.09,0);tone(880,.09,'sine',.11,.1);tone(1100,.14,'sine',.13,.2);tone(1320,.08,'sine',.09,.35)}
 function scanDone(){tone(523,.18,'sine',.11,0);tone(659,.18,'sine',.11,.09);tone(784,.25,'sine',.13,.18);tone(1047,.18,'sine',.09,.28)}
+var thinkPulseTimer=null;
+function thinkPulseTick(){
+  if(!document.body.classList.contains('ce-ai-thinking')){thinkPulseTimer=null;return}
+  var se=document.getElementById('scan-egg');
+  if(se) se.style.setProperty('--think-dur',(0.88+Math.random()*0.82)+'s');
+  thinkPulseTimer=setTimeout(thinkPulseTick,960+Math.floor(Math.random()*980));
+}
+function setAiThinking(on){
+  var se=document.getElementById('scan-egg');
+  if(on){
+    document.body.classList.add('ce-ai-thinking');
+    if(se) se.classList.add('thinking');
+    if(thinkPulseTimer){clearTimeout(thinkPulseTimer);thinkPulseTimer=null}
+    thinkPulseTick();
+  }else{
+    document.body.classList.remove('ce-ai-thinking');
+    if(se){
+      se.classList.remove('thinking');
+      se.style.removeProperty('--think-dur');
+    }
+    if(thinkPulseTimer){clearTimeout(thinkPulseTimer);thinkPulseTimer=null}
+  }
+}
+function snapStepSnd(){tone(784,.06,'sine',.11,0);tone(988,.07,'sine',.1,.06);tone(1319,.11,'sine',.09,.13)}
+function snapMailboxSnd(){tone(587,.1,'sine',.12,0);tone(880,.14,'sine',.11,.1);tone(1175,.24,'sine',.1,.22)}
 function stepDone(){tone(1175,.05,'sine',.18,0);tone(1480,.2,'sine',.14,.05)}
 function achSnd(){tone(1047,.06,'sine',.16,0);tone(1319,.06,'sine',.16,.08);tone(1568,.06,'sine',.16,.16);tone(2093,.2,'sine',.16,.24)}
 function fanfare(){[523,659,784,1047,1319].forEach(function(f,i){tone(f,.24,'sine',.15,i*.09)})}
@@ -1325,12 +2669,38 @@ var humNode=null;
 function startHum(){try{var c=ctx();humNode=c.createOscillator();var g=c.createGain();humNode.type='sine';humNode.frequency.value=55;g.gain.value=0.03;humNode.connect(g);g.connect(c.destination);humNode.start()}catch(e){}}
 function stopHum(){try{if(humNode){humNode.stop();humNode=null}}catch(e){}}
 function hap(p){try{if(navigator.vibrate)navigator.vibrate(p)}catch(e){}}
+function trackEvent(name,meta){
+  try{
+    var r=(typeof lastScanResult!=='undefined'&&lastScanResult)?lastScanResult:{};
+    var base={
+      session_id:(window.CE_SESSION_ID||''),
+      job_id:(window.CE_CURRENT_JOB_ID||''),
+      task_category:(r.job_category||''),
+      hazard_level:(r.hazard_level||'')
+    };
+    fetch('/track-event',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({event:name,meta:Object.assign(base,(meta||{})),language:LANG,ts:Date.now(),session_id:base.session_id,job_id:base.job_id,task_category:base.task_category,hazard_level:base.hazard_level})
+    }).catch(function(){});
+  }catch(e){}
+}
 
 /* TTS */
 var ttsUtter=null;
 function speak(text,lang){stopSpeech();if(!window.speechSynthesis)return;ttsUtter=new SpeechSynthesisUtterance(text);ttsUtter.lang=lang==='nl'?'nl-NL':'en-US';ttsUtter.rate=0.95;ttsUtter.pitch=1;ttsUtter.volume=0.95;ttsUtter.onstart=function(){document.getElementById('tts-stop').style.display='flex'};ttsUtter.onend=function(){document.getElementById('tts-stop').style.display='none'};window.speechSynthesis.speak(ttsUtter)}
 function stopSpeech(){if(window.speechSynthesis)window.speechSynthesis.cancel();document.getElementById('tts-stop').style.display='none'}
-function readAllSteps(){var steps=curSteps;if(!steps.length)return;var text=(LANG==='nl'?'Hier zijn de stappen. ':'Here are the steps. ')+steps.map(function(s,i){return(LANG==='nl'?'Stap ':'Step ')+(i+1)+'. '+s}).join('. ');speak(text,LANG);hap(20)}
+function readAllSteps(){
+  var steps=curSteps;if(!steps.length)return;
+  var parts=steps.map(function(s,i){
+    var line=(LANG==='nl'?'Stap ':'Step ')+(i+1)+'. '+s;
+    var tip=(curVisualTips[i]||'').trim();
+    if(tip)line+='. '+(LANG==='nl'?'Zo herken je het: ':'Look for: ')+tip;
+    return line;
+  });
+  var text=(LANG==='nl'?'Hier zijn de stappen. ':'Here are the steps. ')+parts.join('. ');
+  speak(text,LANG);hap(20);
+}
 function readStep(txt,idx){speak((LANG==='nl'?'Stap ':'Step ')+(idx+1)+'. '+txt,LANG)}
 
 /* GAMIFICATION */
@@ -1432,6 +2802,154 @@ agBtn.addEventListener('click',function(){if(!agCb.checked)return;clickSnd();hap
 
 /* CAMERA */
 var videoEl=document.getElementById('cam-video'),canvasEl=document.getElementById('cam-canvas'),stillEl=document.getElementById('still-img'),camOverlay=document.getElementById('cam-overlay'),camStatusEl=document.getElementById('cam-status'),camStatusTxt=document.getElementById('cam-status-txt'),retakeBtn=document.getElementById('retake-btn'),camRetryBtn=document.getElementById('cam-retry-btn'),camUploadBtn=document.getElementById('cam-upload-btn'),fallbackFile=document.getElementById('fallback-file'),capturedBlob=null,camStream=null,camReady=false;
+var camStatusLockUntil=0,liveLabelTimer=null,liveLabelCanvas=null,lastLiveLabel='',liveLabelCandidate='',liveLabelHits=0,liveLabelShownAt=0,liveLabelReqInFlight=false;
+var DEMO_MODE=(localStorage.getItem('ce_demo_mode')||'0')==='1'||(new URLSearchParams(location.search).get('demo')==='1');
+var DEMO_LABEL_INTERVAL=DEMO_MODE?2200:1700;
+var DEMO_LABEL_SWAP_MIN_MS=DEMO_MODE?1300:950;
+var DEMO_TAP_GUARD_MS=DEMO_MODE?520:420;
+
+function lockCamStatus(ms){camStatusLockUntil=Date.now()+Math.max(0,ms||0)}
+function setCamStatusSystem(text,ms){
+  if(!camStatusEl||!camStatusTxt)return;
+  camStatusTxt.textContent=text||'';
+  camStatusEl.classList.add('show','sys');
+  camStatusEl.classList.remove('label-swap');
+  lockCamStatus(ms==null?2200:ms);
+}
+function setCamStatusLabel(text){
+  if(!camStatusEl||!camStatusTxt||!text)return;
+  if(camStatusTxt.textContent===text)return;
+  camStatusTxt.textContent=text;
+  camStatusEl.classList.remove('sys');
+  camStatusEl.classList.add('show');
+  camStatusEl.classList.remove('label-swap');void camStatusEl.offsetWidth;camStatusEl.classList.add('label-swap');
+}
+function setCamStatusSoft(text,ms){
+  if(!camStatusEl||!camStatusTxt||!text)return;
+  camStatusTxt.textContent=text;
+  camStatusEl.classList.add('show','sys');
+  camStatusEl.classList.remove('label-swap');void camStatusEl.offsetWidth;camStatusEl.classList.add('label-swap');
+  if(ms&&ms>0){
+    setTimeout(function(){
+      if(camStatusEl)camStatusEl.classList.remove('sys');
+    },ms);
+  }
+}
+function getLiveLabelCanvas(){
+  if(!liveLabelCanvas){
+    liveLabelCanvas=document.createElement('canvas');
+    liveLabelCanvas.width=320;liveLabelCanvas.height=224;
+  }
+  return liveLabelCanvas;
+}
+function getLiveLabelBlob(){
+  return new Promise(function(resolve,reject){
+    try{
+      if(!videoEl||videoEl.readyState<2){reject(new Error('video not ready'));return}
+      var vw=videoEl.videoWidth,vh=videoEl.videoHeight;
+      if(!vw||!vh){reject(new Error('no frame'));return}
+      var c=getLiveLabelCanvas(),ctx=c.getContext('2d');
+      var ar=vw/vh,targetW=c.width,targetH=c.height,targetAr=targetW/targetH;
+      var sw=vw,sh=vh,sx=0,sy=0;
+      if(ar>targetAr){
+        sw=Math.floor(vh*targetAr);sx=Math.floor((vw-sw)/2);
+      }else{
+        sh=Math.floor(vw/targetAr);sy=Math.floor((vh-sh)/2);
+      }
+      ctx.drawImage(videoEl,sx,sy,sw,sh,0,0,targetW,targetH);
+      c.toBlob(function(b){ if(b) resolve(b); else reject(new Error('blob failed')); },'image/jpeg',0.72);
+    }catch(e){reject(e)}
+  });
+}
+function scoreLiveFrame(){
+  try{
+    if(!videoEl||videoEl.readyState<2)return null;
+    var vw=videoEl.videoWidth,vh=videoEl.videoHeight;
+    if(!vw||!vh)return null;
+    var c=getLiveLabelCanvas(),ctx=c.getContext('2d');
+    var rw=Math.floor(vw*0.36),rh=Math.floor(vh*0.34),sx=Math.floor((vw-rw)/2),sy=Math.floor((vh-rh)/2);
+    ctx.drawImage(videoEl,sx,sy,rw,rh,0,0,c.width,c.height);
+    var d=ctx.getImageData(0,0,c.width,c.height).data,sumL=0,sumS=0,detail=0,count=0;
+    for(var i=0;i<d.length;i+=4){
+      var r=d[i],g=d[i+1],b=d[i+2],mx=Math.max(r,g,b),mn=Math.min(r,g,b);
+      var l=(0.2126*r+0.7152*g+0.0722*b);
+      var s=mx===0?0:((mx-mn)/mx)*100;
+      sumL+=l;sumS+=s;count++;
+      if(i+4<d.length) detail+=Math.abs(r-d[i+4])+Math.abs(g-d[i+5])+Math.abs(b-d[i+6]);
+    }
+    return {light:sumL/Math.max(1,count),sat:sumS/Math.max(1,count),detail:detail/Math.max(1,count)};
+  }catch(_){return null}
+}
+function buildLiveLabel(sig){
+  if(!sig)return '';
+  var light=sig.light,sat=sig.sat,detail=sig.detail;
+  // Live mode should stay short + object-only.
+  if(light>176&&sat<9&&detail<78) return 'window';
+  if(detail<68&&sat<18&&light<98) return 'tv';
+  if(detail>108&&sat>15&&light>92) return 'laptop';
+  if(detail>118&&sat>22) return 'chair';
+  if(light>164&&sat<22) return 'bottle';
+  if(detail>96&&sat<16) return 'cable';
+  if(light<106&&sat<22) return 'airfryer';
+  if(sat>18&&light>100) return 'pan';
+  return 'object';
+}
+function tickLiveLabel(){
+  if(!camStatusEl||!camStatusTxt)return;
+  if(Date.now()<camStatusLockUntil)return;
+  if(!camReady||!camStream||liveActive||document.body.classList.contains('result-open')||document.body.classList.contains('fixing')||document.body.classList.contains('ce-step-active'))return;
+  if(liveLabelReqInFlight)return;
+  liveLabelReqInFlight=true;
+  var slowTimer=setTimeout(function(){
+    var msg=(LANG==='nl')?'Scene lezen...':'Reading scene...';
+    setCamStatusSoft(msg,850);
+  },1100);
+  getLiveLabelBlob().then(function(blob){
+    var fd=new FormData();
+    fd.append('image',blob,'live.jpg');
+    fd.append('language',LANG||'en');
+    return fetch('/live-label',{method:'POST',body:fd});
+  }).then(function(r){return r.json()}).then(function(data){
+    var aiLabel=((data&&data.label)||'').toString().trim().toLowerCase();
+    var aiConf=((data&&data.confidence)||'low').toString().trim().toLowerCase();
+    if(!aiLabel){
+      aiLabel=buildLiveLabel(scoreLiveFrame())||'object';
+    }
+    // Confidence gate: low-confidence labels should not churn the HUD.
+    if(aiConf==='low'){
+      if(lastLiveLabel) return;
+      aiLabel='object';
+    }
+    if(aiLabel===liveLabelCandidate) liveLabelHits++;
+    else{
+      liveLabelCandidate=aiLabel;
+      liveLabelHits=1;
+    }
+    var needHits = (aiConf==='high') ? 2 : (DEMO_MODE ? 4 : 3);
+    if(liveLabelHits<needHits)return;
+    if(aiLabel===lastLiveLabel)return;
+    if(Date.now()-liveLabelShownAt<DEMO_LABEL_SWAP_MIN_MS)return;
+    lastLiveLabel=aiLabel;
+    liveLabelShownAt=Date.now();
+    setCamStatusLabel(aiLabel);
+  }).catch(function(){
+    // Fallback if API fails: keep UX alive with safe generic label.
+    var fb=buildLiveLabel(scoreLiveFrame())||'object';
+    if(fb!==lastLiveLabel){
+      lastLiveLabel=fb;
+      liveLabelShownAt=Date.now();
+      setCamStatusLabel(fb);
+    }
+  }).finally(function(){
+    clearTimeout(slowTimer);
+    liveLabelReqInFlight=false;
+  });
+}
+function ensureLiveLabelTicker(){
+  if(liveLabelTimer)return;
+  if(camStatusEl)camStatusEl.classList.add('show');
+  liveLabelTimer=setInterval(tickLiveLabel,DEMO_LABEL_INTERVAL);
+}
 
 function isLocalDevHost(){
   var h=(location.hostname||'').toLowerCase();
@@ -1452,20 +2970,23 @@ function disableFallbackCapture(){
 }
 
 function applyCamStream(stream){
-  camStream=stream;videoEl.srcObject=stream;videoEl.style.display='block';stillEl.style.display='none';retakeBtn.style.display='none';capturedBlob=null;camReady=true;camStatusEl.classList.add('ready');camStatusTxt.textContent=T[LANG].camReady;
+  camStream=stream;videoEl.srcObject=stream;videoEl.style.display='block';stillEl.style.display='none';retakeBtn.style.display='none';capturedBlob=null;camReady=true;camStatusEl.classList.add('ready');setCamStatusSystem(T[LANG].camReady,1200);
   disableFallbackCapture();
+  schedulePerception();
+  ensureLockSampler();
+  ensureLiveLabelTicker();
 }
 
 function startCamera(){
   if(cameraNeedsHttpsOnPhone()){
-    camStatusTxt.textContent=T[LANG].camHttpBlocked;
+    setCamStatusSystem(T[LANG].camHttpBlocked,4000);
     camReady=false;
     enableFallbackCapture({showRetry:false});
     if(camRetryBtn)camRetryBtn.style.display='none';
     return;
   }
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
-    camStatusTxt.textContent=T[LANG].camFail;
+    setCamStatusSystem(T[LANG].camFail,3000);
     camReady=false;
     enableFallbackCapture();
     return;
@@ -1474,7 +2995,7 @@ function startCamera(){
     try{camStream.getTracks().forEach(function(t){t.stop()})}catch(e){}
     camStream=null;
   }
-  camStatusTxt.textContent=T[LANG].camStarting;
+  setCamStatusSystem(T[LANG].camStarting,2200);
   var tryConstraints=[
     {video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}},audio:false},
     {video:{facingMode:'environment'},audio:false},
@@ -1482,7 +3003,7 @@ function startCamera(){
   ];
   function attempt(i){
     if(i>=tryConstraints.length){
-      camStatusTxt.textContent=T[LANG].camFail;
+      setCamStatusSystem(T[LANG].camFail,3000);
       camReady=false;
       enableFallbackCapture();
       return;
@@ -1517,13 +3038,14 @@ if(fallbackFile){
     videoEl.style.display='none';
     retakeBtn.style.display='block';
     camStatusEl.classList.add('ready');
-    camStatusTxt.textContent=LANG==='nl'?'Foto klaar — tik op het ei':'Photo ready — tap the egg';
+    setCamStatusSystem(LANG==='nl'?'Foto klaar — tik op het ei':'Photo ready — tap the egg',2800);
     shutterSnd();
     var fl=document.getElementById('s-flash');fl.classList.add('fire');setTimeout(function(){fl.classList.remove('fire')},420);
   });
 }
 
-function captureFrame(){
+function captureFrame(opts){
+  opts=opts||{};
   return new Promise(function(resolve,reject){
     if(!camStream||!camReady){reject(new Error('No camera — use photo upload or allow camera.'));return}
     canvasEl.width=videoEl.videoWidth||1280;canvasEl.height=videoEl.videoHeight||720;
@@ -1534,9 +3056,10 @@ function captureFrame(){
         // Keep camera visible during live scans. We capture frames in the background.
         if(stillEl){stillEl.style.display='none';stillEl.src='';}
         if(retakeBtn){retakeBtn.style.display='none'}
-        /* Analog shutter flash */
-        shutterSnd();
-        var fl=document.getElementById('s-flash');fl.classList.add('fire');setTimeout(function(){fl.classList.remove('fire')},420);
+        if(!opts.skipFlash){
+          shutterSnd();
+          var fl=document.getElementById('s-flash');fl.classList.add('fire');setTimeout(function(){fl.classList.remove('fire')},420);
+        }
         resolve(blob);
       } else reject(new Error('Capture failed'));
     },'image/jpeg',0.92);
@@ -1545,17 +3068,27 @@ function captureFrame(){
 
 function retakePhoto(){
   capturedBlob=null;stillEl.style.display='none';stillEl.src='';retakeBtn.style.display='none';videoEl.style.display='block';
-  document.body.classList.remove('fixing');
+  document.body.classList.remove('fixing','result-open');
+  var ds=document.getElementById('done-screen');if(ds)ds.classList.remove('show');
+  var rgg=document.getElementById('readout-glass');if(rgg)rgg.classList.add('off');
   var cs=document.getElementById('cam-step');if(cs){cs.classList.remove('show');cs.classList.add('off')}
-  camStatusEl.classList.add('ready');camStatusTxt.textContent=T[LANG].camReady;
-  document.getElementById('results').style.display='none';document.getElementById('err-box').style.display='none';document.getElementById('hazard-banner').classList.remove('show');
+  camStatusEl.classList.add('ready');setCamStatusSystem(T[LANG].camReady,1200);
+  var rsl=document.getElementById('results');
+  if(rsl){
+    rsl.style.display='none';
+    rsl.classList.remove('ce-stagger-reveal','ce-stagger-armed');
+  }
+  document.getElementById('err-box').style.display='none';document.getElementById('hazard-banner').classList.remove('show');
   if(!camReady)enableFallbackCapture({showRetry:!cameraNeedsHttpsOnPhone()});
+  if(camReady&&typeof schedulePerception==='function') schedulePerception();
+  clearLockOn();
 }
 
 if(localStorage.getItem(AK)){setTimeout(startCamera,120)}
 
-/* EGG SCAN BUTTON */
+/* EGG SCAN BUTTON — primary living control (tap / hold) */
 var scanEgg=document.getElementById('scan-egg');
+var eggLongTimer=null, eggHoldTriggered=false, eggLastPointerTapAt=0;
 
 function popScanLabel(){
   var el=document.getElementById('scan-lbl-text');
@@ -1564,23 +3097,58 @@ function popScanLabel(){
 }
 
 if(scanEgg){
-scanEgg.addEventListener('pointerdown',function(){
+scanEgg.addEventListener('pointerdown',function(e){
+  if(e&&scanEgg.setPointerCapture&&typeof e.pointerId==='number'){
+    try{scanEgg.setPointerCapture(e.pointerId)}catch(_){}
+  }
   scanEgg.classList.add('pressed');
+  eggHoldTriggered=false;
+  scanEgg.classList.add('egg-rippling');
+  setTimeout(function(){scanEgg.classList.remove('egg-rippling');},700);
+  if(eggLongTimer){clearTimeout(eggLongTimer);eggLongTimer=null;}
+  eggLongTimer=setTimeout(function(){
+    eggLongTimer=null;
+    if(document.body.classList.contains('fixing')&&!document.body.classList.contains('result-open')&&typeof walkIdx==='number'&&walkIdx>0){
+      eggHoldTriggered=true;
+      walkIdx--;
+      if(typeof updateWalkCardUI==='function')updateWalkCardUI();
+      if(typeof clickSnd==='function')clickSnd();
+      hap([10,6,16,6,14]);
+    }
+  },500);
 });
 ['pointerup','pointercancel','pointerleave'].forEach(function(ev){
-  scanEgg.addEventListener(ev,function(){scanEgg.classList.remove('pressed')});
+  scanEgg.addEventListener(ev,function(e){
+    if(e&&scanEgg.releasePointerCapture&&typeof e.pointerId==='number'){
+      try{scanEgg.releasePointerCapture(e.pointerId)}catch(_){}
+    }
+    scanEgg.classList.remove('pressed');
+    if(eggLongTimer){clearTimeout(eggLongTimer);eggLongTimer=null;}
+    if(ev!=='pointerup')return;
+    if(eggHoldTriggered){eggHoldTriggered=false;return;}
+    if(e&&e.pointerType==='mouse'&&e.button!==0)return;
+    eggLastPointerTapAt=Date.now();
+    runEggPrimaryAction();
+  });
 });
 
 scanEgg.addEventListener('keydown',function(e){
   if(e.key!=='Enter'&&e.key!==' ')return;
   e.preventDefault();
-  scanEgg.click();
+  runEggPrimaryAction();
 });
-scanEgg.addEventListener('click',async function(){
-  alienEggClickSnd();hap([8,18,12]);popScanLabel();
-  scanEgg.classList.remove('vibrating');void scanEgg.offsetWidth;scanEgg.classList.add('vibrating');
-  setTimeout(function(){scanEgg.classList.remove('vibrating')},280);
+scanEgg.addEventListener('click',function(){
+  if(Date.now()-eggLastPointerTapAt<DEMO_TAP_GUARD_MS)return;
+  runEggPrimaryAction();
+});
+}
+
+async function runEggPrimaryAction(){
+  if(!scanEgg)return;
   if(liveActive){
+    alienEggClickSnd();hap([16,8,24,12,40]);popScanLabel();trackEvent('scan_button_tap');
+    scanEgg.classList.remove('vibrating');void scanEgg.offsetWidth;scanEgg.classList.add('vibrating');
+    setTimeout(function(){scanEgg.classList.remove('vibrating')},280);
     if(liveAwaitNext && typeof liveResolveNext==='function'){
       var runNext=liveResolveNext;
       liveResolveNext=null;
@@ -1591,13 +3159,25 @@ scanEgg.addEventListener('click',async function(){
     return;
   }
 
+  if(document.body.classList.contains('fixing')&&!document.body.classList.contains('result-open')){
+    alienEggClickSnd();hap([16,8,24,12,40]);popScanLabel();trackEvent('egg_walk_next');
+    scanEgg.classList.remove('vibrating');void scanEgg.offsetWidth;scanEgg.classList.add('vibrating');
+    setTimeout(function(){scanEgg.classList.remove('vibrating')},280);
+    if(typeof goWalkNext==='function')goWalkNext();
+    return;
+  }
+
+  alienEggClickSnd();hap([16,8,24,12,40]);popScanLabel();trackEvent('scan_button_tap');
+  scanEgg.classList.remove('vibrating');void scanEgg.offsetWidth;scanEgg.classList.add('vibrating');
+  setTimeout(function(){scanEgg.classList.remove('vibrating')},280);
+
   document.getElementById('err-box').style.display='none';
 
   // Hide still frame UI if we have camera.
   if(camReady && camStream){
     if(stillEl){stillEl.style.display='none';stillEl.src='';}
     if(retakeBtn){retakeBtn.style.display='none'}
-    startLiveScanSession(2).catch(function(e){
+    startLiveScanSession(3).catch(function(e){
       document.getElementById('err-box').textContent=(e&&e.message)||(typeof e==='string'?e:'')||'Scan failed. Try again.';
       document.getElementById('err-box').style.display='block';
     });
@@ -1616,27 +3196,249 @@ scanEgg.addEventListener('click',async function(){
   // Everything goes through egg: if camera isn't ready yet, open photo chooser.
   if(fallbackFile){
     fallbackFile.click();
-    camStatusTxt.textContent=LANG==='nl'?'Kies een foto en tik weer op het ei':'Choose a photo, then tap egg again';
+    setCamStatusSystem(LANG==='nl'?'Kies een foto en tik weer op het ei':'Choose a photo, then tap egg again',2500);
     return;
   }
   document.getElementById('err-box').textContent=T[LANG].camNotReady;
   document.getElementById('err-box').style.display='block';
-});
 }
 
 var liveActive=false;
 var liveAwaitNext=false;
 var liveResolveNext=null;
 var lpMiniTimer=null;
+function _ceSleep(ms){return new Promise(function(r){setTimeout(r,ms)})}
+async function playScanRitual(){
+  var se=document.getElementById('scan-egg');
+  var cc=document.querySelector('.cam-container');
+  var wave=document.getElementById('scan-ritual-wave');
+  var hi=document.getElementById('obj-highlight-flash');
+  if(se){
+    se.classList.remove('scan-release','scan-precharge');
+    se.classList.add('scan-pull-in');
+  }
+  await _ceSleep(120+Math.floor(Math.random()*82));
+  if(se){
+    se.classList.remove('scan-pull-in');
+    se.classList.add('scan-precharge');
+  }
+  await _ceSleep(72+Math.floor(Math.random()*38));
+  if(se){
+    se.classList.remove('scan-precharge');
+    se.classList.add('scan-release');
+  }
+  if(wave){wave.classList.remove('fire');void wave.offsetWidth;wave.classList.add('fire');setTimeout(function(){wave.classList.remove('fire')},920)}
+  if(cc){
+    cc.classList.add('scan-heatwave');
+    setTimeout(function(){cc.classList.remove('scan-heatwave')},520);
+  }
+  await _ceSleep(88+Math.floor(Math.random()*28));
+  if(hi){hi.classList.remove('fire');void hi.offsetWidth;hi.classList.add('fire');setTimeout(function(){hi.classList.remove('fire')},240)}
+  await _ceSleep(115+Math.floor(Math.random()*35));
+  if(se) se.classList.remove('scan-release');
+}
+var perceptionCycleT=null,perceptionHideT=null;
+var PERCEPTION_HINTS_EN=[
+  'Brushed metal in the middle — faint grease sheen possible',
+  'Parallel slats/cladding — airflow gaps matter more than you think',
+  'Matt plastic bezel — hairline stress near the corner ridge',
+  'Chrome edge with streaks — hard water, not a crack',
+  'Ceramic/porcelain curve — watch the grout shadow line',
+  'Rubber gasket compression — slight oval when squeezed',
+  'Glass + fine wiring mesh — don\'t mistake dust for damage',
+  'Painted steel with orange peel — rust starts in the low spots',
+  'Wire runs bundled tight — heat can pool behind tape',
+  'Wood grain interruption — old screw hole or knot'
+];
+var PERCEPTION_HINTS_NL=[
+  'Geborsteld metaal in het midden — waarschijnlijk vettige waas',
+  'Parallelle ribben — speling rond ventilatie telt mee',
+  'Matte plastic rand — haarlijntje bij de hoekradius',
+  'Chroom met strepen — kalk, geen scheur',
+  'Keramische boog — let op de voegschaduw',
+  'Rubber afdichting licht geplet — ovaal van druk',
+  'Glas met fijn rooster — stof vs. echte breuk',
+  'Geschilderd staal met sinaasappelhuid — roest in dalen',
+  'Kabelboom strak gebonden — warmte achter tape',
+  'Houtnerf onderbroken — oude schroef of kwast'
+];
+function stopPerceptionLayer(){
+  if(perceptionCycleT){clearTimeout(perceptionCycleT);perceptionCycleT=null}
+  if(perceptionHideT){clearTimeout(perceptionHideT);perceptionHideT=null}
+  var h=document.getElementById('perception-hint');
+  if(h) h.classList.remove('show');
+  var p=document.getElementById('perception-layer');
+  if(p) p.classList.remove('active');
+  var egg=document.getElementById('scan-egg');
+  if(egg) egg.classList.remove('perception-hot');
+  clearLockOn();
+}
+function schedulePerception(){
+  if(perceptionCycleT){clearTimeout(perceptionCycleT);perceptionCycleT=null}
+  perceptionCycleT=setTimeout(perceptionTick,4200+Math.random()*5600);
+}
+function perceptionTick(){
+  perceptionCycleT=null;
+  if(
+    liveActive||
+    document.body.classList.contains('ce-ai-thinking')||
+    document.body.classList.contains('result-open')||
+    document.body.classList.contains('fixing')||
+    document.body.classList.contains('ce-step-active')
+  ){
+    schedulePerception();
+    return;
+  }
+  var pool=LANG==='nl'?PERCEPTION_HINTS_NL:PERCEPTION_HINTS_EN;
+  var el=document.getElementById('perception-hint');
+  var pl=document.getElementById('perception-layer');
+  if(!el){schedulePerception();return}
+  el.textContent=pool[Math.floor(Math.random()*pool.length)];
+  el.classList.add('show');
+  if(pl) pl.classList.add('active');
+  var egg=document.getElementById('scan-egg');
+  if(egg) egg.classList.add('perception-hot');
+  perceptionHideT=setTimeout(function(){
+    perceptionHideT=null;
+    el.classList.remove('show');
+    if(pl) pl.classList.remove('active');
+    if(egg) egg.classList.remove('perception-hot');
+    schedulePerception();
+  },2100+Math.random()*1200);
+}
+var lockSampleCv=null,lockLastMean=null,lockStab=0;
+function getLockSampleCanvas(){
+  if(!lockSampleCv){
+    lockSampleCv=document.createElement('canvas');
+    lockSampleCv.width=40;
+    lockSampleCv.height=30;
+  }
+  return lockSampleCv;
+}
+function clearLockOn(){
+  lockStab=0;
+  lockLastMean=null;
+  var cc=document.querySelector('.cam-container');
+  if(cc) cc.classList.remove('ce-lock-on');
+  var egg=document.getElementById('scan-egg');
+  if(egg) egg.classList.remove('orb-lock-focused');
+}
+function tickLockSampler(){
+  try{
+    if(!camReady||!videoEl||videoEl.readyState<2||liveActive||document.body.classList.contains('ce-ai-thinking')||document.body.classList.contains('result-open')){
+      clearLockOn();
+      return;
+    }
+    var vw=videoEl.videoWidth,vh=videoEl.videoHeight;
+    if(!vw||!vh||vw<48||vh<48){clearLockOn();return}
+    var c=getLockSampleCanvas(),ctx=c.getContext('2d');
+    var rw=Math.floor(vw*0.2),rh=Math.floor(vh*0.2),sx=Math.floor((vw-rw)/2),sy=Math.floor((vh-rh)/2);
+    ctx.drawImage(videoEl,sx,sy,rw,rh,0,0,c.width,c.height);
+    var d=ctx.getImageData(0,0,c.width,c.height).data,sum=0,npx=0;
+    for(var i=0;i<d.length;i+=20){
+      sum+=0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2];
+      npx++;
+    }
+    var mean=sum/Math.max(1,npx);
+    if(lockLastMean!==null&&Math.abs(mean-lockLastMean)<1.35) lockStab++; else lockStab=0;
+    lockLastMean=mean;
+    var cc=document.querySelector('.cam-container');
+    var egg=document.getElementById('scan-egg');
+    if(lockStab>=3){
+      if(cc&&!cc.classList.contains('ce-lock-on')){
+        cc.classList.add('ce-lock-on');
+        if(egg){
+          egg.classList.add('orb-lock-focused');
+          try{tone(720,.028,'sine',.055,0);hap(6)}catch(e){}
+        }
+      }
+    }else if(lockStab===0){
+      if(cc) cc.classList.remove('ce-lock-on');
+      if(egg) egg.classList.remove('orb-lock-focused');
+    }
+  }catch(_){clearLockOn()}
+}
+function ensureLockSampler(){
+  if(window._ceLockIv)return;
+  window._ceLockIv=setInterval(tickLockSampler,425);
+}
+(function(){
+  var egg=document.getElementById('scan-egg'),lastMot=0;
+  if(egg&&window.DeviceOrientationEvent){
+    window.addEventListener('deviceorientation',function(e){
+      if(document.body.classList.contains('ce-ai-thinking')||document.body.classList.contains('result-open')) return;
+      var gx=typeof e.gamma==='number'?Math.max(-26,Math.min(26,e.gamma)):0;
+      var gy=typeof e.beta==='number'?Math.max(-14,Math.min(14,e.beta-40)):0;
+      egg.style.setProperty('--orb-glx',(gx*0.48)+'px');
+      egg.style.setProperty('--orb-gly',(6+gy*0.26)+'px');
+    },true);
+  }
+  if(window.DeviceMotionEvent){
+    window.addEventListener('devicemotion',function(ev){
+      if(Date.now()-lastMot<400) return;
+      var a=ev.acceleration;
+      if(!a) return;
+      if(Math.abs(a.x||0)<3.4&&Math.abs(a.y||0)<3.4&&Math.abs(a.z||0)<3.4) return;
+      lastMot=Date.now();
+      var se=document.getElementById('scan-egg');
+      if(!se||document.body.classList.contains('ce-ai-thinking')) return;
+      se.classList.remove('orb-motion-flinch');void se.offsetWidth;se.classList.add('orb-motion-flinch');
+      setTimeout(function(){se.classList.remove('orb-motion-flinch')},240);
+    },true);
+  }
+})();
+(function ceOrganicIdleBreath(){
+  function tick(){
+    var egg=document.getElementById('scan-egg');
+    if(egg&&!egg.classList.contains('thinking')&&!document.body.classList.contains('ce-ai-thinking')){
+      egg.style.setProperty('--idle-breath',(2.5+Math.random()*1.35)+'s');
+    }
+    setTimeout(tick,4000+Math.random()*4200);
+  }
+  tick();
+})();
+function waitEggTap(){
+  return new Promise(function(resolve){
+    liveAwaitNext=true;
+    liveResolveNext=function(){
+      liveAwaitNext=false;
+      liveResolveNext=null;
+      resolve(true);
+    };
+  });
+}
+function setGlassPhase(phase, total){
+  var t=T[LANG]||T.en;
+  var dots=document.querySelectorAll('#live-prompt .glass-phase-dots .gpd');
+  for(var i=0;i<dots.length;i++) dots[i].classList.toggle('on',i<phase);
+  var badge=document.getElementById('glass-xray-badge');
+  if(badge){
+    badge.textContent= phase===1?(t.glassBadge1||'CONTEXT'):phase===2?(t.glassBadge2||'MATERIALS'):(t.glassBadge3||'X-RAY');
+  }
+  var ttl=document.getElementById('live-prompt-ttl');
+  var txt=document.getElementById('live-prompt-txt');
+  var hint=document.getElementById('glass-hint');
+  if(phase===1){
+    if(ttl) ttl.textContent=(t.scanPhase1Ttl||'')+'  ·  '+phase+'/'+total;
+    if(txt) txt.textContent=t.scanPhase1Txt||'';
+    if(hint) hint.textContent=t.glassHint1||'';
+  }else if(phase===2){
+    if(ttl) ttl.textContent=(t.scanPhase2Ttl||'')+'  ·  '+phase+'/'+total;
+    if(txt) txt.textContent=t.scanPhase2Txt||'';
+    if(hint) hint.textContent=t.glassHint2||'';
+  }else{
+    if(ttl) ttl.textContent=(t.scanPhase3Ttl||'')+'  ·  '+phase+'/'+total;
+    if(txt) txt.textContent=t.scanPhase3Txt||'';
+    if(hint) hint.textContent=t.glassHint3||'';
+  }
+}
 async function startLiveScanSession(viewsTarget, initialBlob){
   if(liveActive)return;
   liveActive=true;
+  stopPerceptionLayer();
 
   var lp=document.getElementById('live-prompt');
-  var lpTtl=document.getElementById('live-prompt-ttl');
-  var lpTxt=document.getElementById('live-prompt-txt');
   var lpNext=document.getElementById('live-next-btn');
-
   var camContainerEl = videoEl && videoEl.closest ? videoEl.closest('.cam-container') : null;
   var xrayOn = function(on){
     if(camContainerEl){
@@ -1644,148 +3446,147 @@ async function startLiveScanSession(viewsTarget, initialBlob){
       else camContainerEl.classList.remove('xray-on');
     }
   };
+  var xrayDeep = function(on){
+    if(!camContainerEl)return;
+    if(on) camContainerEl.classList.add('xray-deep');
+    else camContainerEl.classList.remove('xray-deep');
+  };
 
-  // Reset UI
   var hasCam = !!(camReady && camStream);
   if(stillEl){
-    if(hasCam){
-      stillEl.style.display='none';
-      stillEl.src='';
-    }else{
-      // Fallback mode: keep the uploaded/still frame visible.
-      stillEl.style.display='block';
-    }
+    if(hasCam){stillEl.style.display='none';stillEl.src='';}
+    else stillEl.style.display='block';
   }
   if(retakeBtn){retakeBtn.style.display='none'}
-  if(lp){
-    lp.classList.remove('show');
-    lp.classList.remove('mini');
-  }
+  if(lp){lp.classList.remove('show');lp.classList.remove('mini')}
   if(lpMiniTimer){clearTimeout(lpMiniTimer);lpMiniTimer=null}
   if(lpNext){lpNext.disabled=true}
   document.getElementById('err-box').style.display='none';
   document.getElementById('hazard-banner').classList.remove('show');
   document.getElementById('results').style.display='none';
 
-  scanStart();
-  xrayOn(true);
-  camOverlay.classList.add('scanning');
-  document.getElementById('ld').style.display='block';
-  document.getElementById('scan-lbl').textContent='Analysing...';
-  startHum();
+  document.getElementById('ld').style.display='none';
+  camOverlay.classList.remove('scanning');
+  stopHum();
+  xrayOn(false);
+  xrayDeep(false);
 
-  var ldMsgs=T[LANG].ldMsgs,ldI=0,ldTxtEl=document.getElementById('ld-txt');
-  ldTxtEl.textContent=ldMsgs[0];
-  var LI=setInterval(function(){ldI=(ldI+1)%ldMsgs.length;ldTxtEl.textContent=ldMsgs[ldI]},850);
+  var blobs=[];
+  var LI=null;
 
   try{
-    var viewIndex=1;
-    var blob=initialBlob || null;
-
-    while(true){
-      if(!blob){
-        blob = await captureFrame();
-      }
-
-      // Call live analyzer with view index context
-      var fd=new FormData();
-      fd.append('image',blob,'scan.jpg');
-      fd.append('question',document.getElementById('q-inp').value.trim());
-      fd.append('language',LANG);
-      fd.append('view_index',String(viewIndex));
-      fd.append('views_target',String(viewsTarget));
-
-      var resp=await fetch('/analyze-live',{method:'POST',body:fd});
-      var data=await resp.json();
-      if(!data.success)throw new Error(data.error||'Live analysis failed');
-
-      clearInterval(LI);
-      LI=null;
-      stopHum();
-
-      var liveObj=data.live || (data.result?data.result.live:null) || {};
-      var needsMore=!!liveObj.needs_more_views;
-      var nextPrompt=liveObj.next_prompt || '';
-
-      if(needsMore && viewIndex < viewsTarget){
-        // Show instruction to move, keep camera visible.
-        document.getElementById('ld').style.display='none';
-        camOverlay.classList.remove('scanning');
+    for(var phase=1; phase<=viewsTarget; phase++){
+      if(viewsTarget>1){
         if(lp){
+          setGlassPhase(phase, viewsTarget);
+          var phaseMsgEn = phase===1 ? 'Hold steady...' : (phase===2 ? 'Go closer to the problem area.' : 'Keep centered for final detail.');
+          var phaseMsgNl = phase===1 ? 'Houd stil...' : (phase===2 ? 'Ga dichter naar het probleem.' : 'Houd gecentreerd voor laatste detail.');
+          var txtEl = document.getElementById('live-prompt-txt');
+          if(txtEl) txtEl.textContent = (LANG==='nl' ? phaseMsgNl : phaseMsgEn);
           lp.classList.remove('mini');
-          lpTtl.textContent='View '+viewIndex+' / '+viewsTarget;
-          lpTxt.textContent=(nextPrompt || 'Move slightly and show a clearer view.')+' Tap egg for next view.';
           lp.classList.add('show');
-          lpMiniTimer=setTimeout(function(){
-            if(lp && lp.classList.contains('show'))lp.classList.add('mini');
-          },1800);
         }
-
-        hap([20,10,40]);
-        await new Promise(function(resolve){
-          liveAwaitNext=true;
-          liveResolveNext=resolve;
-        });
-
-        // Prepare next view
-        viewIndex += 1;
-        blob=null;
-        scanStart();
-        xrayOn(true);
-        camOverlay.classList.add('scanning');
-        document.getElementById('ld').style.display='block';
-        startHum();
-        ldI=0;
-        ldTxtEl.textContent=ldMsgs[0];
-        LI=setInterval(function(){ldI=(ldI+1)%ldMsgs.length;ldTxtEl.textContent=ldMsgs[ldI]},850);
-        continue;
+        var useXray=viewsTarget>=3 && phase===3;
+        xrayDeep(useXray);
+        xrayOn(useXray);
+        hap([12,8,18]);
+        // One tap should run the full live scan flow automatically.
+        if(hasCam){
+          await _ceSleep(phase===1?680:(phase===2?620:700));
+        }else if(!(viewsTarget===1 && phase===1 && initialBlob)){
+          await waitEggTap();
+        }
+        if(lp) lp.classList.remove('show');
+      }else{
+        xrayDeep(false);
+        xrayOn(false);
       }
 
-      // Final response
-      if(lp){
-        lp.classList.remove('show');
-        lp.classList.remove('mini');
+      var b;
+      if(viewsTarget===1 && phase===1 && initialBlob) b=initialBlob;
+      else{
+        await playScanRitual();
+        b=await captureFrame({skipFlash:true});
       }
-      liveResolveNext=null;
-      liveAwaitNext=false;
-      if(lpMiniTimer){clearTimeout(lpMiniTimer);lpMiniTimer=null}
-      document.getElementById('ld').style.display='none';
-      camOverlay.classList.remove('scanning');
+      blobs.push(b);
+      initialBlob=null;
+      xrayDeep(false);
       xrayOn(false);
-      scanDone();hap([30,15,60]);
-      var s=loadS();s.ts++;saveS(s);addXP(10);checkBadges();rotateAd();
-
-      showHazard(data.result);
-      var hzLv=(data.result.hazard_level||'').toLowerCase();
-      if(hzLv==='danger'||hzLv==='emergency'){dangerSnd();hap([200,100,200])}
-      setTimeout(function(){
-        var hazardFirst=renderResults(data.result);
-        triggerPaywallFlow();
-        document.getElementById('results').style.display='block';
-        document.getElementById('results').querySelectorAll('.hazard-hero.show,.r-hdr,.meta-row,.ec,.warn-ctr,.card,#tip-safety,.ad-banner,.fold-more,.rst-btn,.tts-bar,.tip.pro').forEach(function(el,i){el.classList.remove('si');void el.offsetWidth;el.style.animationDelay=(i*40)+'ms';el.classList.add('si')});
-        showEC();
-      },120);
-      break;
     }
+
+    scanStart();
+    document.getElementById('ld').style.display='block';
+    setAiThinking(true);
+    camOverlay.classList.add('scanning');
+    document.getElementById('scan-lbl').textContent='Analysing...';
+    startHum();
+    var ldMsgs=T[LANG].ldMsgs,ldI=0,ldTxtEl=document.getElementById('ld-txt');
+    ldTxtEl.textContent=ldMsgs[0];
+    var slblThink=document.getElementById('scan-lbl-text');
+    if(slblThink) slblThink.textContent=ldMsgs[0];
+    LI=setInterval(function(){
+      ldI=(ldI+1)%ldMsgs.length;
+      ldTxtEl.textContent=ldMsgs[ldI];
+      if(slblThink) slblThink.textContent=ldMsgs[ldI];
+    },850);
+
+    var fd=new FormData();
+    var jid=ensureJobId();
+    fd.append('image',blobs[0],'scan1.jpg');
+    if(blobs[1]) fd.append('image_2',blobs[1],'scan2.jpg');
+    if(blobs[2]) fd.append('image_3',blobs[2],'scan3.jpg');
+    fd.append('question',document.getElementById('q-inp').value.trim());
+    fd.append('language',LANG);
+    fd.append('session_id',window.CE_SESSION_ID||'');
+    fd.append('job_id',jid);
+    fd.append('source_channel','app');
+
+    var resp=await fetch('/analyze',{method:'POST',body:fd});
+    var data=await resp.json();
+    if(!data.success) throw new Error(data.error||'Analysis failed');
+
+    if(LI){clearInterval(LI);LI=null}
+    stopHum();
+    document.getElementById('ld').style.display='none';
+    setAiThinking(false);
+    var slblDone=document.getElementById('scan-lbl-text');
+    if(slblDone) slblDone.textContent=(T[LANG]&&T[LANG].scanLbl)?T[LANG].scanLbl:'Scan';
+    camOverlay.classList.remove('scanning');
+    xrayOn(false);
+    xrayDeep(false);
+
+    scanDone();hap([35,16,50,16,80]);trackEvent('scan_completed',{views:viewsTarget});
+    var s=loadS();s.ts++;saveS(s);addXP(10);checkBadges();rotateAd();
+
+    showHazard(data.result);
+    var hzLv=(data.result.hazard_level||'').toLowerCase();
+    if(hzLv==='danger'||hzLv==='emergency'){dangerSnd();hap([200,100,200])}
+    setTimeout(function(){
+      renderResults(data.result);
+      triggerPaywallFlow();
+      document.getElementById('results').querySelectorAll('.hazard-hero.show,.r-hdr,.meta-row,.ec,.warn-ctr,.card,#tip-safety,.ad-banner,.fold-more,.rst-btn,.tts-bar,.tip.pro').forEach(function(el,i){el.classList.remove('si');void el.offsetWidth;el.style.animationDelay=(i*40)+'ms';el.classList.add('si')});
+    },120);
 
   }catch(err){
     if(LI)clearInterval(LI);
     stopHum();
     camOverlay.classList.remove('scanning');
     xrayOn(false);
+    xrayDeep(false);
     document.getElementById('ld').style.display='none';
+    setAiThinking(false);
     document.getElementById('err-box').textContent=(err&&err.message)||(typeof err==='string'?err:'')||'Something went wrong. Try again.';
     document.getElementById('err-box').style.display='block';
   }finally{
     liveActive=false;
     liveResolveNext=null;
     liveAwaitNext=false;
-    var lp=document.getElementById('live-prompt');
-    if(lp){
-      lp.classList.remove('show');
-      lp.classList.remove('mini');
-    }
+    if(lp){lp.classList.remove('show');lp.classList.remove('mini')}
     if(lpMiniTimer){clearTimeout(lpMiniTimer);lpMiniTimer=null}
+    xrayDeep(false);
+    xrayOn(false);
+    if(document.getElementById('ld').style.display!=='block')setAiThinking(false);
+    if(camReady) schedulePerception();
   }
 }
 
@@ -1806,7 +3607,7 @@ function updateHazardHero(r){
   if(sub)sub.textContent='';
 
   if(lv==='danger'||lv==='emergency'){
-    el.classList.add('hazard-hero--critical','show');
+    el.classList.add('hazard-hero--critical','show','hazard-mood-critical');
     document.getElementById('hazard-hero-badge').textContent=(lv==='emergency'?'🚨 ':'⛔ ')+(lv==='emergency'?t.hazardHeroEmergBadge:t.hazardHeroDangerBadge);
     document.getElementById('hazard-hero-ttl').textContent=lv==='emergency'?t.hazardHeroEmergTtl:t.hazardHeroDangerTtl;
     document.getElementById('hazard-hero-note').textContent=note||t.hazardHeroNoDetail;
@@ -1818,14 +3619,14 @@ function updateHazardHero(r){
     return true;
   }
   if(lv==='warning'&&note){
-    el.classList.add('hazard-hero--warn','show');
+    el.classList.add('hazard-hero--warn','show','hazard-mood-warn');
     document.getElementById('hazard-hero-badge').textContent='⚠️ '+t.hazardHeroWarnBadge;
     document.getElementById('hazard-hero-ttl').textContent=t.hazardHeroWarnTtl;
     document.getElementById('hazard-hero-note').textContent=note;
     return true;
   }
   if(lv==='caution'&&note){
-    el.classList.add('hazard-hero--caution','show');
+    el.classList.add('hazard-hero--caution','show','hazard-mood-soft');
     document.getElementById('hazard-hero-badge').textContent='⚡ '+t.hazardHeroCautBadge;
     document.getElementById('hazard-hero-ttl').textContent=t.hazardHeroCautTtl;
     document.getElementById('hazard-hero-note').textContent=note;return true;
@@ -1865,21 +3666,66 @@ function showStepOnIsland(stepText, idx){
 
 /* RESULTS */
 var lastScanResult=null;
-var curSteps=[],doneSteps=new Set(),warnCt=0,curTask='';
+window.CE_SESSION_ID = (function(){
+  var k='ce_session_id';
+  var v=localStorage.getItem(k);
+  if(!v){
+    v='sess_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8);
+    localStorage.setItem(k,v);
+  }
+  return v;
+})();
+window.CE_CURRENT_JOB_ID='';
+var ceOutcomeSubmittedForJob='';
+
+function ensureJobId(){
+  if(window.CE_CURRENT_JOB_ID)return window.CE_CURRENT_JOB_ID;
+  window.CE_CURRENT_JOB_ID='job_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8);
+  return window.CE_CURRENT_JOB_ID;
+}
+
+async function submitOutcome(success, reason, rating){
+  try{
+    var jid=ensureJobId();
+    if(ceOutcomeSubmittedForJob===jid)return;
+    var payload={
+      success:!!success,
+      reason:reason||'',
+      rating:rating||'',
+      language:LANG,
+      session_id:window.CE_SESSION_ID,
+      job_id:jid,
+      source_channel:'app',
+      result:lastScanResult||{}
+    };
+    await fetch('/submit-outcome',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+    ceOutcomeSubmittedForJob=jid;
+  }catch(e){}
+}
+var curSteps=[],curVisualTips=[],doneSteps=new Set(),warnCt=0,curTask='';
 var walkIdx=0;
+function stripStepPrefix(s){
+  return String(s||'').replace(/^(step|stap)\s*\d+[:\-.]?\s*/i,'').trim();
+}
 
 function updateWalkCardUI(){
+  var dockBack=document.getElementById('dock-back');
+  var dockNext=document.getElementById('dock-next');
   var tot=curSteps.length||0;
   if(tot===0){
     var tx=document.getElementById('walk-text');if(tx)tx.textContent='';
+    var wl=document.getElementById('walk-look');if(wl){wl.classList.add('off');var wlt=document.getElementById('walk-look-txt');if(wlt)wlt.textContent='';}
     var num=document.getElementById('walk-step-num');if(num)num.textContent='0';
     var tt=document.getElementById('walk-step-tot');if(tt)tt.textContent='0';
     var backBtn=document.getElementById('walk-back');if(backBtn)backBtn.disabled=true;
     var nextBtn=document.getElementById('walk-next');if(nextBtn)nextBtn.disabled=true;
     var finishBtn=document.getElementById('walk-finish');if(finishBtn)finishBtn.style.display='none';
-    if(camBackBtn)camBackBtn.disabled=true;
-    if(camNextBtn)camNextBtn.disabled=true;
-    if(camFinishBtn)camFinishBtn.style.display='none';
+    if(dockBack)dockBack.disabled=true;
+    if(dockNext)dockNext.disabled=true;
     var wtr=document.getElementById('walk-tools-row');if(wtr)wtr.innerHTML='';
     return;
   }
@@ -1896,8 +3742,26 @@ function updateWalkCardUI(){
 
   var tx=document.getElementById('walk-text');
   if(tx){
-    tx.classList.remove('flash');void tx.offsetWidth;tx.classList.add('flash');
-    tx.textContent=curSteps[walkIdx]||'';
+    tx.classList.remove('walk-text-enter','flash');
+    tx.style.opacity='0';
+    setTimeout(function(){
+      tx.textContent=curSteps[walkIdx]||'';
+      void tx.offsetWidth;
+      tx.style.opacity='1';
+      tx.classList.add('walk-text-enter');
+    },135);
+  }
+  var lk=document.getElementById('walk-look'),lkt=document.getElementById('walk-look-txt'),wlbl=document.getElementById('walk-look-lbl');
+  var vtip=(curVisualTips[walkIdx]||'').trim();
+  if(lk&&lkt){
+    if(vtip){
+      lk.classList.remove('off');
+      lkt.textContent=vtip;
+      if(wlbl)wlbl.textContent=(T[LANG]&&T[LANG].walkLookLbl)?T[LANG].walkLookLbl:'What you should see';
+    }else{
+      lk.classList.add('off');
+      lkt.textContent='';
+    }
   }
   renderWalkTools(curSteps[walkIdx]||'');
   renderCamStepOverlay(curSteps[walkIdx]||'');
@@ -1906,47 +3770,132 @@ function updateWalkCardUI(){
   var nextBtn=document.getElementById('walk-next');
   var finishBtn=document.getElementById('walk-finish');
   var canBack = walkIdx>0;
-  var canNext = doneSteps.has(walkIdx) && walkIdx<tot-1;
+  var onLast = walkIdx>=tot-1;
   var allDone = doneSteps.size===tot && tot>0;
+  var navEnabled = tot>0 && !allDone;
 
   if(backBtn)backBtn.disabled=!canBack || allDone;
-  if(nextBtn)nextBtn.disabled=!canNext;
-  if(finishBtn)finishBtn.style.display=allDone ? 'block' : 'none';
-  if(camBackBtn)camBackBtn.disabled=!canBack || allDone;
-  if(camNextBtn)camNextBtn.disabled=!canNext;
-  if(camFinishBtn)camFinishBtn.style.display=allDone ? 'block' : 'none';
+  if(nextBtn)nextBtn.disabled=!navEnabled;
+  if(finishBtn){
+    finishBtn.style.display=allDone ? 'block' : 'none';
+    finishBtn.classList.toggle('walk-finish--on',allDone);
+  }
+  if(dockBack){
+    dockBack.disabled=!canBack || allDone;
+    dockBack.textContent=(T[LANG]&&T[LANG].dockBack)?T[LANG].dockBack:'Back';
+  }
+  if(dockNext){
+    dockNext.disabled=!navEnabled;
+    dockNext.textContent=(onLast?(T[LANG]&&T[LANG].dockDone)?T[LANG].dockDone:'Done':((T[LANG]&&T[LANG].dockNext)?T[LANG].dockNext:'Next'));
+  }
+}
+
+function openMailboxSheet(){
+  try{
+    snapMailboxSnd();
+    openResultScreen();
+    prepareFinishCTA();
+    var ec=document.getElementById('ec');
+    var rs=document.getElementById('results');
+    if(rs) rs.style.display='block';
+    if(ec){
+      ec.classList.add('show','ec-sheet');
+      document.body.classList.add('mailbox-open');
+      ec.classList.remove('ce-pulse');void ec.offsetWidth;ec.classList.add('ce-pulse');
+      setTimeout(function(){
+        var inp=document.getElementById('ec-inp');
+        if(inp) inp.focus({preventScroll:true});
+      },420);
+    }
+    trackEvent('mailbox_opened');
+  }catch(e){}
+  hap([10,5,16,5,28]);
+}
+
+function showDoneCelebration(){
+  var ds=document.getElementById('done-screen');
+  if(!ds||ds.classList.contains('show'))return;
+  openResultScreen();
+  ds.classList.add('show');
+  confetti();
+  fanfare();
+  hap([40,20,60,20,120]);
+  submitOutcome(true,'completed_steps',selectedRating||'');
+  trackEvent('task_done_celebration');
+}
+
+function continueFromDoneCelebration(){
+  var ds=document.getElementById('done-screen');
+  if(ds)ds.classList.remove('show');
+  openResultScreen();
+  prepareFinishCTA();
+  var ec=document.getElementById('ec');
+  if(ec){
+    ec.classList.add('show');
+    ec.classList.remove('ec-sheet');
+    document.body.classList.remove('mailbox-open');
+    ec.classList.remove('ce-pulse');void ec.offsetWidth;ec.classList.add('ce-pulse');
+    setTimeout(function(){
+      ec.scrollIntoView({behavior:'smooth',block:'center'});
+      setTimeout(function(){
+        var inp=document.getElementById('ec-inp');
+        if(inp)inp.focus({preventScroll:true});
+      },380);
+    },120);
+  }
+  trackEvent('task_done_continue');
+}
+
+function goWalkNext(){
+  if(curSteps.length<=0) return;
+  var tot=curSteps.length;
+  if(doneSteps.size===tot && tot>0) return;
+  if(walkIdx<tot-1){
+    walkIdx++;
+    snapStepSnd();
+    hap([8,5,14,5,18]);
+    var cstep=document.getElementById('cam-step');
+    if(cstep){cstep.classList.remove('step-advance-nudge');void cstep.offsetWidth;cstep.classList.add('step-advance-nudge');setTimeout(function(){cstep.classList.remove('step-advance-nudge')},420)}
+    var seg=document.getElementById('scan-egg');
+    if(seg){seg.classList.remove('step-confirm-nudge');void seg.offsetWidth;seg.classList.add('step-confirm-nudge');setTimeout(function(){seg.classList.remove('step-confirm-nudge')},420)}
+    updateWalkCardUI();
+  }else{
+    showDoneCelebration();
+  }
 }
 
 var walkBackBtn=document.getElementById('walk-back'),
     walkNextBtn=document.getElementById('walk-next'),
     walkCheckBtn=document.getElementById('walk-check'),
     walkFinishBtn=document.getElementById('walk-finish'),
-    camBackBtn=document.getElementById('cam-back'),
-    camNextBtn=document.getElementById('cam-next'),
-    camCheckBtn=document.getElementById('cam-check'),
-    camFinishBtn=document.getElementById('cam-finish');
+    dockBackBtn=document.getElementById('dock-back'),
+    dockNextBtn=document.getElementById('dock-next');
 if(walkBackBtn){
   walkBackBtn.addEventListener('click',function(){
-    if(curSteps.length<=0) return;
-    if(walkIdx>0){walkIdx--;hap(6);updateWalkCardUI()}
+    if(curSteps.length<=0||walkIdx<=0) return;
+    clickSnd();
+    walkIdx--;tone(330,.04,'sine',.08,0);hap([6,4,10]);updateWalkCardUI()
   });
 }
-if(camBackBtn){
-  camBackBtn.addEventListener('click',function(){
-    if(curSteps.length<=0) return;
-    if(walkIdx>0){walkIdx--;hap(6);updateWalkCardUI()}
+if(dockBackBtn){
+  dockBackBtn.addEventListener('click',function(){
+    if(curSteps.length<=0||dockBackBtn.disabled||walkIdx<=0) return;
+    clickSnd();
+    walkIdx--;tone(330,.04,'sine',.08,0);hap([6,4,10]);updateWalkCardUI()
   });
 }
 if(walkNextBtn){
   walkNextBtn.addEventListener('click',function(){
-    if(curSteps.length<=0) return;
-    if(doneSteps.has(walkIdx) && walkIdx<curSteps.length-1){walkIdx++;hap(6);updateWalkCardUI()}
+    if(walkNextBtn.disabled)return;
+    clickSnd();
+    goWalkNext();
   });
 }
-if(camNextBtn){
-  camNextBtn.addEventListener('click',function(){
-    if(curSteps.length<=0) return;
-    if(doneSteps.has(walkIdx) && walkIdx<curSteps.length-1){walkIdx++;hap(6);updateWalkCardUI()}
+if(dockNextBtn){
+  dockNextBtn.addEventListener('click',function(){
+    if(dockNextBtn.disabled)return;
+    clickSnd();
+    goWalkNext();
   });
 }
 if(walkCheckBtn){
@@ -1955,33 +3904,9 @@ if(walkCheckBtn){
     openPM(walkIdx,curSteps[walkIdx]);
   });
 }
-if(camCheckBtn){
-  camCheckBtn.addEventListener('click',function(){
-    if(curSteps.length<=0) return;
-    openPM(walkIdx,curSteps[walkIdx]);
-  });
-}
 if(walkFinishBtn){
   walkFinishBtn.addEventListener('click',function(){
-    try{
-      var ec=document.getElementById('ec');
-      if(ec){
-        prepareFinishCTA();
-        ec.classList.remove('ce-pulse');void ec.offsetWidth;ec.classList.add('ce-pulse');
-        ec.scrollIntoView({behavior:'smooth',block:'start'});
-        setTimeout(function(){
-          var inp=document.getElementById('ec-inp');
-          if(inp){inp.focus({preventScroll:true});}
-        },420);
-      }
-    }catch(e){}
-    hap([20,10,40]);
-  });
-}
-if(camFinishBtn){
-  camFinishBtn.addEventListener('click',function(){
-    if(walkFinishBtn){walkFinishBtn.click();return;}
-    prepareFinishCTA();
+    showDoneCelebration();
   });
 }
 
@@ -2015,16 +3940,17 @@ function toolScoreForStep(stepText, toolName){
   return score;
 }
 
-function storesForTool(tool){
+function storesForTool(tool, compactShops){
   var wrap=document.createElement('div');
-  wrap.className='walk-tool-shops';
+  wrap.className='walk-tool-shops'+(compactShops?' walk-tool-shops--compact':'');
   STORES.forEach(function(store){
     var a=document.createElement('a');
-    a.className='shop-lnk';
+    a.className='shop-lnk'+(compactShops?' shop-lnk--mini':'');
     a.href=pickProductUrl(store.n==='Gamma'?'gamma':(store.n==='Praxis'?'praxis':'bol'),tool,store.u);
     a.target='_blank';a.rel='noopener';
-    a.title=store.n;
-    a.innerHTML=store.logo;
+    a.title=store.n+' • '+tool;
+    a.setAttribute('aria-label',store.n+' - '+tool);
+    a.innerHTML= compactShops ? store.logo : (store.logo+'<span class="shop-txt">'+store.n+'</span>');
     a.addEventListener('click',function(){fetch('/track-click',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({store:store.n,tool:tool})}).catch(function(){})});
     wrap.appendChild(a);
   });
@@ -2056,7 +3982,7 @@ function renderWalkTools(stepText){
     nm.className='walk-tool-nm';
     nm.textContent=tool;
     it.appendChild(nm);
-    it.appendChild(storesForTool(tool));
+    it.appendChild(storesForTool(tool,true));
     row.appendChild(it);
   });
 }
@@ -2066,10 +3992,12 @@ function renderCamStepOverlay(stepText){
   if(!wrap) return;
   var tot=curSteps.length||0;
   if(!stepText || tot<=0){
+    document.body.classList.remove('ce-step-active');
     wrap.classList.add('off');
     wrap.classList.remove('show');
     return;
   }
+  document.body.classList.add('ce-step-active');
   wrap.classList.remove('off');
   // force reflow for smooth pop on updates
   wrap.classList.remove('show');void wrap.offsetWidth;wrap.classList.add('show');
@@ -2078,7 +4006,17 @@ function renderCamStepOverlay(stepText){
   var txt=document.getElementById('cam-step-txt');
   if(badge) badge.textContent=(LANG==='nl'?'Stap ':'Step ')+(walkIdx+1);
   if(ct) ct.textContent=(walkIdx+1)+' / '+tot;
-  if(txt) txt.textContent=stepText;
+  if(txt){
+    txt.classList.remove('cam-step-txt--enter');
+    txt.style.transform='scale(1)';
+    txt.style.opacity='0';
+    setTimeout(function(){
+      txt.textContent=stepText;
+      void txt.offsetWidth;
+      txt.style.opacity='1';
+      txt.classList.add('cam-step-txt--enter');
+    },125);
+  }
 
   var toolsEl=document.getElementById('cam-step-tools');
   if(!toolsEl) return;
@@ -2104,20 +4042,82 @@ function renderCamStepOverlay(stepText){
       toolsEl.appendChild(a);
     });
   });
+  var hi=document.getElementById('cam-step-hint');
+  if(hi){
+    var base=(T[LANG]&&T[LANG].stepPhotoHint)?T[LANG].stepPhotoHint:'';
+    var eggN=(T[LANG]&&T[LANG].eggNavHint)?T[LANG].eggNavHint:'';
+    if(document.body.classList.contains('cam-tiktok')&&eggN) hi.textContent=base+' · '+eggN;
+    else hi.textContent=base;
+  }
+}
+
+function openResultScreen(){
+  var results=document.getElementById('results');
+  if(!results)return;
+  results.style.display='block';
+  document.body.classList.add('result-open');
+}
+
+function closeResultScreen(){
+  document.body.classList.remove('result-open','mailbox-open','fixing','ce-step-active');
+  var ecBox=document.getElementById('ec');
+  if(ecBox)ecBox.classList.remove('ec-sheet');
+  var camStep=document.getElementById('cam-step');
+  if(camStep){camStep.classList.remove('show');camStep.classList.add('off')}
+  var rs=document.getElementById('results');
+  if(rs) rs.classList.remove('ce-stagger-reveal','ce-stagger-armed');
 }
 
 function renderResults(r){
   lastScanResult=r;
+  window.CE_CURRENT_JOB_ID='job_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8);
+  ceOutcomeSubmittedForJob='';
   curTask=r.task||r.what_i_see||'';
-  curSteps=(r.steps||[]).map(function(s){return s.replace(/^(step|stap)\s*\d+[:\-\.]?\s*/i,'')});
+  curSteps=[];
+  curVisualTips=[];
+  var sd=r.step_details;
+  if(sd&&Array.isArray(sd)&&sd.length){
+    sd.forEach(function(x){
+      if(!x)return;
+      var tx=stripStepPrefix(x.text||'');
+      if(tx){
+        curSteps.push(tx);
+        curVisualTips.push(String(x.visual_tip||'').trim());
+      }
+    });
+  }
+  if(!curSteps.length){
+    (r.steps||[]).forEach(function(s){
+      if(typeof s==='object'&&s!==null&&s.text){
+        var tx=stripStepPrefix(s.text);
+        if(tx){
+          curSteps.push(tx);
+          curVisualTips.push(String(s.visual_tip||'').trim());
+        }
+      }else{
+        var tx=stripStepPrefix(s);
+        if(tx){
+          curSteps.push(tx);
+          curVisualTips.push('');
+        }
+      }
+    });
+  }
   doneSteps.clear();warnCt=0;updateWarn();
 
   var repairNeeded = curSteps.length>0 && curSteps.some(function(s){return (s||'').trim().length>0});
   var resultsEl=document.getElementById('results');
   if(resultsEl){
-    resultsEl.classList.toggle('fix-mode', !!repairNeeded);
+    resultsEl.classList.remove('fix-mode');
+    if(document.body.classList.contains('cam-tiktok')){
+      resultsEl.classList.remove('ce-stagger-reveal');
+      resultsEl.classList.add('ce-stagger-armed');
+    }
   }
-  document.body.classList.toggle('fixing', !!repairNeeded);
+  document.body.classList.remove('fixing','ce-step-active');
+  document.body.classList.remove('mailbox-open');
+  openResultScreen();
+  var ecSheet=document.getElementById('ec');if(ecSheet) ecSheet.classList.remove('ec-sheet');
   var costStr = (r.estimated_cost||'').toString().trim().toLowerCase();
   var hasCost = !!costStr && costStr !== 'n/a' && costStr !== 'na';
   var stepsCard = document.getElementById('steps-card');
@@ -2141,6 +4141,51 @@ function renderResults(r){
   }
   document.getElementById('r-title').textContent=r.what_i_see||'';
   document.getElementById('r-task2').textContent=r.task||'';
+  var tloc=T[LANG]||T.en;
+  var e1=document.getElementById('edge-a'),e2=document.getElementById('edge-b'),e3=document.getElementById('edge-c');
+  if(e1)e1.textContent=tloc.edgeA||'';
+  if(e2)e2.textContent=tloc.edgeB||'';
+  if(e3)e3.textContent=tloc.edgeC||'';
+  var ubx=document.getElementById('uncertainty-banner');
+  if(ubx){
+    if(r.uncertainty_note&&String(r.uncertainty_note).trim()){
+      ubx.classList.remove('off');
+      var ubt=document.getElementById('ub-txt');if(ubt)ubt.textContent=String(r.uncertainty_note).trim();
+    }else ubx.classList.add('off');
+  }
+  var qcBox=document.getElementById('quick-checks'),qcList=document.getElementById('qc-list');
+  var qcx=r.quick_checks||[];
+  if(qcBox&&qcList){
+    if(qcx&&qcx.length){
+      qcBox.classList.remove('off');
+      qcList.innerHTML=qcx.map(function(c){return '<li>'+ceEsc(String(c))+'</li>';}).join('');
+    }else{
+      qcBox.classList.add('off');
+      qcList.innerHTML='';
+    }
+  }
+  var catChip=document.getElementById('r-cat-chip');
+  var catRaw=(r.job_category||'').trim();
+  if(catChip){
+    if(catRaw){
+      catChip.classList.remove('off');
+      var rcat=document.getElementById('r-cat');if(rcat)rcat.textContent=catRaw.replace(/_/g,' ');
+    }else catChip.classList.add('off');
+  }
+  var rgg=document.getElementById('readout-glass');
+  if(rgg){
+    var matR=(r.material_readout||'').trim();
+    var xrR=(r.xray_readout||'').trim();
+    if(matR||xrR){
+      rgg.classList.remove('off');
+      var rmt=document.getElementById('readout-mat'),rxt=document.getElementById('readout-xray');
+      var rml=document.getElementById('rg-mat-lbl'),rxl=document.getElementById('rg-xray-lbl');
+      if(rmt)rmt.textContent=matR||'—';
+      if(rxt)rxt.textContent=xrR||'—';
+      if(rml)rml.textContent=(T[LANG]&&T[LANG].readoutMatLbl)?T[LANG].readoutMatLbl:'Materials & type';
+      if(rxl)rxl.textContent=(T[LANG]&&T[LANG].readoutXrayLbl)?T[LANG].readoutXrayLbl:'X-ray read';
+    }else rgg.classList.add('off');
+  }
   var conf=(r.confidence_tier||'DIY-safe').toLowerCase();
   var confEl=document.getElementById('r-confidence');
   if(confEl){
@@ -2153,6 +4198,20 @@ function renderResults(r){
     }else{
       confEl.className='conf-tier safe';
       confEl.textContent='✅ DIY-safe';
+    }
+  }
+  var sig=document.getElementById('ce-conf-signal');
+  if(sig){
+    sig.classList.remove('ce-conf-high','ce-conf-mid','ce-conf-low');
+    if(conf.indexOf('call')!==-1){
+      sig.textContent=LANG==='nl'?'Zwak beeld — stop bij twijfel':'Weak framing — stop if unsure';
+      sig.classList.add('ce-conf-low');
+    }else if(conf.indexOf('caution')!==-1){
+      sig.textContent=LANG==='nl'?'Mogelijk probleem — even verifiëren':'Possible issue — verify';
+      sig.classList.add('ce-conf-mid');
+    }else{
+      sig.textContent=LANG==='nl'?'Sterke scan — hoge zekerheid':'Strong scan — high confidence';
+      sig.classList.add('ce-conf-high');
     }
   }
   document.getElementById('r-time').textContent=r.time_needed||'';
@@ -2219,12 +4278,12 @@ function renderResults(r){
     });
   }
 
-  /* Colourful step cards */
+  /* One-step-at-a-time flow on results page */
   if(repairNeeded){
-    updateStepUI();
-    // Walkthrough-only UI: no long scrolling list.
     var sl=document.getElementById('r-steps');
-    if(sl) sl.innerHTML='';
+    if(sl){
+      sl.innerHTML='';
+    }
     walkIdx=0;
     updateWalkCardUI();
     document.getElementById('tts-bar').classList.add('show');
@@ -2233,7 +4292,16 @@ function renderResults(r){
     document.getElementById('r-steps').innerHTML='';
   }
   renderBadges();
-  return updateHazardHero(r);
+  var hz=updateHazardHero(r);
+  if(resultsEl && document.body.classList.contains('cam-tiktok')){
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        resultsEl.classList.remove('ce-stagger-armed');
+        resultsEl.classList.add('ce-stagger-reveal');
+      });
+    });
+  }
+  return hz;
 }
 
 function updateStepUI(){
@@ -2243,23 +4311,17 @@ function updateStepUI(){
   if(done>0&&done===tot){
     var s=loadS();s.tf++;saveS(s);addXP(50);checkBadges();
     setTimeout(function(){
-      document.getElementById('all-done').style.display='block';
-      fanfare();hap([50,30,80,30,120]);confetti();
-      setTimeout(function(){speak(LANG==='nl'?'Gefeliciteerd! Je hebt de klus geklaard!':'Congratulations! Job done!',LANG)},800);
-      try{
-        var ec=document.getElementById('ec');
-        if(ec){
-          prepareFinishCTA();
-          ec.classList.remove('ce-pulse');void ec.offsetWidth;ec.classList.add('ce-pulse')
-        }
-      }catch(e){}
+      document.getElementById('all-done').style.display='none';
+      setTimeout(function(){speak(LANG==='nl'?'Gefeliciteerd! Je hebt de klus geklaard!':'Congratulations! Job done!',LANG)},420);
+      showDoneCelebration();
     },400);
   }
   updateWalkCardUI();
 }
 
 function prepareFinishCTA(){
-  document.body.classList.remove('fixing');
+  document.body.classList.remove('fixing','ce-step-active');
+  document.body.classList.add('result-open');
   var resultsEl=document.getElementById('results');
   if(resultsEl)resultsEl.classList.remove('fix-mode');
   var camStep=document.getElementById('cam-step');
@@ -2300,8 +4362,10 @@ function confetti(){
 var pmModal=document.getElementById('pm'),pmFile=document.getElementById('pm-file'),pmPrev=document.getElementById('pm-prev'),pmGo=document.getElementById('pm-go'),pmCancel=document.getElementById('pm-cancel'),pmRes=document.getElementById('pm-res'),pmIdx=0,pmTxtVal='',pmFile2=null;
 
 function openPM(idx,txt){
-  pmIdx=idx;pmTxtVal=txt;
-  document.getElementById('pm-step-txt').textContent=(LANG==='nl'?'Stap ':'Step ')+(idx+1)+': '+txt;
+  pmIdx=idx;
+  var vt=(curVisualTips[idx]||'').trim();
+  pmTxtVal=vt?(txt+'\n'+(LANG==='nl'?'Zo hoort het te lijken: ':'You should see: ')+vt):txt;
+  document.getElementById('pm-step-txt').textContent=(LANG==='nl'?'Stap ':'Step ')+(idx+1)+': '+txt+(vt?('\n— '+(LANG==='nl'?'Check: ':'Look for: ')+vt):'');
   pmFile2=null;pmFile.value='';pmPrev.style.display='none';pmPrev.src='';
   pmGo.classList.remove('on');pmRes.style.display='none';
   pmGo.innerHTML='🔍 '+T[LANG].pmGo;pmCancel.textContent=T[LANG].pmCancel;
@@ -2320,13 +4384,22 @@ pmGo.addEventListener('click',async function(){
     if(!resp.ok)throw new Error((data&&data.error)||rawPm.slice(0,320)||('HTTP '+resp.status));
     if(!data.success)throw new Error(data.error||'Error');
     if(!data.result)throw new Error('No progress result');
-    var res=data.result,lv=res.danger_level||'safe',t=T[LANG];
-    pmRes.className='pm-res '+lv;pmRes.style.display='block';
+    var res=data.result,lv=(res.danger_level||'safe').toLowerCase(),t=T[LANG];
+    var sm=(res.step_match||'yes').toLowerCase();
+    var bodyTxt=res.progress_feedback||'';
+    if(res.next_hint)bodyTxt=(bodyTxt?bodyTxt+' ':'')+String(res.next_hint);
+    var effective=lv;
+    if(lv==='safe'&&sm==='no')effective='caution';
+    pmRes.className='pm-res '+effective;pmRes.style.display='block';
     var icons={safe:'✅',caution:'⚠️',danger:'🚨',emergency:'🚨'};
     var titles={safe:t.pmSafe,caution:t.pmCaution,danger:t.pmDanger,emergency:t.pmEmergency};
-    document.getElementById('pm-rico').textContent=icons[lv];document.getElementById('pm-rttl').textContent=titles[lv];document.getElementById('pm-rtxt').textContent=res.progress_feedback||'';
-    pmGo.innerHTML='🔍 '+t.pmGo;speak((titles[lv]||'')+'. '+(res.progress_feedback||''),LANG);
-    if(lv==='safe'){
+    var ttl=titles[effective]||titles[lv];
+    if(lv==='safe'&&sm==='no')ttl=t.pmStepMismatch||ttl;
+    document.getElementById('pm-rico').textContent=icons[effective]||icons.caution;
+    document.getElementById('pm-rttl').textContent=ttl;
+    document.getElementById('pm-rtxt').textContent=bodyTxt||(lv==='safe'&&sm==='no'?(t.pmStepMismatch||''):'');
+    pmGo.innerHTML='🔍 '+t.pmGo;speak((ttl||'')+'. '+(bodyTxt||''),LANG);
+    if(lv==='safe'&&sm!=='no'){
       doneSteps.add(pmIdx);updateStepUI();
       var si=document.getElementById('si-'+pmIdx);if(si)si.classList.add('done');
       var sn=document.getElementById('sn-'+pmIdx);if(sn){sn.textContent='✓';sn.className='s-num done-num'}
@@ -2344,10 +4417,46 @@ pmGo.addEventListener('click',async function(){
   }catch(err){pmGo.innerHTML='🔍 '+T[LANG].pmGo;pmGo.classList.add('on')}
 });
 
+(function(){
+  var cs=document.getElementById('cam-step');
+  if(!cs||cs._ceDblTap)return;
+  cs._ceDblTap=true;
+  var last=0;
+  cs.addEventListener('touchend',function(ev){
+    if(!document.body.classList.contains('fixing'))return;
+    if(curSteps.length<=0)return;
+    var now=Date.now();
+    if(now-last<340){
+      try{ev.preventDefault()}catch(e){}
+      last=0;
+      openPM(walkIdx,curSteps[walkIdx]||'');
+    }else last=now;
+  },{passive:false});
+  cs.addEventListener('dblclick',function(){
+    if(!document.body.classList.contains('fixing'))return;
+    if(curSteps.length<=0)return;
+    openPM(walkIdx,curSteps[walkIdx]||'');
+  });
+})();
+
+(function(){
+  var scr=document.getElementById('mailbox-scrim');
+  if(!scr)return;
+  scr.addEventListener('click',function(){
+    if(!document.body.classList.contains('mailbox-open'))return;
+    document.body.classList.remove('mailbox-open');
+    var e=document.getElementById('ec');
+    if(e) e.classList.remove('ec-sheet');
+    tone(220,.06,'sine',.07,0);hap([4,8,6]);
+  });
+})();
+
 /* RESET */
 document.getElementById('rst-btn').addEventListener('click',function(){
   clickSnd();hap(8);stopHum();stopSpeech();capturedBlob=null;
-  document.body.classList.remove('fixing');
+  document.body.classList.remove('fixing','mailbox-open','result-open','ce-step-active');
+  var ds=document.getElementById('done-screen');if(ds)ds.classList.remove('show');
+  var ecR=document.getElementById('ec');if(ecR) ecR.classList.remove('ec-sheet');
   stillEl.style.display='none';retakeBtn.style.display='none';
   if(camStream){videoEl.style.display='block'}
   var fm=document.getElementById('fold-more');if(fm)fm.open=false;
@@ -2357,9 +4466,10 @@ document.getElementById('rst-btn').addEventListener('click',function(){
   document.getElementById('results').classList.remove('fix-mode');
   var camStep=document.getElementById('cam-step');if(camStep){camStep.classList.remove('show');camStep.classList.add('off')}
   document.getElementById('hazard-banner').classList.remove('show');document.getElementById('q-inp').value='';
-  curSteps=[];doneSteps.clear();warnCt=0;updateWarn();
+  curSteps=[];curVisualTips=[];doneSteps.clear();warnCt=0;updateWarn();
   document.getElementById('all-done').style.display='none';document.getElementById('task-locked').style.display='none';
   document.getElementById('tts-bar').classList.remove('show');pmModal.classList.add('off');
+  var rggR=document.getElementById('readout-glass');if(rggR)rggR.classList.add('off');
   window.scrollTo({top:0,behavior:'smooth'});
 });
 
@@ -2369,9 +4479,23 @@ if(nrCta){
     document.getElementById('rst-btn').click();
   });
 }
+var doneGoBtn=document.getElementById('done-go-btn');
+if(doneGoBtn){
+  doneGoBtn.addEventListener('click',function(){
+    clickSnd();
+    continueFromDoneCelebration();
+  });
+}
+var resultsBackBtn=document.getElementById('results-back-btn');
+if(resultsBackBtn){
+  resultsBackBtn.addEventListener('click',function(){
+    clickSnd();hap([8,5,14]);
+    closeResultScreen();
+  });
+}
 
 /* EMAIL + TESTER FEEDBACK */
-var ec=document.getElementById('ec'),ecInp=document.getElementById('ec-inp'),ecSub=document.getElementById('ec-sub'),ecSkip=document.getElementById('ec-skip'),ecNote=document.getElementById('ec-note');
+var ec=document.getElementById('ec'),ecInp=document.getElementById('ec-inp'),ecSub=document.getElementById('ec-sub'),ecSkip=document.getElementById('ec-skip'),ecNote=document.getElementById('ec-note'),ecFeedbackSend=document.getElementById('ec-feedback-send');
 var selectedRating='';
 document.querySelectorAll('.ec-chip').forEach(function(chip){
   chip.addEventListener('click',function(){
@@ -2387,14 +4511,33 @@ ecSub.addEventListener('click',async function(){
   clickSnd();hap(8);
   var gs=loadS();
   try{
-    await fetch('/collect-email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,source:'repair-pioneers',language:LANG,scans_done:gs.ts||0,notes:(ecNote&&ecNote.value?ecNote.value.trim():'')})});
+    await fetch('/collect-email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,source:'repair-pioneers',language:LANG,scans_done:gs.ts||0,notes:(ecNote&&ecNote.value?ecNote.value.trim():''),
+      session_id:(window.CE_SESSION_ID||''),job_id:(window.CE_CURRENT_JOB_ID||''),task_category:((lastScanResult&&lastScanResult.job_category)||''),hazard_level:((lastScanResult&&lastScanResult.hazard_level)||'')})});
     await fetch('/collect-feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({rating:selectedRating||'none',notes:(ecNote&&ecNote.value?ecNote.value.trim():'')||'',language:LANG,session_scans:gs.ts||0,ui_version:'v5-premium'})});
+    submitOutcome(true,'email_capture',selectedRating||'');
   }catch(e){}
   localStorage.setItem('ce_ed','1');
+  ec.classList.remove('ec-sheet');
+  document.body.classList.remove('mailbox-open');
   ec.innerHTML='<p style="text-align:center;color:var(--green);font-weight:700;padding:8px 0;font-size:14px">🥚 '+(LANG==='nl'?'Top! Je zit in Repair Pioneers.':'Nice! You are in Repair Pioneers.')+'</p>';
+  trackEvent('email_submitted',{email_domain:(em.split('@')[1]||'').toLowerCase(),rating:selectedRating||'none'});
   setTimeout(function(){ec.classList.remove('show')},3000);
 });
-ecSkip.addEventListener('click',function(){localStorage.setItem('ce_ed','1');ec.classList.remove('show')});
+if(ecFeedbackSend){
+  ecFeedbackSend.addEventListener('click',async function(){
+    var noteVal=(ecNote&&ecNote.value?ecNote.value.trim():'');
+    if(!noteVal){if(ecNote)ecNote.focus();return;}
+    clickSnd();hap([8,6,12]);
+    try{
+      await fetch('/collect-feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({rating:selectedRating||'none',notes:noteVal,language:LANG,session_scans:(loadS().ts||0),ui_version:'v6-startup'})});
+      submitOutcome(true,'feedback_sent',selectedRating||'none');
+    }catch(e){}
+    trackEvent('feedback_submitted',{rating:selectedRating||'none',chars:noteVal.length});
+    ecFeedbackSend.textContent=(LANG==='nl'?'Verzonden ✓':'Sent ✓');
+    setTimeout(function(){ecFeedbackSend.textContent=(LANG==='nl'?'Feedback sturen':'Send feedback')},1600);
+  });
+}
+ecSkip.addEventListener('click',function(){localStorage.setItem('ce_ed','1');ec.classList.remove('show','ec-sheet');document.body.classList.remove('mailbox-open')});
 
 /* ONE-TIME LANGUAGE TIP */
 var langTip=document.getElementById('lang-tip'),langTipBtn=document.getElementById('lang-tip-btn');
@@ -2417,6 +4560,9 @@ if(langTipBtn){
 var btnEn=document.getElementById('btn-en'),btnNl=document.getElementById('btn-nl');
 if(btnEn)btnEn.addEventListener('click',function(){hideLangTip(true)});
 if(btnNl)btnNl.addEventListener('click',function(){hideLangTip(true)});
+var btnEnFab=document.getElementById('btn-en-fab'),btnNlFab=document.getElementById('btn-nl-fab');
+if(btnEnFab)btnEnFab.addEventListener('click',function(){setLang('en');hideLangTip(true);clickSnd();hap([6,4,8])});
+if(btnNlFab)btnNlFab.addEventListener('click',function(){setLang('nl');hideLangTip(true);clickSnd();hap([6,4,8])});
 
 /* INIT */
 setLang(LANG);updateHdr();checkStreak();renderBadges();

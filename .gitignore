@@ -8,5 +8,7 @@ __pycache__/
 .DS_Store
 *.sqlite
 node_modules/
+frontend/dist
+backend/mvp_emails.log
 .git
 scans.db
