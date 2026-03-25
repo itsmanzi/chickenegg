@@ -495,6 +495,62 @@
     /* Walkthrough-only: keep full list hidden to avoid scrolling */
     #r-steps{display:none!important}
 
+    /* Camera step popup (shows current step over camera) */
+    .cam-step{
+      position:absolute;
+      left:10px;right:10px;
+      bottom:10px;
+      z-index:7;
+      padding:12px 12px;
+      border-radius:18px;
+      background:
+        radial-gradient(120% 120% at 16% 10%, rgba(255,174,58,.22) 0%, rgba(255,174,58,0) 46%),
+        radial-gradient(120% 120% at 84% 14%, rgba(88,115,214,.22) 0%, rgba(88,115,214,0) 50%),
+        linear-gradient(150deg, rgba(255,255,255,.72), rgba(236,242,252,.58));
+      border:1px solid rgba(255,255,255,.75);
+      box-shadow:0 18px 42px rgba(18,26,42,.18), inset 0 1px 0 rgba(255,255,255,.9);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transform:translateY(10px);
+      opacity:0;
+      transition:transform .22s cubic-bezier(.34,1.2,.64,1), opacity .22s ease;
+      overflow:hidden;
+    }
+    .cam-step::before{
+      content:'';
+      position:absolute;left:0;top:0;bottom:0;width:4px;
+      background:linear-gradient(180deg,rgba(255,174,58,.95),rgba(88,115,214,.9));
+      opacity:.95;
+    }
+    .cam-step.show{opacity:1;transform:translateY(0)}
+    .cam-step.off{display:none}
+    .cam-step-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+    .cam-step-badge{
+      font-size:10px;font-weight:1000;letter-spacing:.8px;text-transform:uppercase;
+      color:rgba(40,54,82,.75);
+      background:rgba(255,255,255,.55);
+      border:1px solid rgba(255,255,255,.7);
+      border-radius:999px;
+      padding:4px 10px;
+    }
+    .cam-step-ct{font-size:10px;font-weight:900;color:rgba(40,54,82,.65)}
+    .cam-step-txt{font-size:14px;font-weight:900;line-height:1.35;color:rgba(18,24,34,.9);text-shadow:0 1px 0 rgba(255,255,255,.6)}
+    .cam-step-tools{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-start}
+    .cam-step-tools .shop-lnk{width:44px;height:28px;border-radius:12px;box-shadow:0 8px 16px rgba(18,26,42,.14), inset 0 1px 0 rgba(255,255,255,.85)}
+
+    /* Fix Mode: remove scrolling by hiding non-step sections */
+    #results.fix-mode .r-hdr,
+    #results.fix-mode #tts-bar,
+    #results.fix-mode #tip-safety,
+    #results.fix-mode #tools-card,
+    #results.fix-mode #ad-banner,
+    #results.fix-mode #fold-more,
+    #results.fix-mode #rst-btn,
+    #results.fix-mode #no-repair-box,
+    #results.fix-mode #warn-ctr{
+      display:none!important;
+    }
+
     /* Finish CTA pulse */
     .ec.ec-top.ce-pulse{animation:cePulse 1.05s ease-in-out 0s 2}
     @keyframes cePulse{0%{transform:translateY(0)}50%{transform:translateY(-2px)}100%{transform:translateY(0)}}
@@ -940,6 +996,14 @@
       <div class="scan-corner tl"></div><div class="scan-corner tr"></div>
       <div class="scan-corner bl"></div><div class="scan-corner br"></div>
       <div class="scan-lbl" id="scan-lbl">Analysing...</div>
+    </div>
+    <div class="cam-step off" id="cam-step" aria-live="polite">
+      <div class="cam-step-top">
+        <div class="cam-step-badge" id="cam-step-badge">Step 1</div>
+        <div class="cam-step-ct" id="cam-step-ct">1 / 1</div>
+      </div>
+      <div class="cam-step-txt" id="cam-step-txt"></div>
+      <div class="cam-step-tools" id="cam-step-tools"></div>
     </div>
     <div id="xray-overlay"></div>
     <div id="live-prompt" aria-hidden="true">
@@ -1784,6 +1848,7 @@ function updateWalkCardUI(){
     tx.textContent=curSteps[walkIdx]||'';
   }
   renderWalkTools(curSteps[walkIdx]||'');
+  renderCamStepOverlay(curSteps[walkIdx]||'');
 
   var backBtn=document.getElementById('walk-back');
   var nextBtn=document.getElementById('walk-next');
@@ -1913,6 +1978,51 @@ function renderWalkTools(stepText){
   });
 }
 
+function renderCamStepOverlay(stepText){
+  var wrap=document.getElementById('cam-step');
+  if(!wrap) return;
+  var tot=curSteps.length||0;
+  if(!stepText || tot<=0){
+    wrap.classList.add('off');
+    wrap.classList.remove('show');
+    return;
+  }
+  wrap.classList.remove('off');
+  // force reflow for smooth pop on updates
+  wrap.classList.remove('show');void wrap.offsetWidth;wrap.classList.add('show');
+  var badge=document.getElementById('cam-step-badge');
+  var ct=document.getElementById('cam-step-ct');
+  var txt=document.getElementById('cam-step-txt');
+  if(badge) badge.textContent=(LANG==='nl'?'Stap ':'Step ')+(walkIdx+1);
+  if(ct) ct.textContent=(walkIdx+1)+' / '+tot;
+  if(txt) txt.textContent=stepText;
+
+  var toolsEl=document.getElementById('cam-step-tools');
+  if(!toolsEl) return;
+  toolsEl.innerHTML='';
+  var r=lastScanResult||{};
+  var allTools=(r.tools_needed||[]).concat(r.materials_needed||[]);
+  if(!allTools.length) return;
+  var scored = allTools.map(function(t){
+    return {t:t, s:toolScoreForStep(stepText,t)};
+  }).sort(function(a,b){return b.s-a.s});
+  var picks = scored.filter(function(x){return x.s>0}).slice(0,2).map(function(x){return x.t});
+  if(!picks.length) picks = allTools.slice(0,2);
+  picks.forEach(function(tool){
+    // Show store logos only (premium, no clutter)
+    STORES.forEach(function(store){
+      var a=document.createElement('a');
+      a.className='shop-lnk';
+      a.href=pickProductUrl(store.n==='Gamma'?'gamma':(store.n==='Praxis'?'praxis':'bol'),tool,store.u);
+      a.target='_blank';a.rel='noopener';
+      a.title=store.n+' • '+tool;
+      a.innerHTML=store.logo;
+      a.addEventListener('click',function(){fetch('/track-click',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({store:store.n,tool:tool})}).catch(function(){})});
+      toolsEl.appendChild(a);
+    });
+  });
+}
+
 function renderResults(r){
   lastScanResult=r;
   curTask=r.task||r.what_i_see||'';
@@ -1920,6 +2030,10 @@ function renderResults(r){
   doneSteps.clear();warnCt=0;updateWarn();
 
   var repairNeeded = curSteps.length>0 && curSteps.some(function(s){return (s||'').trim().length>0});
+  var resultsEl=document.getElementById('results');
+  if(resultsEl){
+    resultsEl.classList.toggle('fix-mode', !!repairNeeded);
+  }
   var costStr = (r.estimated_cost||'').toString().trim().toLowerCase();
   var hasCost = !!costStr && costStr !== 'n/a' && costStr !== 'na';
   var stepsCard = document.getElementById('steps-card');
