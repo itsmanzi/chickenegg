@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>chickenegg Founder Dashboard</title>
+  <style>
+    :root{
+      --bg:#0d1016;
+      --panel:#171c26;
+      --line:#2b3344;
+      --text:#e6edf7;
+      --muted:#9fb0c7;
+      --accent:#ff9f43;
+      --good:#2ecc71;
+      --warn:#f1c40f;
+      --bad:#ff6b6b;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+    .wrap{max-width:1180px;margin:24px auto;padding:0 14px 24px}
+    .top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    h1{font-size:22px;margin:0}
+    .sub{color:var(--muted);font-size:13px}
+    .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    select,button{
+      background:var(--panel);
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:8px 12px;
+      font-size:13px;
+    }
+    button{cursor:pointer}
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(12,minmax(0,1fr));
+      gap:12px;
+      margin-top:16px;
+    }
+    .card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px;
+      min-height:120px;
+    }
+    .span-3{grid-column:span 3}
+    .span-4{grid-column:span 4}
+    .span-6{grid-column:span 6}
+    .span-8{grid-column:span 8}
+    .span-12{grid-column:span 12}
+    .kpi-label{font-size:12px;color:var(--muted);margin-bottom:6px}
+    .kpi-value{font-size:30px;font-weight:700;line-height:1}
+    .kpi-delta{margin-top:8px;font-size:13px}
+    .good{color:var(--good)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+    h3{margin:0 0 10px;font-size:14px;color:#c7d5e8}
+    .funnel{display:grid;gap:8px}
+    .funnel-row{display:grid;grid-template-columns:150px 1fr 72px;gap:10px;align-items:center}
+    .bar-wrap{height:10px;background:#111722;border-radius:8px;overflow:hidden;border:1px solid #253043}
+    .bar{height:100%;background:linear-gradient(90deg,var(--accent),#ffc26d)}
+    .muted{color:var(--muted)}
+    .stack{display:grid;gap:8px}
+    .list-item{display:flex;justify-content:space-between;gap:10px;font-size:13px;border-bottom:1px dashed #273244;padding-bottom:6px}
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th,td{padding:8px 6px;border-bottom:1px solid #243043;text-align:left;vertical-align:top}
+    th{color:#b9c9de;font-weight:600}
+    .badge{
+      display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;border:1px solid #38465f;color:#d7e2f0
+    }
+    .spark{
+      height:90px;display:flex;gap:3px;align-items:flex-end
+    }
+    .spark > i{
+      flex:1;background:linear-gradient(180deg,#ffc26d,#ff9f43);border-radius:4px 4px 0 0;opacity:.9;
+    }
+    .coverage{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{
+      padding:4px 8px;border-radius:999px;font-size:12px;border:1px solid #2f3c54;background:#111722
+    }
+    .chip.ok{border-color:#2f6b49;color:#8ee7b2}
+    .chip.miss{border-color:#6f4a4a;color:#ffb3b3}
+    @media (max-width:960px){
+      .span-3,.span-4,.span-6,.span-8{grid-column:span 12}
+      .funnel-row{grid-template-columns:120px 1fr 62px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1>chickenegg Founder Dashboard</h1>
+        <div class="sub" id="asOf">Loading...</div>
+      </div>
+      <div class="controls">
+        <label class="sub" for="days">Window</label>
+        <select id="days">
+          <option value="7">7 days</option>
+          <option value="14" selected>14 days</option>
+          <option value="30">30 days</option>
+          <option value="60">60 days</option>
+        </select>
+        <button id="refreshBtn">Refresh now</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <section class="card span-3">
+        <div class="kpi-label">Live Score</div>
+        <div class="kpi-value" id="liveScore">-</div>
+        <div class="kpi-delta" id="scanGrowth">-</div>
+      </section>
+      <section class="card span-3">
+        <div class="kpi-label">Unique Scan Users</div>
+        <div class="kpi-value" id="uniqueUsers">-</div>
+        <div class="kpi-delta muted" id="repeatRate">-</div>
+      </section>
+      <section class="card span-3">
+        <div class="kpi-label">Scan -> Job Complete</div>
+        <div class="kpi-value" id="scanToJob">-</div>
+        <div class="kpi-delta muted" id="scanToEmail">-</div>
+      </section>
+      <section class="card span-3">
+        <div class="kpi-label">Scans / Day</div>
+        <div class="kpi-value" id="scansPerDay">-</div>
+        <div class="kpi-delta" id="emailGrowth">-</div>
+      </section>
+
+      <section class="card span-6">
+        <h3>Conversion Funnel</h3>
+        <div id="funnel" class="funnel"></div>
+      </section>
+
+      <section class="card span-6">
+        <h3>Daily Scans Trend</h3>
+        <div id="scanSpark" class="spark"></div>
+        <div class="sub" id="trendHint">-</div>
+      </section>
+
+      <section class="card span-4">
+        <h3>Top Task Categories</h3>
+        <div id="topCategories" class="stack muted">No data yet</div>
+      </section>
+      <section class="card span-4">
+        <h3>Top Source Channels</h3>
+        <div id="topChannels" class="stack muted">No data yet</div>
+      </section>
+      <section class="card span-4">
+        <h3>Language Mix</h3>
+        <div id="languageMix" class="stack muted">No data yet</div>
+      </section>
+
+      <section class="card span-12">
+        <h3>Tracking Coverage (required events)</h3>
+        <div id="coverage" class="coverage"></div>
+      </section>
+
+      <section class="card span-12">
+        <h3>Recent Activity</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>UTC Time</th>
+              <th>Event</th>
+              <th>Category</th>
+              <th>Hazard</th>
+              <th>Source</th>
+              <th>Lang</th>
+              <th>Session</th>
+            </tr>
+          </thead>
+          <tbody id="recentEventsBody">
+            <tr><td colspan="7" class="muted">Loading...</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const daysEl = document.getElementById('days');
+    const asOfEl = document.getElementById('asOf');
+    const refreshBtn = document.getElementById('refreshBtn');
+    let autoTimer = null;
+
+    function n(v){ return Number(v || 0); }
+    function fmtPct(v){ return `${n(v).toFixed(2)}%`; }
+    function fmtInt(v){ return new Intl.NumberFormat().format(n(v)); }
+    function deltaClass(v){ return v > 0 ? 'good' : (v < 0 ? 'bad' : 'warn'); }
+    function sign(v){ return v > 0 ? '+' : ''; }
+    function esc(s){
+      return String(s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    function renderList(el, rows, key='name'){
+      if(!rows || !rows.length){
+        el.innerHTML = '<div class="muted">No data yet</div>';
+        return;
+      }
+      el.innerHTML = rows.map(r =>
+        `<div class="list-item"><span>${esc(r[key])}</span><strong>${fmtInt(r.count)}</strong></div>`
+      ).join('');
+    }
+
+    function renderFunnel(rows){
+      const root = document.getElementById('funnel');
+      if(!rows || !rows.length){
+        root.innerHTML = '<div class="muted">No funnel events yet</div>';
+        return;
+      }
+      const max = Math.max(...rows.map(r => n(r.count)), 1);
+      root.innerHTML = rows.map(r => {
+        const w = Math.max(2, Math.round((n(r.count)/max) * 100));
+        return `<div class="funnel-row">
+          <span class="muted">${esc(r.stage)}</span>
+          <div class="bar-wrap"><div class="bar" style="width:${w}%"></div></div>
+          <strong>${fmtInt(r.count)}</strong>
+        </div>`;
+      }).join('');
+    }
+
+    function renderSpark(trend){
+      const root = document.getElementById('scanSpark');
+      if(!trend || !trend.length){
+        root.innerHTML = '<span class="muted">No scan trend yet</span>';
+        return;
+      }
+      const scans = trend.map(d => n(d.scan_completed));
+      const max = Math.max(...scans, 1);
+      root.innerHTML = scans.map(v => {
+        const h = Math.max(8, Math.round((v / max) * 86));
+        return `<i style="height:${h}px" title="${v} scans"></i>`;
+      }).join('');
+      const latest = scans[scans.length - 1] || 0;
+      const prev = scans.length > 1 ? (scans[scans.length - 2] || 0) : 0;
+      const delta = latest - prev;
+      const cls = deltaClass(delta);
+      document.getElementById('trendHint').innerHTML =
+        `Latest day: <strong>${fmtInt(latest)}</strong> scans ` +
+        `<span class="${cls}">(${sign(delta)}${fmtInt(delta)} vs previous day)</span>`;
+    }
+
+    function renderCoverage(coverage){
+      const root = document.getElementById('coverage');
+      const keys = Object.keys(coverage || {});
+      if(!keys.length){
+        root.innerHTML = '<span class="muted">No coverage data</span>';
+        return;
+      }
+      root.innerHTML = keys.map(k => {
+        const ok = !!coverage[k];
+        return `<span class="chip ${ok ? 'ok' : 'miss'}">${esc(k)}: ${ok ? 'ok' : 'missing'}</span>`;
+      }).join('');
+    }
+
+    function renderRecent(rows){
+      const body = document.getElementById('recentEventsBody');
+      if(!rows || !rows.length){
+        body.innerHTML = '<tr><td colspan="7" class="muted">No recent events</td></tr>';
+        return;
+      }
+      body.innerHTML = rows.map(r => `<tr>
+        <td>${esc((r.created_at || '').replace('T',' ').slice(0,19))}</td>
+        <td><span class="badge">${esc(r.event_name)}</span></td>
+        <td>${esc(r.task_category || '-')}</td>
+        <td>${esc(r.hazard_level || '-')}</td>
+        <td>${esc(r.source_channel || '-')}</td>
+        <td>${esc(r.language || '-')}</td>
+        <td>${esc(r.session_id || '-')}</td>
+      </tr>`).join('');
+    }
+
+    async function loadDashboard(){
+      const days = Number(daysEl.value || 14);
+      refreshBtn.disabled = true;
+      try{
+        const res = await fetch(`/metrics-detail?days=${days}`, {cache:'no-store'});
+        const data = await res.json();
+        if(!data.success) throw new Error(data.error || 'Failed to load dashboard');
+
+        asOfEl.textContent = `Auto-refresh every 10s · As of ${new Date(data.as_of_utc).toLocaleString()}`;
+        document.getElementById('liveScore').textContent = n(data.kpis.live_score).toFixed(2);
+        document.getElementById('uniqueUsers').textContent = fmtInt(data.kpis.unique_scan_users);
+        document.getElementById('scanToJob').textContent = fmtPct(data.kpis.scan_to_job_completion_pct);
+        document.getElementById('scansPerDay').textContent = n(data.kpis.scans_per_day).toFixed(2);
+
+        document.getElementById('repeatRate').textContent = `Repeat users: ${fmtPct(data.kpis.repeat_user_rate_proxy_pct)}`;
+        document.getElementById('scanToEmail').textContent = `Scan -> Email: ${fmtPct(data.kpis.scan_to_email_cvr_pct)}`;
+
+        const sg = n(data.momentum.scan_growth_pct);
+        const eg = n(data.momentum.email_growth_pct);
+        document.getElementById('scanGrowth').innerHTML =
+          `Scan growth: <span class="${deltaClass(sg)}">${sign(sg)}${sg.toFixed(2)}%</span>`;
+        document.getElementById('emailGrowth').innerHTML =
+          `Email growth: <span class="${deltaClass(eg)}">${sign(eg)}${eg.toFixed(2)}%</span>`;
+
+        renderFunnel(data.funnel || []);
+        renderSpark(data.trend_daily || []);
+        renderList(document.getElementById('topCategories'), data.top_task_categories || []);
+        renderList(document.getElementById('topChannels'), data.top_source_channels || []);
+        renderList(document.getElementById('languageMix'), (data.language_mix || []).map(x => ({name:x.language,count:x.count})));
+        renderCoverage(data.event_coverage || {});
+        renderRecent(data.recent_events || []);
+      }catch(err){
+        asOfEl.textContent = `Dashboard error: ${err.message}`;
+      }finally{
+        refreshBtn.disabled = false;
+      }
+    }
+
+    function startAuto(){
+      if(autoTimer) clearInterval(autoTimer);
+      autoTimer = setInterval(loadDashboard, 10000);
+    }
+
+    daysEl.addEventListener('change', loadDashboard);
+    refreshBtn.addEventListener('click', loadDashboard);
+
+    loadDashboard();
+    startAuto();
+  </script>
+</body>
+</html>
