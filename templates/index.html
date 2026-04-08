@@ -24,7 +24,7 @@
       --org:#FF9247;
       --t1:#F4F7FF;--t2:rgba(227,235,255,.78);--t3:rgba(192,205,245,.55);--t4:rgba(192,205,245,.28);
       --rxl:20px;--rlg:14px;--rmd:10px;--rsm:6px;
-      --orb-glx:0px;--orb-gly:6px;--think-dur:1.32s;
+      --orb-glx:0px;--orb-gly:6px;--orb-gltx:0px;--orb-glty:0px;--ring-glx:0px;--ring-gly:0px;--think-dur:1.32s;
     }
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
     html{
@@ -79,6 +79,20 @@
     .pxp{background:rgba(140,112,28,.13);border:.5px solid rgba(140,112,28,.3);color:#625810}
     .pstr{background:rgba(160,50,40,.1);border:.5px solid rgba(160,50,40,.24);color:#802818}
     .plvl{background:linear-gradient(135deg,#887018,#A88838);color:#0A0800;font-size:6px;font-weight:900;text-transform:uppercase}
+    #app-version-pill{
+      background:linear-gradient(135deg,#1D7A45,#145E35)!important;
+      border:1px solid rgba(189,255,215,.52)!important;
+      color:#F2FFF6!important;
+      font-size:10px!important;
+      letter-spacing:.45px;
+      padding:4px 9px!important;
+      box-shadow:0 0 0 1px rgba(0,0,0,.12),0 0 16px rgba(52,189,110,.38),inset 0 1px 0 rgba(255,255,255,.28);
+      animation:ceBuildPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes ceBuildPulse{
+      0%,100%{transform:translateY(0);filter:brightness(1)}
+      50%{transform:translateY(-1px);filter:brightness(1.08)}
+    }
     .lang-wrap{display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:14px;background:rgba(15,24,48,.62);border:.5px solid rgba(124,151,230,.38);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
     .lang-label{font-size:9px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;color:#C9D8FF;display:flex;align-items:center;gap:4px;white-space:nowrap}
     .lang-toggle{display:flex;gap:3px;background:rgba(0,0,0,.08);border:.5px solid rgba(0,0,0,.1);border-radius:20px;padding:2px}
@@ -158,17 +172,84 @@
 
     /* HERO — text only, egg removed */
     .hero-sec{display:flex;flex-direction:column;align-items:center;padding:8px 0 4px;text-align:center;flex-shrink:0}
+    .build-flag{
+      margin:0 auto 6px;
+      display:inline-flex;align-items:center;gap:6px;
+      padding:5px 10px;border-radius:999px;
+      font-size:11px;font-weight:900;letter-spacing:.45px;text-transform:uppercase;
+      background:linear-gradient(135deg,#1D7A45,#145E35);
+      color:#F2FFF6;border:1px solid rgba(189,255,215,.52);
+      box-shadow:0 0 0 1px rgba(0,0,0,.12),0 0 16px rgba(52,189,110,.38),inset 0 1px 0 rgba(255,255,255,.28);
+      animation:ceBuildPulse 1.8s ease-in-out infinite;
+    }
+    .build-flag .dot{width:7px;height:7px;border-radius:50%;background:#9BFFC0;box-shadow:0 0 10px rgba(155,255,192,.85)}
+    .live-build-flag{
+      position:absolute;left:10px;top:10px;z-index:16;pointer-events:none;
+      padding:4px 8px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.35px;text-transform:uppercase;
+      background:linear-gradient(135deg,#1D7A45,#145E35);
+      color:#F2FFF6;border:1px solid rgba(189,255,215,.52);
+      box-shadow:0 0 0 1px rgba(0,0,0,.12),0 0 12px rgba(52,189,110,.35),inset 0 1px 0 rgba(255,255,255,.28);
+      animation:ceBuildPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes ceBuildPulse{
+      0%,100%{transform:translateY(0);filter:brightness(1)}
+      50%{transform:translateY(-1px);filter:brightness(1.08)}
+    }
     .hero-h1{font-size:22px;font-weight:900;letter-spacing:-.8px;line-height:1.1;color:#F7FAFF;text-shadow:0 0 16px rgba(80,130,255,.22);margin-bottom:2px}
     .hero-h1 span{color:inherit}
     .hero-p{font-size:11px;color:var(--t2);line-height:1.35;margin-bottom:6px}
+    /* Capture-first mode: remove all non-essential chrome. */
+    body.ce-capture-focus .hdr,
+    body.ce-capture-focus .hero-sec,
+    body.ce-capture-focus .prompt-wrap,
+    body.ce-capture-focus .dyn-island,
+    body.ce-capture-focus #lang-fab,
+    body.ce-capture-focus .build-flag{display:none!important}
+    body.ce-capture-focus .wrap{max-width:none!important;padding:0!important}
+    body.ce-capture-focus .ce-landing{min-height:100dvh!important}
+    body.ce-capture-focus .cam-container{
+      position:fixed!important;inset:0!important;z-index:240!important;
+      margin:0!important;border-radius:0!important;max-height:none!important;
+      box-shadow:none!important;border:none!important;
+    }
+    body.ce-capture-focus #cam-video,
+    body.ce-capture-focus #still-img{border-radius:0!important}
+    body.ce-capture-focus .cam-dock{
+      position:fixed!important;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom));
+      z-index:260;padding:0 10px;justify-content:center;
+    }
+    body.ce-capture-focus .dock-side{display:none!important}
+    body.ce-capture-focus .scan-wrap{margin:0 auto}
+    body.ce-capture-focus .scan-egg{
+      opacity:0;pointer-events:none;transform:translateY(10px) scale(.96);
+      transition:opacity .24s ease,transform .24s ease;
+    }
+    body.ce-capture-focus.ce-can-scan .scan-egg{
+      opacity:1;pointer-events:auto;transform:translateY(0) scale(1);
+    }
+    body.ce-capture-focus .live-build-flag{display:inline-flex}
 
     /* CAMERA */
     .cam-container{
-      margin-bottom:6px;border-radius:16px;overflow:hidden;position:relative;background:#000;
-      box-shadow:0 14px 34px rgba(0,0,0,.4),0 0 0 1px rgba(122,143,215,.28),0 0 24px rgba(61,110,255,.16);
+      margin-bottom:6px;border-radius:16px;overflow:hidden;position:relative;
+      background:radial-gradient(140% 110% at 50% -12%, #1d2739 0%, #0b111b 44%, #070b12 100%);
+      box-shadow:0 14px 34px rgba(0,0,0,.44),0 0 0 1px rgba(166,188,228,.25),0 0 24px rgba(80,118,180,.14);
       width:100%;max-width:100%;
       flex:1 1 auto;min-height:120px;max-height:min(38vh,calc(100dvh - 292px));
       display:flex;flex-direction:column;
+    }
+    .cam-container::before{
+      content:'';
+      position:absolute;
+      inset:8px;
+      border-radius:12px;
+      pointer-events:none;
+      z-index:2;
+      background:
+        linear-gradient(90deg, rgba(179,201,236,.2) 0 34px, transparent 34px calc(100% - 34px), rgba(179,201,236,.2) calc(100% - 34px) 100%),
+        linear-gradient(180deg, rgba(179,201,236,.22) 0 24px, transparent 24px calc(100% - 24px), rgba(179,201,236,.22) calc(100% - 24px) 100%);
+      opacity:.18;
+      mix-blend-mode:screen;
     }
     #cam-video{width:100%;flex:1;min-height:120px;height:100%;max-height:100%;object-fit:cover;display:block;border-radius:16px}
     #cam-canvas{display:none}
@@ -236,6 +317,7 @@
       content:'';position:absolute;inset:0;border-radius:20px;padding:1px;
       background:linear-gradient(135deg,rgba(180,230,255,.5),rgba(255,255,255,0),rgba(120,200,255,.25));
       -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+      mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
       -webkit-mask-composite:xor;mask-composite:exclude;
       pointer-events:none;
     }
@@ -258,8 +340,8 @@
       background:linear-gradient(90deg,rgba(0,255,220,.65),rgba(100,180,255,.85));
       box-shadow:0 0 12px rgba(0,220,255,.35);
     }
-    #live-prompt-ttl{font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:rgba(126,255,166,.98);margin-bottom:6px;line-height:1.25;text-shadow:0 0 10px rgba(70,255,130,.25)}
-    #live-prompt-txt{font-size:14px;color:#caffdb;font-weight:880;line-height:1.4;margin-bottom:10px;text-shadow:0 0 12px rgba(70,255,130,.28),0 1px 8px rgba(0,0,0,.35)}
+    #live-prompt-ttl{font-size:12px;font-weight:920;letter-spacing:.12em;text-transform:uppercase;color:rgba(150,255,186,.98);margin-bottom:6px;line-height:1.22;text-shadow:0 0 12px rgba(70,255,130,.26)}
+    #live-prompt-txt{font-size:clamp(15px,3.8vw,18px);color:#D8FFE7;font-weight:900;line-height:1.36;margin-bottom:10px;text-shadow:0 0 14px rgba(70,255,130,.3),0 1px 10px rgba(0,0,0,.4)}
     #glass-hint{font-size:11px;font-weight:850;color:rgba(108,255,154,.9);letter-spacing:.02em}
     #live-prompt.mini{opacity:.92}
     #live-prompt.mini #live-prompt-txt{font-size:12px}
@@ -286,7 +368,7 @@
     .scan-corner.tr{top:10px;right:10px;border-width:2px 2px 0 0}
     .scan-corner.bl{bottom:10px;left:10px;border-width:0 0 2px 2px}
     .scan-corner.br{bottom:10px;right:10px;border-width:0 2px 2px 0}
-    .scan-lbl{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:9px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:rgba(200,178,108,.85);display:none;animation:lb 1.4s ease-in-out infinite}
+    .scan-lbl{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:10px;font-weight:900;letter-spacing:3.6px;text-transform:uppercase;color:rgba(200,178,108,.9);display:none;animation:lb 1.4s ease-in-out infinite}
     .cam-overlay.scanning .scan-lbl{display:block}
     .cam-overlay .obj-highlight-flash{
       position:absolute;inset:0;border-radius:18px;pointer-events:none;z-index:52;opacity:0;
@@ -371,6 +453,36 @@
       left:50%!important;
       transform:translateX(-50%)!important;
     }
+    .capture-job{
+      position:absolute!important;left:50%!important;transform:translateX(-50%)!important;
+      bottom:calc(96px + env(safe-area-inset-bottom))!important;
+      width:90%!important;max-width:420px!important;z-index:20!important;pointer-events:none;
+      padding:16px!important;border-radius:22px!important;
+      background:rgba(20,20,20,.7)!important;
+      border:1px solid rgba(255,255,255,.08)!important;
+      box-shadow:0 10px 28px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.06)!important;
+      backdrop-filter:blur(10px) saturate(1.05)!important;-webkit-backdrop-filter:blur(10px) saturate(1.05)!important;
+      text-align:left!important;display:block!important;
+    }
+    .capture-job-ttl{
+      text-transform:none;font-size:19px;font-weight:600;line-height:1.25;letter-spacing:-.2px;
+      color:#F2F2F2;max-width:30ch;margin:0;
+      text-shadow:0 1px 8px rgba(0,0,0,.45);
+    }
+    .capture-job-sub{
+      margin-top:6px;font-size:14px;font-weight:500;line-height:1.4;opacity:.85;color:#F2F2F2;
+      max-width:34ch;margin-left:0;margin-right:0;
+      text-shadow:0 1px 6px rgba(0,0,0,.4);
+    }
+    .capture-job.attn{animation:captureJobPing .44s cubic-bezier(.22,1,.36,1)}
+    @keyframes captureJobPing{
+      0%{transform:translateX(-50%) scale(.99)}
+      55%{transform:translateX(-50%) scale(1.01)}
+      100%{transform:translateX(-50%) scale(1)}
+    }
+    .cam-status{display:none!important}
+    body.result-open .capture-job{display:none!important}
+    body.ce-cam-error .capture-job{background:rgba(20,20,20,.82)!important}
     @keyframes dp{0%,100%{opacity:.5}50%{opacity:1}}
     .cam-status.ready .cam-dot{background:#44cc44;animation:none;opacity:1}
     .retake-btn{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);border:.5px solid rgba(255,255,255,.25);border-radius:20px;padding:4px 12px;font-size:9px;font-weight:700;color:rgba(255,255,255,.85);cursor:pointer;display:none;font-family:inherit;transition:transform .2s ease,background .2s ease,box-shadow .2s ease}
@@ -455,6 +567,21 @@
     .hazard-hero-sub{font-size:13px;color:var(--t2);line-height:1.4;margin-bottom:12px}
     .hazard-hero-actions{display:none;flex-direction:column;gap:10px}
     .hazard-hero-actions.show{display:flex}
+    .hazard-inline-actions{display:none;margin-top:8px}
+    .hazard-inline-actions.show{display:block}
+    .hazard-step-unlock{
+      width:100%;
+      min-height:46px;
+      border-radius:12px;
+      border:1px solid rgba(160,80,20,.38);
+      background:linear-gradient(135deg,rgba(160,80,20,.2),rgba(130,66,16,.12));
+      color:#6F3B12;
+      font-size:14px;
+      font-weight:850;
+      font-family:inherit;
+      cursor:pointer;
+    }
+    .hazard-step-unlock:active{transform:scale(.99)}
     .hcall{
       display:flex;align-items:center;justify-content:center;gap:10px;
       min-height:52px;padding:12px 16px;border-radius:14px;font-size:16px;font-weight:900;font-family:inherit;
@@ -467,6 +594,223 @@
     .hcall.hcall-gas{background:linear-gradient(135deg,#6A4A18,#4A3410)}
     .hcall.hcall-water{background:linear-gradient(135deg,#1A5080,#143a5c)}
 
+    /* Visual Decision Engine — perception → severity → decision */
+    #ce-visual-engine{margin-bottom:14px}
+    #ce-visual-engine .ce-ve-paywall{
+      font-size:12px;font-weight:700;line-height:1.45;color:var(--t2);max-width:38ch;margin:0 auto 12px;
+      padding:10px 14px;border-radius:14px;
+      background:linear-gradient(135deg,rgba(144,112,24,.12),rgba(120,90,18,.08));
+      border:1px solid rgba(144,112,24,.28);
+      box-shadow:0 6px 20px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.35);
+    }
+    #ce-visual-engine .ce-ve-paywall.off{display:none}
+    .ce-ve-kicker{font-size:10px;font-weight:900;letter-spacing:.72px;text-transform:uppercase;color:var(--t3);margin:0 0 6px 4px}
+    .ce-ve-card{
+      border-radius:20px;padding:16px 16px 14px;margin-bottom:10px;position:relative;
+      background:linear-gradient(165deg,rgba(255,255,255,.72),rgba(248,248,252,.55));
+      border:1px solid rgba(255,255,255,.55);
+      box-shadow:0 10px 28px rgba(18,22,32,.1),inset 0 1px 0 rgba(255,255,255,.75);
+      backdrop-filter:blur(12px) saturate(1.1);
+      -webkit-backdrop-filter:blur(12px) saturate(1.1);
+      max-width:100%;
+    }
+    body.cam-tiktok .ce-ve-card{
+      background:linear-gradient(165deg,rgba(28,32,44,.55),rgba(22,24,34,.42));
+      border-color:rgba(255,255,255,.12);
+      box-shadow:0 12px 32px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.08);
+    }
+    #ce-visual-engine:not(.ce-ve-ready) .ce-ve-card{
+      opacity:0;transform:translateY(12px);
+    }
+    #ce-visual-engine.ce-ve-ready .ce-ve-card{
+      opacity:1;transform:translateY(0);
+      transition:opacity .55s cubic-bezier(.25,1,.45,1),transform .55s cubic-bezier(.25,1,.45,1);
+    }
+    #ce-visual-engine.ce-ve-ready .ce-ve-card-perc{transition-delay:40ms}
+    #ce-visual-engine.ce-ve-ready .ce-ve-card-sev{transition-delay:160ms}
+    #ce-visual-engine.ce-ve-ready .ce-ve-card-dec{transition-delay:280ms}
+    .ce-ve-what{font-size:16px;font-weight:800;letter-spacing:-.35px;line-height:1.35;color:var(--t1);max-width:38ch;margin:0 0 10px}
+    .ce-ve-list-lbl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--t3);margin:10px 0 6px}
+    .ce-ve-list{margin:0;padding-left:1.1em;max-width:38ch;color:var(--t2);font-size:14px;line-height:1.45}
+    .ce-ve-list li{margin-bottom:4px}
+    .ce-ve-sev-row{display:flex;align-items:flex-start;gap:12px}
+    .ce-ve-sev-ico{font-size:28px;line-height:1;flex-shrink:0}
+    .ce-ve-sev-body{min-width:0}
+    .ce-ve-sev-title{font-size:17px;font-weight:900;letter-spacing:-.3px;margin:0 0 4px;color:var(--t1)}
+    .ce-ve-sev-txt{font-size:14px;font-weight:650;line-height:1.45;color:var(--t2);max-width:36ch;margin:0}
+    .ce-sev-safe.ce-ve-card{border-color:rgba(58,120,72,.35)}
+    .ce-sev-attn.ce-ve-card{border-color:rgba(180,130,40,.4)}
+    .ce-sev-danger.ce-ve-card{border-color:rgba(180,60,48,.45);background:linear-gradient(165deg,rgba(160,50,40,.1),rgba(255,255,255,.65))}
+    body.cam-tiktok .ce-sev-danger.ce-ve-card{background:linear-gradient(165deg,rgba(120,40,32,.35),rgba(22,24,34,.5))}
+    .ce-dec-pill{
+      display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;
+      font-size:15px;font-weight:900;letter-spacing:-.2px;margin-bottom:10px;
+      box-shadow:0 6px 18px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.4);
+    }
+    .ce-dec-safe{background:linear-gradient(135deg,rgba(58,120,72,.22),rgba(48,100,60,.14));color:#1a4d28;border:1px solid rgba(72,160,96,.4)}
+    .ce-dec-caution{background:linear-gradient(135deg,rgba(180,130,40,.22),rgba(150,100,28,.12));color:#5a3c0e;border:1px solid rgba(200,150,50,.45)}
+    .ce-dec-stop{background:linear-gradient(135deg,rgba(160,50,40,.24),rgba(120,36,28,.14));color:#5c1810;border:1px solid rgba(200,80,64,.5)}
+    body.cam-tiktok .ce-dec-safe{color:#B7F3CC}
+    body.cam-tiktok .ce-dec-caution{color:#FFD89A}
+    body.cam-tiktok .ce-dec-stop{color:#FFC8C4}
+    .ce-ve-dec-rationale{font-size:14px;line-height:1.5;color:var(--t2);max-width:38ch;margin:0 0 10px}
+    .ce-ve-subblock{margin-top:8px;padding-top:10px;border-top:1px solid rgba(0,0,0,.06)}
+    body.cam-tiktok .ce-ve-subblock{border-top-color:rgba(255,255,255,.08)}
+    .ce-ve-sub-lbl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.55px;color:var(--t3);margin-bottom:4px}
+    .ce-ve-sub-txt{font-size:13px;line-height:1.45;color:var(--t2);max-width:38ch}
+    .ce-ve-stop-list{margin:0;padding-left:1.1em;max-width:38ch;font-size:13px;line-height:1.45;color:var(--t2)}
+    .off{display:none!important}
+    .walk-check-btn:disabled{opacity:.48;cursor:not-allowed;filter:grayscale(.25)}
+    .ce-ve-rental-verdict{font-size:15px;font-weight:850;line-height:1.4;color:var(--t1);max-width:38ch;margin:0 0 6px}
+    .ce-ve-legal-note{font-size:12px;font-weight:650;color:var(--t3);max-width:38ch;line-height:1.45}
+    #ce-ve-severity{display:none!important}
+    #ce-results-shell{position:relative;margin-bottom:4px}
+    #ce-results-sticky{
+      position:sticky;top:0;z-index:5;
+      display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+      padding:10px 0 12px;margin:0 0 2px;
+      background:linear-gradient(180deg,rgba(246,247,251,.97) 60%,rgba(246,247,251,0));
+      border-bottom:1px solid rgba(0,0,0,.06);
+    }
+    body.cam-tiktok #ce-results-sticky{
+      background:linear-gradient(180deg,rgba(18,20,30,.94) 55%,rgba(18,20,30,0));
+      border-bottom-color:rgba(255,255,255,.08);
+    }
+    .ce-sticky-sev{
+      font-size:11px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;
+      padding:6px 12px;border-radius:999px;flex-shrink:0;
+      border:1px solid rgba(58,120,72,.45);
+      background:linear-gradient(135deg,rgba(58,120,72,.2),rgba(48,100,60,.12));
+      color:#1a4d28;
+    }
+    .ce-sticky-sev.ce-sticky-caution{
+      border-color:rgba(180,130,40,.5);
+      background:linear-gradient(135deg,rgba(180,130,40,.22),rgba(150,100,28,.1));
+      color:#5a3c0e;
+    }
+    .ce-sticky-sev.ce-sticky-stop{
+      border-color:rgba(180,60,48,.5);
+      background:linear-gradient(135deg,rgba(160,50,40,.26),rgba(120,36,28,.12));
+      color:#5c1810;
+    }
+    body.cam-tiktok .ce-sticky-sev{color:#B7F3CC;border-color:rgba(120,200,150,.35)}
+    body.cam-tiktok .ce-sticky-sev.ce-sticky-caution{color:#FFD89A;border-color:rgba(220,170,80,.4)}
+    body.cam-tiktok .ce-sticky-sev.ce-sticky-stop{color:#FFC8C4;border-color:rgba(220,100,90,.45)}
+    .ce-sticky-task{font-size:14px;font-weight:800;color:var(--t1);line-height:1.25;flex:1;min-width:0}
+    .ce-tab-bar{
+      display:flex;gap:0;border-bottom:1px solid rgba(0,0,0,.1);margin:0 0 12px;
+      position:sticky;top:52px;z-index:4;background:transparent;
+      padding-top:2px;
+    }
+    body.cam-tiktok .ce-tab-bar{border-bottom-color:rgba(255,255,255,.1)}
+    .ce-tab{
+      flex:1;min-height:44px;border:none;background:transparent;font-family:inherit;
+      font-size:14px;font-weight:750;color:var(--t3);cursor:pointer;padding:10px 6px 12px;
+      border-bottom:3px solid transparent;margin-bottom:-1px;transition:color .15s,border-color .15s;
+    }
+    .ce-tab.on{color:var(--t1);font-weight:900;border-bottom-color:var(--t1)}
+    body.cam-tiktok .ce-tab.on{color:#f8fafc;border-bottom-color:#e2e8f0}
+    .ce-tab-panel{padding-bottom:8px}
+    .ce-tab-panel.off{display:none!important}
+    .ce-results-shell--locked .ce-tab-bar{display:none!important}
+    .ce-outcome-hero{text-align:center;padding:4px 4px 14px}
+    .ce-oh-ico-wrap{
+      width:72px;height:72px;margin:0 auto 12px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(145deg,rgba(58,160,96,.28),rgba(48,120,72,.14));
+      border:2px solid rgba(58,140,88,.45);
+      box-shadow:0 10px 28px rgba(34,90,52,.15);
+    }
+    .ce-oh-ico-wrap.ce-oh-caution{background:linear-gradient(145deg,rgba(220,160,50,.22),rgba(180,120,30,.1));border-color:rgba(200,150,50,.5)}
+    .ce-oh-ico-wrap.ce-oh-stop{background:linear-gradient(145deg,rgba(200,70,55,.24),rgba(140,40,32,.12));border-color:rgba(200,80,64,.5)}
+    .ce-oh-ico{font-size:34px;line-height:1}
+    .ce-oh-title{font-size:20px;font-weight:900;letter-spacing:-.4px;line-height:1.2;color:var(--t1);margin:0 0 6px}
+    .ce-oh-sub{font-size:13px;font-weight:650;color:var(--t2);line-height:1.4;max-width:36ch;margin:0 auto}
+    .ce-outcome-verdict{margin-bottom:10px}
+    .ce-outcome-verdict .ce-ve-card-dec{margin-bottom:0}
+    .ce-sev-band-safe .ce-ve-card-dec{border-color:rgba(58,120,72,.32)}
+    .ce-sev-band-attn .ce-ve-card-dec{border-color:rgba(180,130,40,.38)}
+    .ce-sev-band-stop .ce-ve-card-dec{border-color:rgba(180,60,48,.42)}
+    .ce-outcome-actions{display:flex;flex-direction:column;gap:10px;margin:14px 0 16px}
+    .ce-outcome-cta{
+      width:100%;min-height:48px;border-radius:14px;font-size:15px;font-weight:850;font-family:inherit;cursor:pointer;
+      transition:transform .1s,opacity .15s;
+    }
+    .ce-outcome-cta:active{transform:scale(.99)}
+    .ce-outcome-cta-primary{
+      border:1.5px solid rgba(49,46,129,.35);
+      background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(34,211,238,.06));
+      color:var(--t1);
+    }
+    .ce-outcome-cta-secondary{
+      border:1.5px solid rgba(0,0,0,.12);
+      background:transparent;color:var(--t2);
+    }
+    body.cam-tiktok .ce-outcome-cta-primary{border-color:rgba(129,140,248,.45);color:#f1f5f9}
+    body.cam-tiktok .ce-outcome-cta-secondary{border-color:rgba(255,255,255,.16);color:#cbd5e1}
+    .ce-outcome-chips{display:flex;gap:8px;margin:0 0 12px}
+    .ce-oc{
+      flex:1;min-width:0;text-align:center;padding:10px 6px;border-radius:14px;
+      background:linear-gradient(165deg,rgba(255,255,255,.65),rgba(248,248,252,.5));
+      border:1px solid rgba(0,0,0,.06);
+    }
+    body.cam-tiktok .ce-oc{background:linear-gradient(165deg,rgba(32,36,48,.55),rgba(24,26,36,.4));border-color:rgba(255,255,255,.08)}
+    .ce-oc-l{display:block;font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:4px}
+    .ce-oc-v{display:block;font-size:14px;font-weight:850;color:var(--t1);line-height:1.2}
+    .ce-ve-acc{margin:10px 0 0;border-radius:16px;border:1px solid rgba(0,0,0,.08);overflow:hidden;background:rgba(255,255,255,.4)}
+    body.cam-tiktok .ce-ve-acc{border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.04)}
+    .ce-ve-acc-sum{
+      list-style:none;cursor:pointer;padding:12px 14px;font-size:13px;font-weight:850;color:var(--t1);
+    }
+    .ce-ve-acc-sum::-webkit-details-marker{display:none}
+    .ce-ve-acc[open] .ce-ve-acc-sum{border-bottom:1px solid rgba(0,0,0,.06)}
+    body.cam-tiktok .ce-ve-acc[open] .ce-ve-acc-sum{border-bottom-color:rgba(255,255,255,.08)}
+    .ce-ve-acc .ce-ve-kicker{margin:12px 14px 6px}
+    .ce-ve-acc .ce-ve-card-perc{margin:0 12px 12px}
+    .results-redo{
+      min-height:38px;padding:8px 12px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.34);
+      background:rgba(14,18,30,.5);
+      color:#EFF4FF;font-size:12px;font-weight:800;font-family:inherit;cursor:pointer;
+    }
+    .results-redo:active{transform:scale(.97)}
+    body.result-open.cam-tiktok .results-redo{
+      background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);color:#111827;
+    }
+    #ce-panel-details .ce-conf-signal{margin:0 0 10px;text-align:center}
+    #fm-cta{
+      display:none;position:fixed;left:50%;bottom:max(12px,env(safe-area-inset-bottom));transform:translateX(-50%);
+      width:min(96vw,420px);z-index:960;padding:10px 14px;border-radius:16px;
+      background:linear-gradient(165deg,rgba(28,34,52,.94),rgba(18,22,36,.97));
+      border:1px solid rgba(255,255,255,.14);box-shadow:0 14px 40px rgba(0,0,0,.45);
+      color:#e8ecff;font-size:13px;font-weight:700;text-align:center;
+    }
+    #fm-cta.show{display:block}
+    #fm-free-note{display:block;margin-top:4px;font-size:11px;font-weight:650;opacity:.88}
+    #pw-modal{
+      display:none;position:fixed;inset:0;z-index:970;background:rgba(6,8,14,.62);
+      backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px;
+    }
+    #pw-modal.show{display:flex}
+    .pw-sheet{
+      width:min(100%,400px);max-height:88vh;overflow-y:auto;border-radius:20px;padding:20px 18px 18px;
+      background:linear-gradient(180deg,#fff,#f4f6fb);border:1px solid rgba(0,0,0,.08);
+      box-shadow:0 24px 60px rgba(0,0,0,.35);
+    }
+    .pw-sheet h3{margin:0 0 8px;font-size:18px;letter-spacing:-.3px}
+    .pw-sheet p{margin:0 0 10px;font-size:14px;line-height:1.45;color:#374151}
+    .pw-price{font-size:15px;font-weight:800;color:#111}
+    .pw-actions{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+    .pw-btn{
+      display:block;width:100%;min-height:48px;border-radius:14px;border:none;font-size:15px;font-weight:800;
+      font-family:inherit;cursor:pointer;text-align:center;text-decoration:none;line-height:48px;
+    }
+    .pw-btn-primary{background:linear-gradient(135deg,#2d4a8f,#1e3566);color:#fff}
+    .pw-btn-secondary{background:#fff;border:1.5px solid #c5cad6;color:#1a1a1a}
+    .pw-btn-ghost{background:transparent;color:#4b5563;font-size:13px;min-height:40px;line-height:40px}
+    .hero-privacy{margin-top:8px;font-size:12px;font-weight:600}
+    .hero-privacy a{color:rgba(222,233,255,.72);text-decoration:underline;text-underline-offset:2px}
+
     /* PROMPT */
     .prompt-wrap{position:relative;margin-bottom:6px;flex-shrink:0}
     .prompt-box{width:100%;max-width:100%;background:linear-gradient(148deg,rgba(195,195,199,.75),rgba(178,178,182,.75));border:.5px solid rgba(255,255,255,.55);border-radius:var(--rlg);padding:10px 38px 10px 14px;font-size:13px;color:var(--t1);font-family:inherit;outline:none;resize:none;box-shadow:0 1px 6px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.55);transition:border-color .2s;line-height:1.4}
@@ -478,6 +822,37 @@
 
     /* ═══ EGG SCAN BUTTON ═══ */
     .scan-wrap{display:flex;flex-direction:column;align-items:center;padding:4px 0 2px;position:relative;flex-shrink:0}
+    .scan-wrap::before{
+      content:'';
+      position:absolute;
+      left:50%;
+      bottom:6px;
+      transform:translateX(-50%);
+      width:min(66vw,270px);
+      height:112px;
+      border-radius:999px;
+      background:
+        radial-gradient(70% 50% at 50% 20%, rgba(255,255,255,.2) 0%, rgba(255,255,255,0) 72%),
+        linear-gradient(180deg, rgba(120,138,170,.22), rgba(28,36,52,.32));
+      border:1px solid rgba(190,210,240,.24);
+      box-shadow:0 18px 32px rgba(8,12,22,.44),inset 0 1px 0 rgba(255,255,255,.2);
+      pointer-events:none;
+      z-index:1;
+    }
+    .scan-wrap::after{
+      content:'';
+      position:absolute;
+      left:50%;
+      bottom:22px;
+      transform:translateX(-50%);
+      width:min(50vw,206px);
+      height:2px;
+      border-radius:999px;
+      background:linear-gradient(90deg,rgba(144,170,216,0),rgba(144,170,216,.66),rgba(144,170,216,0));
+      box-shadow:0 0 16px rgba(144,170,216,.24);
+      pointer-events:none;
+      z-index:2;
+    }
     .scan-egg{
       cursor:pointer;
       animation:none;
@@ -488,13 +863,15 @@
       min-height:96px;
       padding:10px 12px 14px;
       border-radius:999px;
-      background:linear-gradient(168deg,rgba(255,255,255,.42) 0%,rgba(228,234,244,.96) 14%,rgba(198,208,226,.98) 52%,rgba(170,182,204,.95) 100%);
+      background:
+        radial-gradient(120% 120% at 22% 16%, rgba(255,255,255,.62) 0%, rgba(255,255,255,0) 34%),
+        linear-gradient(162deg,#eef3ff 0%,#c8d4ea 28%,#8b9dbb 58%,#4b5d7b 82%,#263246 100%);
       border:1px solid rgba(255,255,255,.72);
       box-shadow:
         0 2px 0 rgba(255,255,255,.88) inset,
-        0 10px 22px rgba(28,38,58,.18),
-        0 5px 0 rgba(130,142,168,.55),
-        0 14px 28px rgba(46,62,92,.12);
+        0 10px 22px rgba(16,24,40,.36),
+        0 5px 0 rgba(76,90,116,.62),
+        0 14px 28px rgba(26,40,66,.24);
       filter:none;
       will-change:transform,box-shadow;
       user-select:none;
@@ -512,8 +889,8 @@
       height:13px;
       border-radius:50%;
       transform:translate(-50%,-50%);
-      background:radial-gradient(circle at 35% 35%,#c9ecff 0%,#89d2ff 42%,#2b3f78 100%);
-      box-shadow:0 0 0 1px rgba(255,255,255,.56),0 0 12px rgba(106,214,255,.55);
+      background:radial-gradient(circle at 35% 35%,#f3f8ff 0%,#bbd0f1 46%,#314868 100%);
+      box-shadow:0 0 0 1px rgba(255,255,255,.56),0 0 10px rgba(145,178,226,.5);
       z-index:8;
       pointer-events:none;
     }
@@ -524,8 +901,8 @@
       width:0;
       height:2px;
       border-radius:999px;
-      background:linear-gradient(90deg,rgba(255,66,118,.95),rgba(255,66,118,0));
-      box-shadow:0 0 9px rgba(255,66,118,.75);
+      background:linear-gradient(90deg,rgba(162,209,255,.95),rgba(162,209,255,0));
+      box-shadow:0 0 9px rgba(162,209,255,.75);
       z-index:7;
       opacity:0;
       pointer-events:none;
@@ -539,6 +916,16 @@
       100%{width:0;opacity:0}
     }
     .scan-egg:focus-visible{outline:2px solid rgba(100,140,220,.55);outline-offset:4px}
+    .scan-egg::before{
+      content:'';
+      position:absolute;
+      inset:8px 10px 28px 10px;
+      border-radius:50%;
+      background:radial-gradient(120% 100% at 30% 10%,rgba(255,255,255,.42) 0%,rgba(255,255,255,.12) 34%,rgba(255,255,255,0) 75%);
+      pointer-events:none;
+      z-index:6;
+      mix-blend-mode:screen;
+    }
     .scan-egg::after{
       content:'';
       position:absolute;
@@ -548,7 +935,7 @@
       height:22%;
       transform:translate(-50%,-50%);
       border-radius:50%;
-      background:radial-gradient(ellipse,rgba(120,190,255,.22) 0%,rgba(80,140,255,0) 70%);
+      background:radial-gradient(ellipse,rgba(165,199,242,.24) 0%,rgba(86,118,164,0) 70%);
       opacity:0;
       pointer-events:none;
       transition:opacity .12s ease;
@@ -575,14 +962,14 @@
       animation:eggAlienBreath var(--idle-breath,3.2s) ease-in-out infinite;
     }
     @keyframes eggAlienBreath{
-      0%,100%{transform:translateY(0) scale(1);filter:drop-shadow(calc(6px + var(--orb-glx)) calc(12px + var(--orb-gly)) 16px rgba(100,200,255,.24))}
-      50%{transform:translateY(-2px) scale(1.035);filter:drop-shadow(calc(10px + var(--orb-glx)) calc(18px + var(--orb-gly)) 24px rgba(180,120,255,.38))}
+      0%,100%{transform:translateY(0) scale(1);filter:drop-shadow(calc(6px + var(--orb-glx)) calc(12px + var(--orb-gly)) 16px rgba(140,175,224,.24))}
+      50%{transform:translateY(-2px) scale(1.03);filter:drop-shadow(calc(10px + var(--orb-glx)) calc(18px + var(--orb-gly)) 22px rgba(123,155,206,.34))}
     }
     .scan-egg .egg-ripple{
       position:absolute;inset:-8px;border-radius:50%;
       pointer-events:none;opacity:0;
-      border:2px solid rgba(141,232,255,.55);
-      box-shadow:0 0 24px rgba(131,56,236,.35);
+      border:2px solid rgba(176,205,242,.55);
+      box-shadow:0 0 24px rgba(107,143,198,.35);
     }
     .scan-egg.egg-rippling .egg-ripple{
       animation:eggRippleOut .65s cubic-bezier(.22,1,.36,1) forwards;
@@ -594,10 +981,39 @@
     .scan-egg .egg-swirl{
       position:absolute;inset:-8px;border-radius:50%;
       pointer-events:none;z-index:4;opacity:0;
-      background:conic-gradient(from 210deg,transparent 0deg,rgba(131,56,236,.42) 55deg,transparent 110deg,rgba(90,200,255,.38) 185deg,transparent 260deg,rgba(200,120,255,.28) 320deg,transparent 360deg);
+      background:conic-gradient(from 210deg,transparent 0deg,rgba(152,176,216,.4) 55deg,transparent 110deg,rgba(114,152,206,.34) 185deg,transparent 260deg,rgba(196,208,232,.26) 320deg,transparent 360deg);
       filter:blur(5px);
       mix-blend-mode:soft-light;
       animation:eggSwirlDrift 3.2s ease-in-out infinite;
+    }
+    .scan-egg .egg-grain{
+      position:absolute;
+      inset:8px 10px 14px 10px;
+      border-radius:50%;
+      pointer-events:none;
+      z-index:6;
+      opacity:0;
+      background:
+        repeating-linear-gradient(104deg, rgba(255,255,255,.055) 0 1px, rgba(255,255,255,0) 1px 3px),
+        linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,.03));
+      mix-blend-mode:screen;
+      filter:contrast(1.08);
+    }
+    .scan-egg .egg-glint{
+      position:absolute;
+      top:18%;
+      left:8%;
+      width:50%;
+      height:20%;
+      border-radius:999px;
+      pointer-events:none;
+      z-index:7;
+      opacity:0;
+      background:linear-gradient(95deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.6) 46%, rgba(255,255,255,.08) 70%, rgba(255,255,255,0) 100%);
+      filter:blur(.45px);
+      transform:translate(var(--orb-gltx),var(--orb-glty)) rotate(-20deg);
+      transform-origin:center center;
+      transition:transform .24s ease-out,opacity .24s ease-out;
     }
     @keyframes eggSwirlDrift{
       0%,100%{transform:rotate(0deg) scale(1)}
@@ -607,6 +1023,23 @@
       opacity:.72;
       animation:eggSwirlThink 1.8s linear infinite;
     }
+    .scan-egg:not(.pressed):not(.thinking) .egg-grain{
+      opacity:.42;
+      animation:eggGrainDrift 7.2s linear infinite;
+    }
+    .scan-egg:not(.pressed):not(.thinking) .egg-glint{
+      opacity:.52;
+      animation:eggGlintSweep 6.8s ease-in-out infinite;
+    }
+    @keyframes eggGrainDrift{
+      0%{transform:translateX(0) translateY(0)}
+      50%{transform:translateX(1px) translateY(-1px)}
+      100%{transform:translateX(0) translateY(0)}
+    }
+    @keyframes eggGlintSweep{
+      0%,100%{transform:rotate(-24deg) translateX(0);opacity:.42}
+      50%{transform:rotate(-14deg) translateX(2px);opacity:.62}
+    }
     @keyframes eggSwirlThink{
       to{transform:rotate(360deg)}
     }
@@ -615,10 +1048,10 @@
       transform-origin:center center;
     }
     @keyframes eggThinkPulse{
-      0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(131,56,236,.22),0 10px 28px rgba(28,38,58,.2)}
-      28%{transform:scale(1.06);box-shadow:0 0 0 8px rgba(131,56,236,.08),0 14px 34px rgba(58,134,255,.28)}
+      0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(120,152,206,.22),0 10px 28px rgba(28,38,58,.2)}
+      28%{transform:scale(1.06);box-shadow:0 0 0 8px rgba(120,152,206,.1),0 14px 34px rgba(74,118,184,.26)}
       48%{transform:scale(1.02)}
-      72%{transform:scale(1.09);box-shadow:0 0 0 12px rgba(131,56,236,0),0 18px 44px rgba(58,134,255,.38)}
+      72%{transform:scale(1.08);box-shadow:0 0 0 12px rgba(120,152,206,0),0 18px 44px rgba(74,118,184,.34)}
     }
     .scan-egg.perception-hot:not(.pressed):not(.thinking):not(.orb-lock-focused){
       animation:eggAlienBreath 1.55s ease-in-out infinite;
@@ -653,6 +1086,26 @@
     }
     .cam-container.ce-lock-on .cam-overlay{
       animation:lockShimmer 2.6s ease-in-out infinite;
+    }
+    .snap-shutter-ring.lock-flash::after{
+      animation:ringLockFlash 180ms cubic-bezier(.22,1,.36,1) forwards;
+    }
+    @keyframes ringLockFlash{
+      0%{
+        opacity:.34;
+        transform:translate(var(--ring-glx),var(--ring-gly)) scale(1);
+        filter:brightness(1);
+      }
+      42%{
+        opacity:.95;
+        transform:translate(var(--ring-glx),var(--ring-gly)) scale(1.03);
+        filter:brightness(1.34);
+      }
+      100%{
+        opacity:.42;
+        transform:translate(var(--ring-glx),var(--ring-gly)) scale(1);
+        filter:brightness(1);
+      }
     }
     @keyframes lockShimmer{
       0%,100%{box-shadow:inset 0 0 0 2px rgba(120,200,255,.5),inset 0 0 48px rgba(60,130,255,.1)}
@@ -699,11 +1152,54 @@
     @keyframes spin{to{transform:rotate(360deg)}}
     .ld-txt{font-size:15px;font-weight:700;color:var(--t1);margin-bottom:4px;letter-spacing:-.2px}
     .ld-sub{font-size:12px;color:var(--t2)}
+    .stage1-confirm{
+      display:none;
+      margin:10px auto 0;
+      padding:8px 10px;
+      border-radius:12px;
+      background:linear-gradient(145deg,rgba(58,96,56,.18),rgba(38,76,36,.12));
+      border:1px solid rgba(98,213,143,.34);
+      color:#1B4D30;
+      font-size:12px;
+      font-weight:800;
+      line-height:1.35;
+      max-width:86%;
+      text-align:left;
+      box-shadow:0 8px 18px rgba(24,54,38,.16),inset 0 1px 0 rgba(255,255,255,.3);
+    }
+    .stage1-confirm.show{display:block;animation:ceStage1In .34s cubic-bezier(.25,1,.45,1)}
+    @keyframes ceStage1In{
+      from{opacity:0;transform:translateY(8px) scale(.98)}
+      to{opacity:1;transform:translateY(0) scale(1)}
+    }
+    .stage1-confirm{
+      display:none;
+      margin:10px auto 0;
+      padding:8px 10px;
+      border-radius:12px;
+      background:linear-gradient(145deg,rgba(58,96,56,.18),rgba(38,76,36,.12));
+      border:1px solid rgba(98,213,143,.34);
+      color:#1B4D30;
+      font-size:12px;
+      font-weight:800;
+      line-height:1.35;
+      max-width:86%;
+      text-align:left;
+      box-shadow:0 8px 18px rgba(24,54,38,.16),inset 0 1px 0 rgba(255,255,255,.3);
+    }
+    .stage1-confirm.show{display:block;animation:ceStage1In .34s cubic-bezier(.25,1,.45,1)}
+    @keyframes ceStage1In{
+      from{opacity:0;transform:translateY(8px) scale(.98)}
+      to{opacity:1;transform:translateY(0) scale(1)}
+    }
 
     /* RESULTS */
     #results{display:none}
     #results-screen-bar{
       display:none;
+      grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+      align-items:center;
+      gap:8px;
       position:sticky;
       top:0;
       z-index:6;
@@ -714,6 +1210,7 @@
       background:linear-gradient(180deg,rgba(14,18,30,.94),rgba(14,18,30,.72));
       border-bottom:1px solid rgba(150,172,236,.22);
     }
+    body.result-open #results-screen-bar{display:grid}
     .results-back{
       min-height:42px;
       padding:10px 14px;
@@ -727,9 +1224,14 @@
       cursor:pointer;
       box-shadow:0 6px 18px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.2);
     }
+    .results-back{justify-self:start}
     .results-back:active{transform:scale(.97)}
+    .results-redo{justify-self:end}
     #results-title{
-      margin-top:7px;
+      margin-top:0;
+      justify-self:center;
+      text-align:center;
+      max-width:46vw;
       font-size:12px;
       font-weight:900;
       letter-spacing:.65px;
@@ -1169,6 +1671,82 @@
       margin:0!important;
       border-radius:16px!important;
     }
+    /* Full-screen camera stack (z0 video → z10 reticle → z20 card → z30 egg via dock) */
+    body.cam-tiktok #cam-video,
+    body.cam-tiktok #still-img{
+      position:absolute!important;
+      inset:0!important;
+      width:100%!important;height:100%!important;
+      max-height:none!important;min-height:0!important;flex:none!important;
+      object-fit:cover!important;
+      z-index:0!important;
+    }
+    body.cam-tiktok .cam-container::before{
+      content:'';
+      position:absolute;
+      pointer-events:none;
+      z-index:2!important;
+      inset:0!important;
+      border-radius:0!important;
+      opacity:1!important;
+      background:
+        linear-gradient(180deg,rgba(0,0,0,.22) 0%,rgba(0,0,0,.06) 24%,transparent 40%),
+        linear-gradient(0deg,rgba(0,0,0,.34) 0%,rgba(0,0,0,.08) 28%,transparent 46%)!important;
+    }
+    body.cam-tiktok .cam-overlay{z-index:8!important}
+    body.cam-tiktok .s-flash{z-index:9!important}
+    body.cam-tiktok .live-build-flag{z-index:11!important}
+    .cam-bottom-dock-bg{
+      position:absolute;left:0;right:0;bottom:0;height:140px;z-index:5;
+      pointer-events:none;
+      background:linear-gradient(0deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,.12) 50%,transparent 100%);
+    }
+    .cam-detection-layer{
+      position:absolute;inset:0;z-index:10;pointer-events:none;
+      display:flex;align-items:flex-start;justify-content:center;
+      padding-top:calc(45vh - 28px);
+    }
+    .ce-reticle{
+      width:56px;height:56px;border-radius:12px;box-sizing:border-box;
+      border:1.5px solid rgba(255,255,255,.4);
+      opacity:0;transform:scale(1);
+      transition:opacity .35s ease;
+    }
+    body.ce-cam-detecting:not(.result-open) .ce-reticle{
+      opacity:1;
+      animation:ceReticlePulse 1.2s ease-in-out infinite;
+    }
+    @keyframes ceReticlePulse{
+      0%,100%{transform:scale(1);opacity:.88}
+      50%{transform:scale(1.06);opacity:1}
+    }
+    .cam-top-bar{
+      display:none;
+      position:fixed;
+      left:0;right:0;
+      top:env(safe-area-inset-top,0px);
+      height:48px;
+      padding:0 12px;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      z-index:400;
+      background:linear-gradient(180deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,0) 100%);
+      pointer-events:none;
+    }
+    body.cam-tiktok.ce-capture-focus:not(.result-open) .cam-top-bar{display:flex!important}
+    body.result-open .cam-top-bar{display:none!important}
+    .cam-top-btn{
+      min-width:44px;min-height:44px;
+      border-radius:12px;
+      background:rgba(20,20,20,.55);
+      color:#F2F2F2;font-size:18px;font-weight:700;
+      cursor:pointer;font-family:inherit;
+      border:1px solid rgba(255,255,255,.1);
+      pointer-events:auto;
+      box-shadow:0 4px 14px rgba(0,0,0,.25);
+    }
+    .cam-top-spacer{flex:1;min-width:8px}
     .cam-dock{
       position:fixed;
       left:0;right:0;bottom:0;
@@ -1177,11 +1755,15 @@
       align-items:flex-end;
       justify-content:center;
       gap:0;
-      padding:10px 0 calc(16px + env(safe-area-inset-bottom));
-      background:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.35) 40%,rgba(0,0,0,.82) 100%);
+      padding:12px 0 calc(18px + env(safe-area-inset-bottom));
+      background:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.26) 34%,rgba(0,0,0,.84) 100%);
       pointer-events:none;
     }
     .cam-dock > *{pointer-events:auto}
+    body.cam-tiktok .cam-dock{
+      padding:6px 0 calc(10px + env(safe-area-inset-bottom));
+      background:linear-gradient(180deg,transparent 0%,transparent 55%,rgba(0,0,0,.22) 100%);
+    }
     .dock-side{display:none!important}
     .dock-mid{
       flex:0 0 auto;
@@ -1191,26 +1773,56 @@
       gap:2px;
     }
     .snap-shutter-ring{
-      padding:4px;
+      position:relative;
+      padding:6px;
       border-radius:999px;
-      background:conic-gradient(from 220deg,#FFFC00 0%,#FF006E 33%,#8338EC 66%,#3A86FF 100%,#FFFC00 100%);
+      background:linear-gradient(145deg,#eef3ff 0%,#b7c4de 26%,#6e7f9f 58%,#2b3750 100%);
       box-shadow:
-        0 8px 28px rgba(0,0,0,.45),
+        0 12px 30px rgba(0,0,0,.48),
         0 0 0 2px rgba(255,255,255,.22) inset,
-        0 0 20px rgba(255,252,0,.2);
+        0 0 24px rgba(130,170,230,.28);
       animation:snapRingGlow 2.8s ease-in-out infinite;
+    }
+    .snap-shutter-ring::before{
+      content:'';
+      position:absolute;
+      inset:-4px;
+      border-radius:999px;
+      pointer-events:none;
+      background:
+        radial-gradient(circle, rgba(204,214,236,.95) 0 42%, rgba(86,101,130,.9) 65%, rgba(32,40,58,.85) 100%) 50% 0/7px 7px no-repeat,
+        radial-gradient(circle, rgba(204,214,236,.95) 0 42%, rgba(86,101,130,.9) 65%, rgba(32,40,58,.85) 100%) 92% 24%/7px 7px no-repeat,
+        radial-gradient(circle, rgba(204,214,236,.95) 0 42%, rgba(86,101,130,.9) 65%, rgba(32,40,58,.85) 100%) 92% 76%/7px 7px no-repeat,
+        radial-gradient(circle, rgba(204,214,236,.95) 0 42%, rgba(86,101,130,.9) 65%, rgba(32,40,58,.85) 100%) 50% 100%/7px 7px no-repeat,
+        radial-gradient(circle, rgba(204,214,236,.95) 0 42%, rgba(86,101,130,.9) 65%, rgba(32,40,58,.85) 100%) 8% 76%/7px 7px no-repeat,
+        radial-gradient(circle, rgba(204,214,236,.95) 0 42%, rgba(86,101,130,.9) 65%, rgba(32,40,58,.85) 100%) 8% 24%/7px 7px no-repeat;
+      opacity:.66;
+      filter:drop-shadow(0 1px 1px rgba(0,0,0,.26));
+    }
+    .snap-shutter-ring::after{
+      content:'';
+      position:absolute;
+      inset:3px 6px auto 6px;
+      height:26%;
+      border-radius:999px;
+      pointer-events:none;
+      background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,0));
+      opacity:.42;
+      transform:translate(var(--ring-glx),var(--ring-gly));
+      transition:transform .26s ease-out,opacity .26s ease-out;
+      mix-blend-mode:screen;
     }
     @keyframes snapRingGlow{
       0%,100%{filter:brightness(1) saturate(1);transform:scale(1)}
-      50%{filter:brightness(1.08) saturate(1.15);transform:scale(1.03)}
+      50%{filter:brightness(1.05) saturate(1.04);transform:scale(1.02)}
     }
     body.fixing .snap-shutter-ring{
       animation:snapRingCalm 2.2s ease-in-out infinite;
-      background:linear-gradient(145deg,#FFFC00 0%,#FFD60A 40%,#FFF8B8 100%);
+      background:linear-gradient(145deg,#dfe8fb 0%,#aebedc 40%,#7083a4 100%);
     }
     @keyframes snapRingCalm{
       0%,100%{box-shadow:0 8px 28px rgba(0,0,0,.4),0 0 0 2px rgba(255,255,255,.2) inset}
-      50%{box-shadow:0 10px 32px rgba(255,252,0,.25),0 0 0 2px rgba(255,255,255,.35) inset}
+      50%{box-shadow:0 10px 32px rgba(112,146,210,.22),0 0 0 2px rgba(255,255,255,.35) inset}
     }
     .dock-pill{
       min-width:78px;
@@ -1281,18 +1893,55 @@
       opacity:1;transform:translateY(0) scale(1);
     }
     .perception-layer.active::before{opacity:1}
+    body.cam-tiktok .snap-shutter-ring{
+      width:96px;height:96px;box-sizing:border-box;
+      padding:0;border-radius:50%;
+      border:5px solid rgba(255,255,255,.25);
+      background:rgba(0,0,0,.14);
+      display:flex;align-items:center;justify-content:center;
+      animation:none!important;
+      box-shadow:0 8px 24px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.1);
+    }
+    body.cam-tiktok .snap-shutter-ring::before,
+    body.cam-tiktok .snap-shutter-ring::after{display:none!important}
+    body.cam-tiktok.ce-cam-detecting:not(.ce-ai-thinking) .snap-shutter-ring{
+      animation:snapRingDetectPulse 1.2s ease-in-out infinite!important;
+    }
+    body.cam-tiktok.ce-ai-thinking .snap-shutter-ring{
+      animation:ceRingSpin 1.5s linear infinite!important;
+      filter:none;
+    }
+    body.cam-tiktok.ce-cam-locked .snap-shutter-ring,
+    body.cam-tiktok.ce-can-scan .snap-shutter-ring{
+      border-color:rgba(255,255,255,.42);
+      box-shadow:0 8px 24px rgba(0,0,0,.28),0 0 20px rgba(130,200,255,.2),inset 0 1px 0 rgba(255,255,255,.14);
+    }
+    @keyframes snapRingDetectPulse{
+      0%,100%{transform:scale(1)}
+      50%{transform:scale(1.03)}
+    }
+    @keyframes ceRingSpin{
+      to{transform:rotate(360deg)}
+    }
     body.cam-tiktok .snap-shutter-ring .scan-egg{
-      min-width:82px;
-      min-height:82px;
-      padding:7px 9px 10px;
+      min-width:80px!important;
+      min-height:80px!important;
+      width:80px!important;
+      height:80px!important;
+      padding:0!important;
+      box-sizing:border-box;
+      border-radius:50%!important;
+      background:linear-gradient(145deg,#dcdcdc,#a8a8a8)!important;
+      border:1px solid rgba(255,255,255,.35)!important;
+      box-shadow:0 4px 12px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.55)!important;
     }
     body.cam-tiktok .cam-dock .slbl{
-      font-size:9px;
-      font-weight:900;
-      letter-spacing:3px;
-      color:rgba(255,255,255,.95);
-      text-shadow:0 2px 12px rgba(0,0,0,.6);
-      margin-top:2px;
+      font-size:10px;
+      font-weight:920;
+      letter-spacing:3.8px;
+      color:rgba(236,243,255,.95);
+      text-shadow:0 2px 14px rgba(0,0,0,.66);
+      margin-top:4px;
     }
     body.cam-tiktok .scan-egg.vibrating{
       animation:eggClickPulse .26s cubic-bezier(.34,1.45,.64,1) forwards, snapEggBounce .32s cubic-bezier(.34,1.55,.64,1)!important;
@@ -1392,9 +2041,10 @@
       -webkit-backdrop-filter:blur(14px) saturate(1.2)!important;
       pointer-events:none!important;
     }
-    body.cam-tiktok #ld .ld-orb,
+    body.cam-tiktok #ld .ld-orb{display:none!important}
     body.cam-tiktok #ld .ld-txt,
-    body.cam-tiktok #ld .ld-sub{display:none!important}
+    body.cam-tiktok #ld .ld-sub,
+    body.cam-tiktok #ld .stage1-confirm{display:block!important}
     body.cam-tiktok.ce-ai-thinking #ld{
       background:rgba(0,0,0,.42)!important;
       animation:ceVeilBreathe 2.4s ease-in-out infinite;
@@ -1405,14 +2055,6 @@
     }
     body.cam-tiktok #ld[style*="block"]{
       display:flex!important;
-    }
-    body.cam-tiktok.ce-ai-thinking .snap-shutter-ring{
-      animation:alienRingThink 1s ease-in-out infinite!important;
-      filter:drop-shadow(0 0 20px rgba(131,56,236,.55));
-    }
-    @keyframes alienRingThink{
-      0%,100%{transform:scale(1);opacity:1}
-      50%{transform:scale(1.06);opacity:.92}
     }
     body.cam-tiktok #results{
       position:fixed;
@@ -1441,7 +2083,7 @@
       content:'';display:block;height:5px;width:40px;border-radius:999px;
       background:rgba(15,23,42,.12);margin:-2px auto 10px;
     }
-    body.cam-tiktok #results-screen-bar{display:block}
+    body.cam-tiktok #results-screen-bar{display:grid}
     body.result-open.cam-tiktok .ce-landing{
       perspective:1280px;
     }
@@ -1498,6 +2140,7 @@
     #results.ce-stagger-armed:not(.ce-stagger-reveal) #steps-card .steps-top,
     #results.ce-stagger-armed:not(.ce-stagger-reveal) #no-repair-box:not([style*="display: none"]),
     #results.ce-stagger-armed:not(.ce-stagger-reveal) .hazard-hero.show,
+    #results.ce-stagger-armed:not(.ce-stagger-reveal) #ce-visual-engine,
     #results.ce-stagger-armed:not(.ce-stagger-reveal) #ec,
     #results.ce-stagger-armed:not(.ce-stagger-reveal) .ad-banner,
     #results.ce-stagger-armed:not(.ce-stagger-reveal) .fold-more,
@@ -1509,19 +2152,20 @@
     .ce-conf-signal.ce-conf-mid{color:rgba(194,65,12,.92)}
     .ce-conf-signal.ce-conf-low{color:rgba(153,27,27,.93)}
     body.result-open.cam-tiktok #results.ce-stagger-reveal #ce-conf-signal{animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:28ms}
-    body.result-open.cam-tiktok #results.ce-stagger-reveal #r-title{animation:ceStaggerItem .52s cubic-bezier(.25,1,.45,1) both;animation-delay:0ms}
-    body.result-open.cam-tiktok #results.ce-stagger-reveal #r-task2{animation:ceStaggerItem .52s cubic-bezier(.25,1,.45,1) both;animation-delay:85ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #r-confidence{animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:0ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #r-title{animation:ceStaggerItem .52s cubic-bezier(.25,1,.45,1) both;animation-delay:70ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #r-task2{animation:ceStaggerItem .52s cubic-bezier(.25,1,.45,1) both;animation-delay:120ms}
     body.result-open.cam-tiktok #results.ce-stagger-reveal #results-summary .edge-strip{animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:45ms}
     body.result-open.cam-tiktok #results.ce-stagger-reveal #uncertainty-banner:not(.off){animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:120ms}
     body.result-open.cam-tiktok #results.ce-stagger-reveal #quick-checks:not(.off){animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:150ms}
     body.result-open.cam-tiktok #results.ce-stagger-reveal #readout-glass:not(.off){animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:175ms}
-    body.result-open.cam-tiktok #results.ce-stagger-reveal #r-confidence{animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:195ms}
     body.result-open.cam-tiktok #results.ce-stagger-reveal .meta-row{animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:215ms}
     body.result-open.cam-tiktok #results.ce-stagger-reveal #cost-row{animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:235ms}
     body.result-open.cam-tiktok #results.ce-stagger-reveal .tts-bar{animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:255ms}
     body.result-open.cam-tiktok #results.ce-stagger-reveal #warn-ctr:not(.off){animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:275ms}
     body.result-open.cam-tiktok #results.ce-stagger-reveal #tip-safety{animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:295ms}
     body.result-open.cam-tiktok #results.ce-stagger-reveal .hazard-hero.show{animation:ceStaggerItem .55s cubic-bezier(.25,1,.45,1) both;animation-delay:60ms}
+    body.result-open.cam-tiktok #results.ce-stagger-reveal #ce-visual-engine{animation:ceStaggerItem .52s cubic-bezier(.25,1,.45,1) both;animation-delay:90ms}
     body.result-open.cam-tiktok #results.ce-stagger-reveal #tools-card{animation:ceStaggerItem .52s cubic-bezier(.25,1,.45,1) both;animation-delay:320ms}
     body.result-open.cam-tiktok #results.ce-stagger-reveal #steps-card .steps-top{animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:360ms}
     body.result-open.cam-tiktok #results.ce-stagger-reveal #steps-card .prog-track{animation:ceStaggerItem .48s cubic-bezier(.25,1,.45,1) both;animation-delay:380ms}
@@ -1594,6 +2238,16 @@
       border:1px solid rgba(99,102,241,.1)!important;
       box-shadow:0 8px 22px rgba(15,23,42,.06)!important;
       color:#111827!important;
+    }
+    body.result-open.cam-tiktok #tip-safety.result-safety-card{
+      border-left:3px solid #FFB020!important;
+      padding-left:13px!important;
+    }
+    body.result-open.cam-tiktok #r-confidence.conf-tier{
+      font-size:12px!important;
+      font-weight:600!important;
+      opacity:.65!important;
+      letter-spacing:.02em!important;
     }
     body.result-open.cam-tiktok .readout-glass{
       background:linear-gradient(135deg,rgba(99,102,241,.22),rgba(34,211,238,.14),rgba(245,158,11,.16))!important;
@@ -1881,6 +2535,22 @@
     #task-locked{display:none;background:rgba(160,50,40,.08);border:1.5px solid rgba(160,50,40,.28);border-radius:var(--rxl);padding:22px 18px;text-align:center;margin-bottom:12px}
     #task-locked h3{color:var(--red);font-size:17px;margin-bottom:7px}
     #task-locked p{color:var(--t2);font-size:13px;line-height:1.6;margin-bottom:14px}
+    .confidence-gate{display:none;background:rgba(180,120,20,.09);border:1px solid rgba(180,120,20,.3);border-radius:var(--rxl);padding:14px 12px;margin:10px 0}
+    .confidence-gate.show{display:block;animation:ceGateIn .42s cubic-bezier(.25,1,.45,1)}
+    .confidence-gate-ttl{font-size:15px;font-weight:900;color:#6A4712;margin-bottom:6px}
+    .confidence-gate-msg{font-size:13px;color:var(--t2);line-height:1.45;margin-bottom:10px}
+    .confidence-gate-actions{display:flex;gap:8px}
+    .confidence-gate-btn{flex:1;min-height:42px;border-radius:12px;border:1px solid rgba(0,0,0,.1);background:rgba(255,255,255,.6);font-size:13px;font-weight:800;font-family:inherit;cursor:pointer}
+    .confidence-gate-btn.confirm{background:linear-gradient(135deg,#987018,#786010);border-color:rgba(144,112,24,.5);color:#F8EDD8}
+    .confidence-gate-note{margin-top:8px;font-size:11px;line-height:1.4;color:var(--t3)}
+    @keyframes ceGateIn{
+      0%{opacity:0;transform:translateY(12px) scale(.98)}
+      60%{opacity:1;transform:translateY(-1px) scale(1.01)}
+      100%{opacity:1;transform:translateY(0) scale(1)}
+    }
+    .err-box .err-title{font-size:14px;font-weight:900;margin-bottom:4px}
+    .err-box .err-msg{font-size:13px;line-height:1.45}
+    .err-box .err-cta{margin-top:9px;min-height:38px;border:none;border-radius:10px;padding:0 12px;background:linear-gradient(135deg,#987018,#786010);color:#F8EDD8;font-size:12px;font-weight:800;font-family:inherit;cursor:pointer}
     .ec-contacts{background:rgba(0,0,0,.06);border-radius:var(--rmd);padding:11px;text-align:left}
     .ec-contacts p{font-size:10px;color:var(--t3);margin-bottom:5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px}
     .ec-item{display:flex;justify-content:space-between;font-size:13px;color:var(--t1);padding:4px 0;border-bottom:.5px solid rgba(0,0,0,.07)}
@@ -2002,6 +2672,23 @@
     .conf-tier.safe{background:rgba(58,96,56,.12);color:var(--green);border:.5px solid rgba(58,96,56,.28)}
     .conf-tier.caution{background:rgba(152,112,24,.12);color:var(--gold);border:.5px solid rgba(152,112,24,.28)}
     .conf-tier.pro{background:rgba(160,50,40,.1);color:var(--red);border:.5px solid rgba(160,50,40,.28)}
+    /* Hazard tier must be the first visual anchor on result screen. */
+    #r-confidence{
+      display:flex;
+      width:100%;
+      align-items:center;
+      justify-content:flex-start;
+      border-radius:14px;
+      padding:11px 12px;
+      margin:0 0 10px 0;
+      font-size:13px;
+      font-weight:900;
+      letter-spacing:.2px;
+      box-shadow:0 8px 18px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.08);
+    }
+    #r-confidence.safe{background:linear-gradient(145deg,rgba(58,96,56,.2),rgba(58,96,56,.12));border:1px solid rgba(58,96,56,.38)}
+    #r-confidence.caution{background:linear-gradient(145deg,rgba(152,112,24,.24),rgba(152,112,24,.14));border:1px solid rgba(152,112,24,.4)}
+    #r-confidence.pro{background:linear-gradient(145deg,rgba(160,50,40,.24),rgba(160,50,40,.12));border:1px solid rgba(160,50,40,.42)}
 
     .ad-banner{background:linear-gradient(135deg,rgba(185,160,85,.13),rgba(165,140,65,.06));border:.5px solid rgba(165,135,50,.24);border-radius:var(--rmd);padding:9px 12px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;text-decoration:none}
     .ad-l{display:flex;gap:8px;align-items:center}
@@ -2039,15 +2726,15 @@
     .hero-badge.hot{display:none}
     .cam-container{border:1px solid rgba(103,114,132,.55);max-height:min(40vh,calc(100dvh - 288px))}
     .scan-egg{
-      background:linear-gradient(168deg,rgba(42,54,88,.22) 0%,rgba(30,42,72,.28) 100%),linear-gradient(168deg,rgba(255,255,255,.14) 0%,rgba(210,220,240,.92) 18%,rgba(175,188,218,.96) 52%,rgba(148,162,194,.94) 100%);
+      background:linear-gradient(168deg,rgba(26,34,54,.26) 0%,rgba(20,30,48,.3) 100%),linear-gradient(168deg,rgba(255,255,255,.2) 0%,rgba(219,228,242,.94) 20%,rgba(176,190,214,.96) 54%,rgba(133,149,176,.94) 100%);
       border-color:rgba(130,155,210,.4);
       box-shadow:
         0 2px 0 rgba(255,255,255,.4) inset,
         0 10px 26px rgba(12,18,40,.35),
         0 5px 0 rgba(72,92,140,.45),
-        0 0 28px rgba(90,170,255,.2);
+        0 0 22px rgba(120,162,220,.2);
     }
-    .scan-egg::before{display:none}
+    .scan-egg::before{display:block;opacity:.95}
     .slbl{font-size:9px;letter-spacing:2.5px;color:#DCE8FF}
     .r-hdr{background:linear-gradient(150deg,rgba(26,34,62,.74),rgba(18,24,44,.78));padding:14px;border:.5px solid rgba(133,160,228,.3);border-radius:14px;margin-bottom:12px}
     .r-title{font-size:24px;line-height:1.15}
@@ -2112,53 +2799,151 @@
       .cam-container{max-height:min(36vh,calc(100dvh - 276px))}
     }
 
-    /* INDUSTRIAL FINAL OVERRIDES */
+    /* MODERN APP LOOK V2 (visual-only refresh) */
     :root{
-      --bg:radial-gradient(130% 95% at 12% 0%,#F2F4F8 0%,#D7DBE3 38%,#B8BEC9 72%,#9CA4B2 100%);
-      --card:linear-gradient(160deg,rgba(242,245,250,.9),rgba(224,229,238,.94) 50%,rgba(205,212,224,.92) 100%);
-      --border:rgba(255,255,255,.75);
-      --gold:#A86F14;--gold2:rgba(168,111,20,.18);
-      --green:#2D6F49;
-      --red:#8C2A1E;
-      --org:#995010;
-      --t1:#11141B;--t2:rgba(17,20,27,.7);--t3:rgba(17,20,27,.48);--t4:rgba(17,20,27,.24);
+      --bg:
+        radial-gradient(130% 96% at 12% 0%,#1D2433 0%,#121827 44%,#0B0F19 76%,#080B13 100%);
+      --card:
+        linear-gradient(158deg,rgba(33,42,62,.92),rgba(22,29,46,.94) 52%,rgba(16,22,36,.95) 100%);
+      --border:rgba(170,191,235,.2);
+      --gold:#C8923D;--gold2:rgba(200,146,61,.2);
+      --green:#66D89D;
+      --red:#FF6E68;
+      --org:#FFB160;
+      --t1:#F6F9FF;--t2:rgba(221,230,247,.78);--t3:rgba(187,200,230,.6);--t4:rgba(187,200,230,.32);
     }
-    body::before{background:radial-gradient(circle at 85% 10%,rgba(120,132,156,.22) 0%,rgba(120,132,156,0) 35%),radial-gradient(circle at 10% 20%,rgba(226,171,84,.15) 0%,rgba(226,171,84,0) 35%),linear-gradient(160deg,rgba(255,255,255,.25) 0%,rgba(255,255,255,0) 50%)}
-    body::after{opacity:.17;mix-blend-mode:soft-light}
-    .hdr{background:linear-gradient(180deg,rgba(210,216,226,.88),rgba(196,203,214,.86));border-bottom:.5px solid rgba(255,255,255,.72);box-shadow:0 1px 0 rgba(0,0,0,.06),inset 0 1px 0 rgba(255,255,255,.5)}
-    .brand-word,.lname .w{color:#1E2A3E!important;text-shadow:0 1px 0 rgba(255,255,255,.5)}
-    .brand-word span,.lname .g{background:none!important;-webkit-background-clip:initial;background-clip:initial;-webkit-text-fill-color:currentColor;color:#1E2A3E!important}
-    .lang-wrap{background:rgba(238,242,248,.9);border-color:rgba(135,147,171,.34)}
-    .lang-label{color:#2B3342}
-    .lang-toggle{background:rgba(220,226,236,.9);border-color:rgba(144,156,181,.32)}
-    .lang-btn{color:rgba(42,49,64,.72)}
-    .lang-btn.on{background:linear-gradient(135deg,#6D7C99,#54617A);color:#F7FAFF}
-    .hero-sec{padding-top:4px;padding-bottom:2px}
-    .hero-h1{font-size:24px;line-height:1.08;color:#151922;text-shadow:0 1px 0 rgba(255,255,255,.45)}
-    .hero-h1 span{color:inherit}
-    .hero-p{font-size:12px;color:rgba(21,25,34,.72);margin-bottom:4px}
+    body::before{
+      background:
+        radial-gradient(circle at 86% 10%,rgba(101,136,220,.2) 0%,rgba(101,136,220,0) 36%),
+        radial-gradient(circle at 8% 14%,rgba(92,232,191,.12) 0%,rgba(92,232,191,0) 34%),
+        linear-gradient(160deg,rgba(255,255,255,.06) 0%,rgba(255,255,255,0) 42%);
+    }
+    body::after{opacity:.16;mix-blend-mode:screen}
+    .hdr{
+      background:linear-gradient(180deg,rgba(19,27,43,.78),rgba(14,20,33,.74));
+      border-bottom:.5px solid rgba(175,197,238,.24);
+      box-shadow:0 10px 28px rgba(6,10,18,.34),inset 0 1px 0 rgba(255,255,255,.1);
+      backdrop-filter:blur(14px) saturate(1.12);
+      -webkit-backdrop-filter:blur(14px) saturate(1.12);
+    }
+    .brand-word,.lname .w{color:#EAF2FF!important;text-shadow:0 0 14px rgba(100,140,230,.2)}
+    .brand-word span,.lname .g{
+      background:linear-gradient(90deg,#8AD7FF,#A5B6FF)!important;
+      -webkit-background-clip:text;background-clip:text;
+      -webkit-text-fill-color:transparent;color:transparent!important;
+    }
+    .lang-wrap{background:rgba(18,27,51,.72);border-color:rgba(133,158,222,.42)}
+    .lang-label{color:#DDE8FF}
+    .lang-toggle{background:rgba(10,17,36,.72);border-color:rgba(133,158,222,.34)}
+    .lang-btn{color:rgba(214,226,255,.75)}
+    .lang-btn.on{
+      background:linear-gradient(135deg,rgba(86,122,223,.92),rgba(67,95,190,.92));
+      color:#F6FAFF;
+      box-shadow:0 6px 16px rgba(44,70,165,.35),inset 0 1px 0 rgba(255,255,255,.24);
+    }
+    .hero-sec{padding-top:6px;padding-bottom:3px}
+    .hero-h1{
+      font-size:clamp(25px,6.3vw,34px);
+      letter-spacing:-1.05px;
+      line-height:1.01;
+      color:#F7FBFF;
+      text-shadow:0 8px 24px rgba(24,54,126,.25);
+    }
+    .hero-h1 span{
+      background:linear-gradient(90deg,#9BD8FF,#A1BAFF);
+      -webkit-background-clip:text;background-clip:text;
+      -webkit-text-fill-color:transparent;color:transparent;
+    }
+    .hero-p{font-size:14px;color:rgba(222,233,255,.84);margin-bottom:6px;line-height:1.32}
     .hero-sec::after{display:none}
-    .cam-container{border-color:rgba(129,142,168,.45);box-shadow:0 14px 30px rgba(20,27,39,.24),0 0 0 1px rgba(255,255,255,.42),0 0 18px rgba(96,106,128,.2)}
-    .prompt-box{background:linear-gradient(145deg,rgba(244,247,252,.9),rgba(226,232,241,.9));border-color:rgba(146,160,186,.35);color:#151922}
-    .mic-btn{background:linear-gradient(145deg,rgba(214,220,230,.95),rgba(195,203,216,.95));border-color:rgba(255,255,255,.8);color:#2E394D}
-    .card,.badges-sec,.fold-more{box-shadow:0 8px 24px rgba(23,31,47,.12),inset 0 1px 0 rgba(255,255,255,.85),inset 0 -1px 0 rgba(20,30,48,.08)}
-    .chip{background:linear-gradient(135deg,rgba(234,239,248,.94),rgba(215,223,236,.94));border-color:rgba(146,160,186,.34);color:#1B2436;box-shadow:0 1px 6px rgba(39,50,73,.15),inset 0 1px 0 rgba(255,255,255,.8)}
-    .r-hdr{background:linear-gradient(148deg,rgba(238,242,249,.88),rgba(220,227,238,.92));border:1px solid rgba(146,160,186,.32)}
+    .cam-container{
+      border-color:rgba(153,176,219,.34);
+      box-shadow:0 18px 36px rgba(7,11,20,.48),0 0 0 1px rgba(255,255,255,.08),0 0 24px rgba(98,137,216,.16);
+    }
+    .prompt-box{
+      background:linear-gradient(145deg,rgba(21,30,52,.88),rgba(16,23,42,.9));
+      border-color:rgba(146,169,218,.3);
+      color:#F4F8FF;
+      box-shadow:0 8px 20px rgba(7,12,22,.34),inset 0 1px 0 rgba(255,255,255,.09);
+    }
+    .prompt-box::placeholder{color:rgba(188,203,236,.64)}
+    .mic-btn{
+      background:linear-gradient(145deg,rgba(90,114,206,.92),rgba(66,88,174,.92));
+      border-color:rgba(184,202,255,.3);
+      color:#EAF1FF;
+      box-shadow:0 4px 14px rgba(42,62,148,.35),inset 0 1px 0 rgba(255,255,255,.22);
+    }
     .r-title{
-      color:#1C2638;
-      text-shadow:0 1px 0 rgba(255,255,255,.55);
+      font-size:clamp(27px,7vw,34px);
+      letter-spacing:-.72px;
+      line-height:1.04;
+      font-weight:940;
     }
     .r-task{
-      color:#7D510B;
+      font-size:clamp(14px,3.8vw,17px);
+      line-height:1.34;
+      font-weight:760;
+    }
+    .card,.badges-sec,.fold-more{
+      border:.5px solid rgba(168,190,233,.24);
+      box-shadow:0 14px 30px rgba(6,10,18,.36),inset 0 1px 0 rgba(255,255,255,.1),inset 0 -1px 0 rgba(255,255,255,.04);
     }
     .card-lbl{
-      background:linear-gradient(90deg,rgba(90,110,160,.95),rgba(168,111,20,.95));
-      -webkit-background-clip:text;background-clip:text;
-      -webkit-text-fill-color:transparent;
+      color:#C7D8FF;
+      letter-spacing:1.4px;
+      font-size:10px;
+    }
+    .chip{
+      background:linear-gradient(135deg,rgba(70,92,166,.8),rgba(52,72,138,.84));
+      border-color:rgba(148,172,243,.32);
+      color:#EBF2FF;
+      box-shadow:0 5px 12px rgba(10,18,44,.3),inset 0 1px 0 rgba(255,255,255,.16);
+    }
+    .chip.easy{background:rgba(72,175,114,.2);border-color:rgba(98,213,143,.34);color:#9EF0BE}
+    .chip.medium{background:rgba(255,165,62,.2);border-color:rgba(255,174,58,.34);color:#FFD9A5}
+    .chip.hard{background:rgba(255,96,90,.2);border-color:rgba(255,98,90,.34);color:#FFC0BC}
+    .r-hdr{
+      background:linear-gradient(148deg,rgba(32,44,76,.8),rgba(20,30,58,.9));
+      border:1px solid rgba(126,151,226,.34);
+      box-shadow:0 12px 28px rgba(10,16,32,.38),inset 0 1px 0 rgba(255,255,255,.12);
+    }
+    .r-title{font-size:26px;line-height:1.1;color:#F4F8FF}
+    .r-task{font-size:14px;color:#FFD7A4}
+    .tool-entry{
+      background:linear-gradient(145deg,rgba(35,47,84,.48),rgba(21,30,56,.56));
+      border:.5px solid rgba(122,148,221,.24);
+      border-radius:14px;
+      padding:10px 11px;
+    }
+    .tip.safety,.tip.pro{
+      background:linear-gradient(145deg,rgba(34,46,82,.74),rgba(21,30,56,.8));
+      border-color:rgba(128,150,221,.28);
+      box-shadow:0 8px 20px rgba(8,12,24,.3),inset 0 1px 0 rgba(255,255,255,.08);
+    }
+    .tip.pro{border-color:rgba(255,184,84,.36)}
+    .tts-bar{
+      background:linear-gradient(135deg,rgba(54,74,136,.84),rgba(41,58,112,.88));
+      border-color:rgba(141,168,236,.3);
+    }
+    .sh-btn,.walk-nav-btn,.walk-check-btn,.walk-finish-btn,.rst-btn{
+      background:linear-gradient(135deg,rgba(66,89,166,.86),rgba(46,67,131,.9));
+      border-color:rgba(141,168,236,.3);
+      color:#EBF2FF;
+      box-shadow:0 6px 15px rgba(8,14,30,.36),inset 0 1px 0 rgba(255,255,255,.15);
+    }
+    .walk-text{
+      background:linear-gradient(148deg,rgba(27,37,66,.78),rgba(18,25,45,.86));
+      border-color:rgba(133,160,228,.32);
+      color:#E8EFFF;
+    }
+    body.result-open.cam-tiktok #results{
+      background:
+        radial-gradient(140% 90% at 20% 0%, rgba(120,170,255,.15) 0%, rgba(120,170,255,0) 42%),
+        linear-gradient(180deg, rgba(12,18,32,.96) 0%, rgba(9,14,26,.98) 28%, rgba(8,12,22,.99) 100%);
     }
     .cam-upload-btn{display:none!important}
     @media (max-width:380px){
-      #app-version-pill{display:none!important}
+      #app-version-pill{font-size:8px!important;padding:3px 7px!important}
       .lname{font-size:14px}
     }
   </style>
@@ -2179,7 +2964,7 @@
   </div>
   <div class="ag-ttl" id="ag-ttl">Before you start fixing</div>
   <div class="ag-sub" id="ag-sub">Quick read — keeps you safe.</div>
-  <div class="ag-card"><div class="ag-ct y">⚠️ <span id="ag-lim-lbl">AI Limitations</span></div><p id="ag-lim">chickenegg uses AI vision to identify objects and generate repair instructions. AI can make mistakes. Always use your own judgment. Stop if something looks wrong.</p></div>
+  <div class="ag-card"><div class="ag-ct y">⚠️ <span id="ag-lim-lbl">AI Limitations</span></div><p id="ag-lim">chickenegg uses AI vision to identify objects and generate repair instructions. AI can make mistakes — always use your own judgment. Don't photograph people's faces; point the camera at objects and damage only.</p></div>
   <div class="ag-card"><div class="ag-ct r">🚫 <span id="ag-not-lbl">Do NOT use for</span></div><ul id="ag-not"><li>Electrical panel or live wire work</li><li>Gas line installation or repair</li><li>Load-bearing structural work</li><li>Any work requiring a licensed professional</li></ul></div>
   <div class="ag-card"><div class="ag-ct b">🛡️ <span id="ag-pro-lbl">How we protect you</span></div><p id="ag-pro">AI checks your progress photos at each step. 3 danger warnings locks the task for your safety and shows emergency contacts.</p></div>
   <div class="ag-card"><div class="ag-ct y">📋 <span id="ag-res-lbl">Your responsibility</span></div><p id="ag-res">By using chickenegg you confirm you are 18+ and accept full responsibility for any repairs you carry out.</p></div>
@@ -2198,6 +2983,20 @@
     <img id="pm-prev" src="" alt=""/>
     <button class="pm-go" id="pm-go">🔍 Analyse My Progress</button>
     <button class="pm-cancel" id="pm-cancel">Cancel</button>
+  </div>
+</div>
+
+<div id="fm-cta" aria-live="polite"><span id="fm-free-note"></span></div>
+<div id="pw-modal" role="dialog" aria-modal="true" aria-labelledby="pw-ttl">
+  <div class="pw-sheet" role="document">
+    <h3 id="pw-ttl">ChickenEgg Pro</h3>
+    <p id="pw-lead"></p>
+    <p class="pw-price" id="pw-anchor"></p>
+    <div class="pw-actions">
+      <a class="pw-btn pw-btn-primary" id="pw-btn-year" href="https://gumroad.com" target="_blank" rel="noopener" onclick="trackGumroad('pro-year')"></a>
+      <a class="pw-btn pw-btn-secondary" id="pw-btn-month" href="https://gumroad.com" target="_blank" rel="noopener" onclick="trackGumroad('pro-month')"></a>
+      <button type="button" class="pw-btn pw-btn-ghost" id="pw-close"></button>
+    </div>
   </div>
 </div>
 
@@ -2254,7 +3053,7 @@
     <div class="pill pstr">🔥 <span id="streak-num">0</span></div>
     <div class="pill pxp">⚡ <span id="xp-num">0</span></div>
     <div class="pill plvl" id="lvl-badge">Beginner</div>
-    <div class="pill" id="app-version-pill" style="background:rgba(0,0,0,.08);border:.5px solid rgba(0,0,0,.12);color:rgba(18,16,12,.55);font-size:7px;font-weight:800">v{{app_version}}</div>
+    <div class="pill" id="app-version-pill">SAFETY MODE V2</div>
   </div>
 </header>
 
@@ -2276,12 +3075,15 @@
   </div>
   <!-- HERO — text only, no egg -->
   <div class="hero-sec">
+    <div class="build-flag" id="build-flag"><span class="dot"></span>SAFETY MODE V2</div>
     <h1 class="hero-h1">Point. Snap. <span>Fixed.</span></h1>
     <p class="hero-p" id="hero-p">Photo anything at home — get exact step-by-step instructions</p>
+    <p class="hero-privacy" id="hero-privacy"><a href="/privacy" rel="noopener">Privacy</a></p>
   </div>
 
   <!-- LIVE CAMERA -->
   <div class="cam-container">
+    <div class="live-build-flag" id="live-build-flag">SAFETY MODE V2</div>
     <video id="cam-video" autoplay playsinline muted></video>
     <canvas id="cam-canvas"></canvas>
     <img id="still-img" src="" alt="Captured"/>
@@ -2310,12 +3112,24 @@
     </div>
     <div class="s-flash" id="s-flash"></div>
     <div class="cam-status" id="cam-status"><div class="cam-dot"></div><span id="cam-status-txt">Starting...</span></div>
+    <div class="cam-bottom-dock-bg" aria-hidden="true"></div>
+    <div class="cam-detection-layer" id="cam-detection-layer" aria-hidden="true"><div class="ce-reticle" id="ce-reticle"></div></div>
+    <div class="capture-job" id="capture-job" aria-live="polite">
+      <div class="capture-job-ttl" id="capture-job-ttl">Point at the issue</div>
+      <div class="capture-job-sub" id="capture-job-sub">Frame the object clearly</div>
+    </div>
     <button class="retake-btn" id="retake-btn" onclick="retakePhoto()">↩ Retake</button>
     <button type="button" class="cam-upload-btn" id="cam-upload-btn"><span id="cam-upload-lbl">Choose photo</span></button>
     <button class="cam-retry-btn" id="cam-retry-btn" onclick="startCamera()">Enable camera</button>
     <div class="scan-heatwave-el" id="scan-heatwave-el" aria-hidden="true"></div>
     <div class="scan-ritual-wave" id="scan-ritual-wave" aria-hidden="true"></div>
   </div>
+
+  <nav class="cam-top-bar" id="cam-top-bar" aria-label="Camera">
+    <button type="button" class="cam-top-btn" id="cam-back-btn" aria-label="Back">←</button>
+    <span class="cam-top-spacer"></span>
+    <button type="button" class="cam-top-btn" id="cam-help-btn" aria-label="Help">?</button>
+  </nav>
 
   <!-- HAZARD BANNER -->
   <div class="hazard-banner" id="hazard-banner"></div>
@@ -2337,6 +3151,8 @@
       <div class="scan-egg" id="scan-egg" role="button" tabindex="0" aria-label="Scan with camera">
       <span class="egg-ripple" aria-hidden="true"></span>
       <span class="egg-swirl" aria-hidden="true"></span>
+      <span class="egg-grain" aria-hidden="true"></span>
+      <span class="egg-glint" aria-hidden="true"></span>
       <span class="egg-eye" aria-hidden="true"></span>
       <span class="egg-laser" aria-hidden="true"></span>
       <svg width="50" height="60" viewBox="0 0 64 76" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -2386,6 +3202,7 @@
     <div class="ld-orb"><div class="or1"></div><div class="or2"></div><div class="oc"></div></div>
     <div class="ld-txt" id="ld-txt">Scanning image...</div>
     <div class="ld-sub" id="ld-sub">Reading every detail</div>
+    <div class="stage1-confirm" id="stage1-confirm">✅ Object confirmed</div>
   </div>
   <div class="err-box" id="err-box"></div>
   <div id="done-screen" aria-live="polite">
@@ -2402,7 +3219,7 @@
     <div id="results-screen-bar">
       <button type="button" class="results-back" id="results-back-btn">← Camera</button>
       <div id="results-title">Scan Results</div>
-      <div class="ce-conf-signal" id="ce-conf-signal" aria-live="polite"></div>
+      <button type="button" class="results-redo" id="results-redo-btn">Again</button>
     </div>
     <div id="all-done"><div class="de">🏆</div><h3 id="done-h3">Job Done!</h3><p id="done-p">You fixed it yourself. That win lasts for days.</p><div class="done-xp">⚡ +50 XP</div></div>
     <div id="task-locked"><h3>⛔ <span id="locked-ttl">Task Locked</span></h3><p id="locked-p">3 danger warnings triggered. Stop and contact a professional.</p><div class="ec-contacts"><p>Emergency (NL)</p><div class="ec-item"><span>Emergency</span><a href="tel:112">112</a></div><div class="ec-item"><span>Gas</span><a href="tel:0800-9009">0800-9009</a></div><div class="ec-item"><span>Water</span><a href="tel:0900-9994">0900-9994</a></div></div></div>
@@ -2416,58 +3233,154 @@
         <a class="hcall hcall-gas" id="hcall-gas" href="tel:0800-9009">0800-9009</a>
         <a class="hcall hcall-water" id="hcall-water" href="tel:0900-9994">0900-9994</a>
       </div>
+      <div class="hazard-inline-actions" id="hazard-inline-actions">
+        <button type="button" class="hazard-step-unlock" id="hazard-step-unlock">Show steps anyway</button>
+      </div>
     </div>
-    <div class="r-hdr" id="results-summary">
-      <div class="edge-strip" id="edge-strip" aria-label="Product strengths"><span class="edge-pill" id="edge-a"></span><span class="edge-dot">·</span><span class="edge-pill" id="edge-b"></span><span class="edge-dot">·</span><span class="edge-pill" id="edge-c"></span></div>
-      <div class="r-title" id="r-title"></div>
-      <div class="r-task" id="r-task2"></div>
-      <div class="uncertainty-banner off" id="uncertainty-banner"><span class="ub-ico">👁</span><div><div class="ub-lbl" id="ub-lbl">Verify</div><div class="ub-txt" id="ub-txt"></div></div></div>
-      <div class="quick-checks off" id="quick-checks"><div class="qc-ttl" id="qc-ttl">Before you start</div><ul class="qc-list" id="qc-list"></ul></div>
-      <div class="readout-glass off" id="readout-glass">
-        <div class="readout-glass-inner">
-          <div class="rg-row"><span class="rg-ico" aria-hidden="true">🔧</span><div class="rg-body"><div class="rg-lbl" id="rg-mat-lbl">Materials & type</div><div class="rg-txt" id="readout-mat"></div></div></div>
-          <div class="rg-row rg-xray-row"><span class="rg-ico" aria-hidden="true">⚡</span><div class="rg-body"><div class="rg-lbl" id="rg-xray-lbl">X-ray read</div><div class="rg-txt" id="readout-xray"></div></div></div>
+    <div id="ce-results-shell" class="ce-results-shell">
+      <div id="ce-results-sticky"><span class="ce-sticky-sev" id="ce-sticky-sev"></span><span class="ce-sticky-task" id="ce-sticky-task"></span></div>
+      <div class="ce-tab-bar" role="tablist" aria-label="Analysis sections">
+        <button type="button" class="ce-tab on" role="tab" id="ce-tab-outcome" data-ce-tab="outcome" aria-selected="true" aria-controls="ce-panel-outcome">Outcome</button>
+        <button type="button" class="ce-tab" role="tab" id="ce-tab-steps" data-ce-tab="steps" aria-selected="false" aria-controls="ce-panel-steps">Steps</button>
+        <button type="button" class="ce-tab" role="tab" id="ce-tab-details" data-ce-tab="details" aria-selected="false" aria-controls="ce-panel-details">Details</button>
+      </div>
+      <div id="ce-panel-outcome" class="ce-tab-panel" role="tabpanel" data-ce-panel="outcome" aria-labelledby="ce-tab-outcome">
+        <div id="ce-visual-engine" class="ce-visual-engine" aria-live="polite">
+          <div class="ce-ve-paywall off" id="ce-ve-paywall-hint"></div>
+          <div class="ce-outcome-hero">
+            <div class="ce-oh-ico-wrap" id="ce-oh-ico-wrap"><span class="ce-oh-ico" id="ce-oh-ico">✓</span></div>
+            <div class="ce-oh-title" id="ce-oh-title"></div>
+            <div class="ce-oh-sub" id="ce-oh-sub"></div>
+          </div>
+          <div class="ce-outcome-verdict ce-sev-band-safe" id="ce-outcome-verdict">
+            <div class="ce-ve-card ce-ve-card-dec">
+              <div class="ce-dec-pill ce-dec-safe" id="ce-ve-dec-pill">
+                <span id="ce-ve-dec-icon">✅</span><span id="ce-ve-dec-label"></span>
+              </div>
+              <p class="ce-ve-dec-rationale" id="ce-ve-dec-rationale"></p>
+              <div class="ce-ve-subblock off" id="ce-ve-rental-wrap">
+                <div class="ce-ve-sub-lbl" id="ce-ve-rental-lbl">Verhuurder of huurder?</div>
+                <div class="ce-ve-rental-verdict" id="ce-ve-rental-verdict"></div>
+                <div class="ce-ve-sub-txt ce-ve-legal-note" id="ce-ve-rental-ai-note"></div>
+                <div class="ce-ve-legal-note" id="ce-ve-rental-legal"></div>
+              </div>
+              <div class="ce-ve-subblock off" id="ce-ve-why-wrap">
+                <div class="ce-ve-sub-lbl" id="ce-ve-why-lbl">Why this matters</div>
+                <div class="ce-ve-sub-txt" id="ce-ve-why"></div>
+              </div>
+              <div class="ce-ve-subblock off" id="ce-ve-stop-wrap">
+                <div class="ce-ve-sub-lbl" id="ce-ve-stop-lbl">When to stop</div>
+                <ul class="ce-ve-stop-list" id="ce-ve-stop-list"></ul>
+              </div>
+            </div>
+          </div>
+          <div class="ce-ve-card ce-ve-card-sev ce-sev-safe" id="ce-ve-severity">
+            <div class="ce-ve-sev-row">
+              <div class="ce-ve-sev-ico" id="ce-ve-sev-icon">🟢</div>
+              <div class="ce-ve-sev-body">
+                <div class="ce-ve-sev-title" id="ce-ve-sev-title"></div>
+                <p class="ce-ve-sev-txt" id="ce-ve-sev-txt"></p>
+              </div>
+            </div>
+          </div>
+          <details class="ce-ve-acc" id="ce-ve-acc">
+            <summary class="ce-ve-acc-sum" id="ce-ve-acc-sum">Why the AI thinks this</summary>
+            <div class="ce-ve-kicker" id="ce-ve-kicker-perc">Perception</div>
+            <div class="ce-ve-card ce-ve-card-perc">
+              <div class="ce-ve-what" id="ce-ve-what"></div>
+              <div class="ce-ve-list-lbl" id="ce-ve-obs-lbl">Key observations</div>
+              <ul class="ce-ve-list" id="ce-ve-obs"></ul>
+              <div class="ce-ve-list-lbl" id="ce-ve-issues-lbl">Possible issues</div>
+              <ul class="ce-ve-list" id="ce-ve-issues"></ul>
+            </div>
+          </details>
+        </div>
+        <div class="ce-outcome-actions">
+          <button type="button" class="ce-outcome-cta ce-outcome-cta-primary" id="ce-cta-steps">View steps →</button>
+          <button type="button" class="ce-outcome-cta ce-outcome-cta-secondary" id="ce-cta-share">Share analysis</button>
+        </div>
+        <div class="ce-outcome-chips" id="ce-outcome-chips">
+          <div class="ce-oc"><span class="ce-oc-l" id="ce-oc-time-l">Time</span><span class="ce-oc-v" id="ce-oc-time"></span></div>
+          <div class="ce-oc"><span class="ce-oc-l" id="ce-oc-cost-l">Cost</span><span class="ce-oc-v" id="ce-oc-cost"></span></div>
+          <div class="ce-oc"><span class="ce-oc-l" id="ce-oc-level-l">Level</span><span class="ce-oc-v" id="ce-oc-level"></span></div>
+        </div>
+        <div class="tip safety result-safety-card" id="tip-safety"><div class="tip-ico">⚠️</div><div><div class="tip-lbl" id="safety-lbl">Safety</div><div class="tip-txt" id="r-safety"></div></div></div>
+      </div>
+      <div id="ce-panel-steps" class="ce-tab-panel off" role="tabpanel" data-ce-panel="steps" aria-labelledby="ce-tab-steps" hidden>
+        <div class="tts-bar" id="tts-bar">
+          <button class="tts-btn speak" id="tts-read-all" onclick="readAllSteps()">🔊 <span id="tts-read-lbl">Read all steps</span></button>
+          <button class="tts-btn" id="tts-stop" onclick="stopSpeech()" style="display:none">⏹ Stop</button>
+          <div class="tts-speed" id="tts-speed-lbl">Speed: normal</div>
+        </div>
+        <div class="warn-ctr off" id="warn-ctr">⚠️ <span id="warn-txt"></span></div>
+        <div class="confidence-gate" id="confidence-gate">
+          <div class="confidence-gate-ttl" id="confidence-gate-ttl">Confirm the object first</div>
+          <div class="confidence-gate-msg" id="confidence-gate-msg">Medium confidence detected. Confirm this is correct before loading full steps.</div>
+          <div class="confidence-gate-actions">
+            <button type="button" class="confidence-gate-btn confirm" id="confidence-gate-confirm">Yes, continue</button>
+            <button type="button" class="confidence-gate-btn" id="confidence-gate-retake">Retake photo</button>
+          </div>
+          <div class="confidence-gate-note" id="confidence-gate-note">Safety check: if this object looks wrong, retake before continuing.</div>
+        </div>
+        <div class="card" id="no-repair-box" style="display:none">
+          <div class="card-lbl" id="no-repair-title">No repair needed</div>
+          <p class="no-repair-p" id="no-repair-p">Enjoy your drink! No plumber needed here.</p>
+          <button class="rst-btn" id="no-repair-cta" style="margin-top:4px">↩ Try another image</button>
+        </div>
+        <div class="card" id="tools-card"><div class="card-lbl" id="tools-lbl">Tools & Materials</div><div class="tools-list" id="r-tools"></div></div>
+        <a class="ad-banner" id="ad-banner" href="https://www.gamma.nl" target="_blank" rel="noopener"><div class="ad-l"><span style="font-size:18px" id="ad-ico">🏪</span><div><div class="ad-sp">Sponsored</div><div class="ad-nm" id="ad-nm">Gamma</div><div class="ad-sub" id="ad-sub-txt">Tools — same-day pickup NL</div></div></div><div class="ad-cta" id="ad-cta">Shop →</div></a>
+        <div class="card" id="steps-card">
+          <div class="steps-top"><div class="card-lbl" style="margin-bottom:0" id="steps-lbl">Step by Step</div><div class="steps-ct"><span id="s-done">0</span> / <span id="s-tot">0</span> <span id="done-lbl">done</span></div></div>
+          <div class="prog-track"><div class="prog-fill" id="p-fill"></div></div>
+          <div class="walk-pane" id="walk-pane">
+            <div class="walk-meta">
+              <span id="walk-step-num">1</span> / <span id="walk-step-tot">0</span>
+            </div>
+            <div class="walk-text" id="walk-text"></div>
+            <div class="walk-look off" id="walk-look"><div class="walk-look-lbl" id="walk-look-lbl">What you should see</div><div class="walk-look-txt" id="walk-look-txt"></div></div>
+            <div class="walk-tools" id="walk-tools">
+              <div class="walk-tools-ttl" id="walk-tools-ttl">Tools for this step</div>
+              <div class="walk-tools-row" id="walk-tools-row"></div>
+            </div>
+            <div class="walk-nav">
+              <button class="walk-nav-btn" id="walk-back" type="button" disabled>← Back</button>
+              <button class="walk-nav-btn" id="walk-next" type="button" disabled>Next →</button>
+            </div>
+            <button class="walk-check-btn" id="walk-check" type="button">📸 Check my progress</button>
+            <button class="walk-finish-btn" id="walk-finish" type="button" style="display:none">✅ Finished</button>
+          </div>
+          <ol class="steps-list" id="r-steps"></ol>
         </div>
       </div>
-      <div class="conf-tier safe" id="r-confidence">✅ DIY-safe</div>
-      <div class="meta-row"><div class="chip" id="r-diff"></div><div class="chip">⏱ <span id="r-time"></span></div><div class="chip off" id="r-cat-chip">📁 <span id="r-cat"></span></div></div>
-      <div class="cost-row" id="cost-row" style="display:none">💶 <span id="cost-lbl">Estimated cost:</span> <span class="cost-amt" id="r-cost"></span></div>
-    </div>
-    <div class="tts-bar" id="tts-bar">
-      <button class="tts-btn speak" id="tts-read-all" onclick="readAllSteps()">🔊 <span id="tts-read-lbl">Read all steps</span></button>
-      <button class="tts-btn" id="tts-stop" onclick="stopSpeech()" style="display:none">⏹ Stop</button>
-      <div class="tts-speed" id="tts-speed-lbl">Speed: normal</div>
-    </div>
-    <div class="warn-ctr off" id="warn-ctr">⚠️ <span id="warn-txt"></span></div>
-    <div class="card" id="no-repair-box" style="display:none">
-      <div class="card-lbl" id="no-repair-title">No repair needed</div>
-      <p class="no-repair-p" id="no-repair-p">Enjoy your drink! No plumber needed here.</p>
-      <button class="rst-btn" id="no-repair-cta" style="margin-top:4px">↩ Try another image</button>
-    </div>
-    <div class="tip safety" id="tip-safety"><div class="tip-ico">⚠️</div><div><div class="tip-lbl" id="safety-lbl">Safety</div><div class="tip-txt" id="r-safety"></div></div></div>
-    <div class="card" id="tools-card"><div class="card-lbl" id="tools-lbl">Tools & Materials</div><div class="tools-list" id="r-tools"></div></div>
-    <a class="ad-banner" id="ad-banner" href="https://www.gamma.nl" target="_blank" rel="noopener"><div class="ad-l"><span style="font-size:18px" id="ad-ico">🏪</span><div><div class="ad-sp">Sponsored</div><div class="ad-nm" id="ad-nm">Gamma</div><div class="ad-sub" id="ad-sub-txt">Tools — same-day pickup NL</div></div></div><div class="ad-cta" id="ad-cta">Shop →</div></a>
-    <div class="card" id="steps-card">
-      <div class="steps-top"><div class="card-lbl" style="margin-bottom:0" id="steps-lbl">Step by Step</div><div class="steps-ct"><span id="s-done">0</span> / <span id="s-tot">0</span> <span id="done-lbl">done</span></div></div>
-      <div class="prog-track"><div class="prog-fill" id="p-fill"></div></div>
-      <div class="walk-pane" id="walk-pane">
-        <div class="walk-meta">
-          <span id="walk-step-num">1</span> / <span id="walk-step-tot">0</span>
+      <div id="ce-panel-details" class="ce-tab-panel off" role="tabpanel" data-ce-panel="details" aria-labelledby="ce-tab-details" hidden>
+        <div class="ce-conf-signal" id="ce-conf-signal" aria-live="polite"></div>
+        <div class="conf-tier safe" id="r-confidence">✅ DIY-safe</div>
+        <div class="r-hdr" id="results-summary">
+          <div class="edge-strip" id="edge-strip" aria-label="Product strengths"><span class="edge-pill" id="edge-a"></span><span class="edge-dot">·</span><span class="edge-pill" id="edge-b"></span><span class="edge-dot">·</span><span class="edge-pill" id="edge-c"></span></div>
+          <div class="r-title" id="r-title"></div>
+          <div class="r-task" id="r-task2"></div>
+          <div class="uncertainty-banner off" id="uncertainty-banner"><span class="ub-ico">👁</span><div><div class="ub-lbl" id="ub-lbl">Verify</div><div class="ub-txt" id="ub-txt"></div></div></div>
+          <div class="quick-checks off" id="quick-checks"><div class="qc-ttl" id="qc-ttl">Before you start</div><ul class="qc-list" id="qc-list"></ul></div>
+          <div class="readout-glass off" id="readout-glass">
+            <div class="readout-glass-inner">
+              <div class="rg-row"><span class="rg-ico" aria-hidden="true">🔧</span><div class="rg-body"><div class="rg-lbl" id="rg-mat-lbl">Materials & type</div><div class="rg-txt" id="readout-mat"></div></div></div>
+              <div class="rg-row rg-xray-row"><span class="rg-ico" aria-hidden="true">⚡</span><div class="rg-body"><div class="rg-lbl" id="rg-xray-lbl">X-ray read</div><div class="rg-txt" id="readout-xray"></div></div></div>
+            </div>
+          </div>
+          <div class="meta-row"><div class="chip" id="r-diff"></div><div class="chip">⏱ <span id="r-time"></span></div><div class="chip off" id="r-cat-chip">📁 <span id="r-cat"></span></div></div>
+          <div class="cost-row" id="cost-row" style="display:none">💶 <span id="cost-lbl">Estimated cost:</span> <span class="cost-amt" id="r-cost"></span></div>
         </div>
-        <div class="walk-text" id="walk-text"></div>
-        <div class="walk-look off" id="walk-look"><div class="walk-look-lbl" id="walk-look-lbl">What you should see</div><div class="walk-look-txt" id="walk-look-txt"></div></div>
-        <div class="walk-tools" id="walk-tools">
-          <div class="walk-tools-ttl" id="walk-tools-ttl">Tools for this step</div>
-          <div class="walk-tools-row" id="walk-tools-row"></div>
-        </div>
-        <div class="walk-nav">
-          <button class="walk-nav-btn" id="walk-back" type="button" disabled>← Back</button>
-          <button class="walk-nav-btn" id="walk-next" type="button" disabled>Next →</button>
-        </div>
-        <button class="walk-check-btn" id="walk-check" type="button">📸 Check my progress</button>
-        <button class="walk-finish-btn" id="walk-finish" type="button" style="display:none">✅ Finished</button>
+        <details class="fold-more" id="fold-more">
+          <summary class="fold-sum" id="fold-sum">Savings, sharing &amp; extra tips</summary>
+          <div class="fold-inner">
+            <div class="sav" id="sav-box"><div class="sav-l">💰 <span id="sav-lbl">Saving vs plumber</span><div class="sav-lbl" id="sav-sub">why call when you can fix?</div></div><div class="sav-amt" id="sav-amt">€85</div></div>
+            <div class="share-bar"><button type="button" class="sh-btn wa" id="sh-wa">📲 <span id="wa-lbl">Share on WhatsApp</span></button><button type="button" class="sh-btn" id="sh-copy">🔗 <span id="copy-lbl">Copy link</span></button></div>
+            <div class="tip pro"><div class="tip-ico">💡</div><div><div class="tip-lbl" id="pro-lbl">Pro Tip</div><div class="tip-txt" id="r-pro"></div></div></div>
+            <div class="when-pro" id="when-pro-box"><strong id="when-pro-lbl">When to call a professional:</strong> <span id="r-when-pro"></span></div>
+            <div class="badges-sec"><div class="card-lbl" id="badges-lbl">Achievements</div><div class="badges-row" id="badges-row"></div></div>
+          </div>
+        </details>
       </div>
-      <ol class="steps-list" id="r-steps"></ol>
     </div>
     <div class="ec ec-top" id="ec">
       <div class="ec-handle" id="ec-handle" aria-hidden="true"></div>
@@ -2483,25 +3396,81 @@
       <div class="ec-row" style="margin-top:8px"><button type="button" class="ec-sub" id="ec-feedback-send" style="width:100%">Send feedback</button></div>
       <div class="ec-skip" id="ec-skip" role="button" tabindex="0">Not now</div>
     </div>
-    <details class="fold-more" id="fold-more">
-      <summary class="fold-sum" id="fold-sum">Savings, sharing &amp; extra tips</summary>
-      <div class="fold-inner">
-        <div class="sav" id="sav-box"><div class="sav-l">💰 <span id="sav-lbl">Saving vs plumber</span><div class="sav-lbl" id="sav-sub">why call when you can fix?</div></div><div class="sav-amt" id="sav-amt">€85</div></div>
-        <div class="share-bar"><button type="button" class="sh-btn wa" id="sh-wa">📲 <span id="wa-lbl">Share on WhatsApp</span></button><button type="button" class="sh-btn" id="sh-copy">🔗 <span id="copy-lbl">Copy link</span></button></div>
-        <div class="tip pro"><div class="tip-ico">💡</div><div><div class="tip-lbl" id="pro-lbl">Pro Tip</div><div class="tip-txt" id="r-pro"></div></div></div>
-        <div class="when-pro" id="when-pro-box"><strong id="when-pro-lbl">When to call a professional:</strong> <span id="r-when-pro"></span></div>
-        <div class="badges-sec"><div class="card-lbl" id="badges-lbl">Achievements</div><div class="badges-row" id="badges-row"></div></div>
-      </div>
-    </details>
     <button type="button" class="rst-btn" id="rst-btn">↩ <span id="rst-lbl">Scan something else</span></button>
   </div>
 </div>
 
 <script>
 var LANG='en';
+var CE_STATE_COPY={
+  en:{
+    idle:['Point at the issue','Frame the object clearly'],
+    detecting:['Hold steady','Analyzing surface details'],
+    locked:['Object detected','Ready to scan'],
+    scanning:['Scanning...','Building repair steps'],
+    error:["Can't detect object",'Improve lighting or move closer']
+  },
+  nl:{
+    idle:['Richt op het probleem','Kader het object duidelijk'],
+    detecting:['Houd stil','Oppervlak wordt geanalyseerd'],
+    locked:['Object herkend','Klaar om te scannen'],
+    scanning:['Scannen...','Stappen worden opgebouwd'],
+    error:['Object niet herkend','Meer licht of dichterbij']
+  }
+};
+var CE_RESULT_UI={
+  en:{
+    tabO:'Outcome',tabS:'Steps',tabD:'Details',hdr:'Analysis',redo:'Again',
+    ctaSteps:'View steps →',ctaShare:'Share analysis',
+    ocT:'Time',ocC:'Cost',ocL:'Level',ocDIY:'DIY',ocPro:'Pro',
+    accWhy:'Why the AI thinks this',stSafe:'Safe',stCaut:'Caution',stStop:"Don't"
+  },
+  nl:{
+    tabO:'Uitkomst',tabS:'Stappen',tabD:'Details',hdr:'Analyse',redo:'Opnieuw',
+    ctaSteps:'Bekijk stappen →',ctaShare:'Deel analyse',
+    ocT:'Tijd',ocC:'Kosten',ocL:'Niveau',ocDIY:'Zelf',ocPro:'Pro',
+    accWhy:'Waarom denkt de AI dit?',stSafe:'Veilig',stCaut:'Let op',stStop:'Niet doen'
+  }
+};
+function ceSwitchTab(name){
+  name=name||'outcome';
+  ['outcome','steps','details'].forEach(function(t){
+    var btn=document.querySelector('[data-ce-tab="'+t+'"]');
+    var panel=document.querySelector('[data-ce-panel="'+t+'"]');
+    var on=(t===name);
+    if(btn){
+      btn.classList.toggle('on',on);
+      btn.setAttribute('aria-selected',on?'true':'false');
+    }
+    if(panel){
+      panel.classList.toggle('off',!on);
+      if(on) panel.removeAttribute('hidden');
+      else panel.setAttribute('hidden','hidden');
+    }
+  });
+}
+function ceClipCaptureText(s,max){
+  if(s==null)return'';
+  s=String(s).trim();
+  if(!s)return'';
+  if(s.length<=max)return s;
+  return s.slice(0,Math.max(0,max-1))+'…';
+}
+function setCameraUiState(state,opts){
+  opts=opts||{};
+  ['idle','detecting','locked','scanning','error'].forEach(function(x){
+    document.body.classList.remove('ce-cam-'+x);
+  });
+  if(state) document.body.classList.add('ce-cam-'+state);
+  if(opts.copy!==false&&state){
+    var pack=(CE_STATE_COPY[LANG]||CE_STATE_COPY.en)[state];
+    if(pack) setCaptureJob(pack[0],pack[1],{skipClip:true});
+  }
+}
+function setCaptureStateCopy(state){ setCameraUiState(state,{copy:true}); }
 var T={
-  en:{heroP:'Photo anything at home — get exact step-by-step instructions',scanLbl:'Scan',ldSub:'Reading every detail',toolsLbl:'Tools & Materials',stepsLbl:'Step by Step',doneLbl:'done',safetyLbl:'Safety',proLbl:'Pro Tip',savLbl:'Saving vs plumber',savSub:'why call when you can fix?',shaWa:'Share on WhatsApp',shCopy:'Copy link',costLbl:'Estimated cost:',readAll:'Read all steps',ttsStop:'Stop',ttsSpeed:'Speed: normal',doneH:'Job Done!',doneP:'You fixed it yourself. That win lasts for days.',lockedTtl:'Task Locked',lockedP:'3 danger warnings triggered. Stop and contact a professional.',whenProLbl:'When to call a professional:',rstLbl:'Scan something else',adCta:'Shop →',pmTtl:'Check Your Progress',pmUpLbl:'Take a photo of your progress',pmGo:'Analyse My Progress',pmCancel:'Cancel',checkProgress:'Check progress',readStep:'Read',dockBack:'Back',dockNext:'Next',dockDone:'Done',stepPhotoHint:'Double-tap this card for photo check',eggNavHint:'Tap egg — next · Hold egg — back',edgeA:'Camera-first',edgeB:'Photo-checked steps',edgeC:'Whole home — not just gadgets',ubLbl:'Verify first',qcTtl:'Before you start',walkLookLbl:'What you should see',pmStepMismatch:'Not a match for this step yet',glassBadge1:'CONTEXT',glassBadge2:'MATERIALS',glassBadge3:'X-RAY',scanPhase1Ttl:'Scan 1 — Room context',scanPhase1Txt:'Frame the whole object plus a slice of the room: floor/wall, power cable, water path, and what it connects to.',scanPhase2Ttl:'Scan 2 — Materials & typeplate',scanPhase2Txt:'Closer: brand or model sticker, joints (compression/copper/PVC), hose colours, screw heads, serial plates — anything that IDs the hardware.',scanPhase3Ttl:'Scan 3 — X-ray on the defect',scanPhase3Txt:'Macro on the fault: leak origin vs splash stain, crack vs scratch, belt wear, corrosion, loose junction — dirt/limescale vs real failure.',glassHint1:'Hold steady — capturing context…',glassHint2:'Re-frame, then tap the egg to capture',glassHint3:'Tap the egg — X-ray pass',readoutMatLbl:'Materials & type',readoutXrayLbl:'X-ray read',agTtl:'Before you start fixing',agSub:'Quick read — keeps you safe.',agLimLbl:'AI Limitations',agLim:'chickenegg uses AI vision to identify objects and generate repair instructions. AI can make mistakes. Always use your own judgment.',agNotLbl:'Do NOT use for',agNot:'<li>Electrical panel or live wire work</li><li>Gas line installation or repair</li><li>Load-bearing structural work</li><li>Any work requiring a licensed professional</li>',agProLbl:'How we protect you',agPro:'AI checks your progress photos at each step. 3 danger warnings locks the task for your safety.',agResLbl:'Your responsibility',agRes:'By using chickenegg you confirm you are 18+ and accept full responsibility for any repairs.',agAgreeLbl:"I've read this and accept I am responsible for my own safety and any repairs I carry out.",agBtn:"I Agree — Let's Fix Things 🔧",epTitle:'This is your moment',epBody:'Start free: <strong>3 repairs/month</strong>. Upgrade to <strong>Pro €4.99/month</strong> for unlimited repair sessions.',epPerksTtl:'What Pro unlocks',epPerks:'✓ Unlimited repairs &nbsp;✓ Priority AI checks &nbsp;✓ Advanced safety triage',epSkip:"No thanks, I will stay on free for now",warnTxt:'danger warning',camReady:'Ready — tap egg',camStarting:'Starting camera...',camFail:'Camera error — use button below',camHttpBlocked:'This address is not secure (http). Phones only allow live camera on https. Tap “Choose photo” below, or use ngrok HTTPS.',camUploadLbl:'📷 Choose photo',camNotReady:'Choose a photo first (button above), then tap the egg.',heroCtaScan:'Start Live Scan',heroCtaDemo:'Use Photo Instead',hazardCaution:'⚠️ Caution: ',hazardWarning:'⚠️ Warning: ',hazardDanger:'🚨 DANGER: ',ldMsgs:['Scanning image...','Identifying object...','Checking repair method...','Building your guide...','Almost ready...'],pmSafe:'Looks good!',pmCaution:'Minor issue noted',pmDanger:'Stop — fix this first',pmEmergency:'STOP IMMEDIATELY',noRepairTitle:'No repair needed',noRepairP:'Enjoy your drink! No plumber needed here.',noRepairCta:'↩ Try another image',toolEmpty:'No tools needed for this one.',ecH3:'Join the Repair Pioneers',ecP:'How was this? Add your email for updates — or tap Not now. Tools and steps are right below.',ecSubBtn:'Join',ecSkip:'Not now',ecEmailPh:'your@email.com',ecNotePh:'One thing to improve (optional)',foldMoreLbl:'Savings, sharing & extra tips — tap to open',badgesLbl:'Achievements',langTip:'Tip: switch EN/NL here any time.',langTipBtn:'Got it',hazardHeroDangerBadge:'Serious hazard',hazardHeroEmergBadge:'Emergency',hazardHeroDangerTtl:'High risk — pause and get help if unsure',hazardHeroEmergTtl:'Possible emergency — call for help',hazardHeroNoDetail:'Our AI thinks this may be unsafe to handle alone. If you smell gas, see sparks or fire, or have major flooding, use the numbers below.',hazardHeroCallSub:'Netherlands — tap to call:',hazardHeroWarnBadge:'Warning',hazardHeroWarnTtl:'Read this before you start',hazardHeroCautBadge:'Caution',hazardHeroCautTtl:'Be careful with this job',hCall112:'112 — Emergency',hCallGas:'0800-9009 — Gas smell / leak',hCallWater:'0900-9994 — Water damage line'},
-  nl:{heroP:'Foto alles thuis — krijg exacte stap-voor-stap instructies',scanLbl:'Scan',ldSub:'Elk detail lezen',toolsLbl:'Gereedschap & Materialen',stepsLbl:'Stap voor Stap',doneLbl:'gedaan',safetyLbl:'Veiligheid',proLbl:'Pro Tip',savLbl:'Besparing vs loodgieter',savSub:'waarom bellen als je het zelf kunt?',shaWa:'Deel via WhatsApp',shCopy:'Link kopiëren',costLbl:'Geschatte kosten:',readAll:'Alle stappen voorlezen',ttsStop:'Stoppen',ttsSpeed:'Snelheid: normaal',doneH:'Klaar!',doneP:'Je hebt het zelf gerepareerd. Die overwinning vergeet je niet.',lockedTtl:'Taak Vergrendeld',lockedP:'3 gevaarswaarschuwingen. Stop en bel een professional.',whenProLbl:'Wanneer een professional bellen:',rstLbl:'Iets anders scannen',adCta:'Winkel →',pmTtl:'Controleer je voortgang',pmUpLbl:'Maak een foto van je voortgang',pmGo:'Analyseer mijn voortgang',pmCancel:'Annuleren',checkProgress:'Voortgang controleren',readStep:'Voorlezen',dockBack:'Terug',dockNext:'Volgende',dockDone:'Klaar',stepPhotoHint:'Dubbeltik op deze kaart voor fotocontrole',eggNavHint:'Tik ei — volgende · Vasthouden — terug',edgeA:'Camera eerst',edgeB:'Stap-foto controle',edgeC:'Heel het huis — niet alleen gadgets',ubLbl:'Eerst checken',qcTtl:'Voordat je start',walkLookLbl:'Wat je zou moeten zien',pmStepMismatch:'Nog geen match met deze stap',glassBadge1:'CONTEXT',glassBadge2:'MATERIAAL',glassBadge3:'X-RAY',scanPhase1Ttl:'Scan 1 — Omgeving',scanPhase1Txt:'Het hele object + stukje ruimte: vloer/muur, snoer, leiding, en waar het op aansluit.',scanPhase2Ttl:'Scan 2 — Materiaal & typenummer',scanPhase2Txt:'Dichterbij: merk/modelsticker, koppelstukken (knel/koper/PVC), slangkleur, schroefkoppen, plaatjes — alles wat onderdelen identificeert.',scanPhase3Ttl:'Scan 3 — X-ray op de fout',scanPhase3Txt:'Zeer dichtbij het probleem: lekbron vs spat, scheur vs kras, slijtage, corrosie, losse verbinding — kalk/vuil versus echte breuk.',glassHint1:'Houd vast — context vastleggen…',glassHint2:'Herkader, tik dan op het ei',glassHint3:'Tik op het ei — X-ray scan',readoutMatLbl:'Materiaal & type',readoutXrayLbl:'X-ray uitlees',agTtl:'Voordat je begint',agSub:'Snel lezen — houdt je veilig.',agLimLbl:'AI Beperkingen',agLim:'chickenegg gebruikt AI-visie om objecten te identificeren. AI kan fouten maken. Gebruik altijd je eigen oordeel.',agNotLbl:'NIET gebruiken voor',agNot:'<li>Groepenkast of spanningsvoerende draden</li><li>Gasleiding installatie of reparatie</li><li>Constructief draagwerk</li><li>Werk waarvoor een vergunning vereist is</li>',agProLbl:'Hoe we je beschermen',agPro:"AI controleert je voortgangsfoto's bij elke stap. 3 gevaarswaarschuwingen vergrendelt de taak.",agResLbl:'Jouw verantwoordelijkheid',agRes:'Door chickenegg te gebruiken bevestig je dat je 18+ bent en volledige verantwoordelijkheid accepteert voor reparaties.',agAgreeLbl:'Ik heb dit gelezen en accepteer dat ik verantwoordelijk ben voor mijn eigen veiligheid en reparaties.',agBtn:'Ik ga akkoord — Laten we iets repareren 🔧',epTitle:'Dit is jouw moment',epBody:'Start gratis: <strong>3 reparaties/maand</strong>. Upgrade naar <strong>Pro €4,99/maand</strong> voor onbeperkte reparaties.',epPerksTtl:'Wat Pro ontgrendelt',epPerks:'✓ Onbeperkte reparaties &nbsp;✓ Prioriteit AI-checks &nbsp;✓ Geavanceerde veiligheids-triage',epSkip:'Nee bedankt, ik blijf voorlopig gratis',warnTxt:'gevaarswaarschuwing',camReady:'Klaar — tik op ei',camStarting:'Camera starten...',camFail:'Camera-fout — gebruik knop hieronder',camHttpBlocked:'Dit adres is niet beveiligd (http). Op je telefoon werkt live camera alleen via https. Tik “Kies foto” hieronder, of gebruik ngrok (https).',camUploadLbl:'📷 Kies foto',camNotReady:'Kies eerst een foto (knop hierboven), tik dan op het ei.',heroCtaScan:'Start Live Scan',heroCtaDemo:'Foto Uploaden',hazardCaution:'⚠️ Let op: ',hazardWarning:'⚠️ Waarschuwing: ',hazardDanger:'🚨 GEVAAR: ',ldMsgs:['Afbeelding scannen...','Object identificeren...','Reparatiemethode controleren...','Gids bouwen...','Bijna klaar...'],pmSafe:'Ziet er goed uit!',pmCaution:'Klein probleem opgemerkt',pmDanger:'Stop — herstel dit eerst',pmEmergency:'STOP ONMIDDELLIJK',noRepairTitle:'Geen reparatie nodig',noRepairP:'Geniet van je drankje! Geen loodgieter nodig.',noRepairCta:'↩ Probeer opnieuw',toolEmpty:'Geen gereedschap nodig voor dit.',ecH3:'Word Repair Pioneer',ecP:'Hoe was dit? E-mail voor updates — of tik Niet nu. Gereedschap en stappen staan hieronder.',ecSubBtn:'Aanmelden',ecSkip:'Niet nu',ecEmailPh:'jij@voorbeeld.nl',ecNotePh:'Iets om te verbeteren (optioneel)',foldMoreLbl:'Besparing, delen & extra tips — tik om te openen',badgesLbl:'Prestaties',langTip:'Tip: wissel hier tussen EN/NL.',langTipBtn:'Begrepen',hazardHeroDangerBadge:'Ernstig gevaar',hazardHeroEmergBadge:'Noodgeval',hazardHeroDangerTtl:'Hoog risico — twijfel je? Bel hulp',hazardHeroEmergTtl:'Mogelijk noodgeval — bel hulp',hazardHeroNoDetail:'De AI denkt dat je dit beter niet alleen doet. Ruik je gas, zie je vuur/vonk of veel water? Gebruik de nummers hieronder.',hazardHeroCallSub:'Nederland — tik om te bellen:',hazardHeroWarnBadge:'Waarschuwing',hazardHeroWarnTtl:'Lees dit voordat je begint',hazardHeroCautBadge:'Let op',hazardHeroCautTtl:'Wees voorzichtig met deze klus',hCall112:'112 — Noodnummer',hCallGas:'0800-9009 — Gaslucht / gaslek',hCallWater:'0900-9994 — Waterschade melden'}
+  en:{heroP:'Photo anything at home — get exact step-by-step instructions',scanLbl:'Scan',ldSub:'Reading every detail',toolsLbl:'Tools & Materials',stepsLbl:'Step by Step',doneLbl:'done',safetyLbl:'Safety',proLbl:'Pro Tip',savLbl:'Saving vs plumber',savSub:'why call when you can fix?',shaWa:'Share on WhatsApp',shCopy:'Copy link',costLbl:'Estimated cost:',readAll:'Read all steps',ttsStop:'Stop',ttsSpeed:'Speed: normal',doneH:'Job Done!',doneP:'You fixed it yourself. That win lasts for days.',lockedTtl:'Task Locked',lockedP:'3 danger warnings triggered. Stop and contact a professional.',whenProLbl:'When to call a professional:',rstLbl:'Scan something else',adCta:'Shop →',pmTtl:'Check Your Progress',pmUpLbl:'Take a photo of your progress',pmGo:'Analyse My Progress',pmCancel:'Cancel',checkProgress:'Check progress',readStep:'Read',dockBack:'Back',dockNext:'Next',dockDone:'Done',stepPhotoHint:'Double-tap this card for photo check',eggNavHint:'Tap egg — next · Hold egg — back',edgeA:'Camera-first',edgeB:'Photo-checked steps',edgeC:'Whole home — not just gadgets',ubLbl:'Verify first',qcTtl:'Before you start',walkLookLbl:'What you should see',pmStepMismatch:'Not a match for this step yet',glassBadge1:'CONTEXT',glassBadge2:'MATERIALS',glassBadge3:'X-RAY',scanPhase1Ttl:'Scan 1 — Room context',scanPhase1Txt:'Frame the whole object plus a slice of the room: floor/wall, power cable, water path, and what it connects to.',scanPhase2Ttl:'Scan 2 — Materials & typeplate',scanPhase2Txt:'Closer: brand or model sticker, joints (compression/copper/PVC), hose colours, screw heads, serial plates — anything that IDs the hardware.',scanPhase3Ttl:'Scan 3 — X-ray on the defect',scanPhase3Txt:'Macro on the fault: leak origin vs splash stain, crack vs scratch, belt wear, corrosion, loose junction — dirt/limescale vs real failure.',glassHint1:'Hold steady — capturing context…',glassHint2:'Re-frame, then tap the egg to capture',glassHint3:'Tap the egg — X-ray pass',readoutMatLbl:'Materials & type',readoutXrayLbl:'X-ray read',agTtl:'Before you start fixing',agSub:'Quick read — keeps you safe.',agLimLbl:'AI Limitations',agLim:"chickenegg uses AI vision to identify objects and generate repair instructions. AI can make mistakes — always use your own judgment. Don't photograph people's faces; point the camera at objects and damage only.",agNotLbl:'Do NOT use for',agNot:'<li>Electrical panel or live wire work</li><li>Gas line installation or repair</li><li>Load-bearing structural work</li><li>Any work requiring a licensed professional</li>',agProLbl:'How we protect you',agPro:'AI checks your progress photos at each step. 3 danger warnings locks the task for your safety.',agResLbl:'Your responsibility',agRes:'By using chickenegg you confirm you are 18+ and accept full responsibility for any repairs.',agAgreeLbl:"I've read this and accept I am responsible for my own safety and any repairs I carry out.",agBtn:"I Agree — Let's Fix Things 🔧",epTitle:'This is your moment',epBody:'Start free: <strong>3 repairs/month</strong>. Upgrade to <strong>Pro €4.99/month</strong> for unlimited repair sessions.',epPerksTtl:'What Pro unlocks',epPerks:'✓ Unlimited repairs &nbsp;✓ Priority AI checks &nbsp;✓ Advanced safety triage',epSkip:"No thanks, I will stay on free for now",warnTxt:'danger warning',camReady:'Ready — tap egg',camStarting:'Starting camera...',camFail:'Camera error — use button below',camHttpBlocked:'This address is not secure (http). Phones only allow live camera on https. Tap “Choose photo” below, or use ngrok HTTPS.',camUploadLbl:'📷 Choose photo',camNotReady:'Choose a photo first (button above), then tap the egg.',heroCtaScan:'Start Live Scan',heroCtaDemo:'Use Photo Instead',heroPrivacyLbl:'Privacy',hazardCaution:'⚠️ Caution: ',hazardWarning:'⚠️ Warning: ',hazardDanger:'🚨 DANGER: ',ldMsgs:['Scanning image...','Identifying object...','Checking repair method...','Building your guide...','Almost ready...'],pmSafe:'Looks good!',pmCaution:'Minor issue noted',pmDanger:'Stop — fix this first',pmEmergency:'STOP IMMEDIATELY',noRepairTitle:'No repair needed',noRepairP:'Enjoy your drink! No plumber needed here.',noRepairCta:'↩ Try another image',toolEmpty:'No tools needed for this one.',ecH3:'Join the Repair Pioneers',ecP:'How was this? Add your email for updates — or tap Not now. Tools and steps are right below.',ecSubBtn:'Join',ecSkip:'Not now',ecEmailPh:'your@email.com',ecNotePh:'One thing to improve (optional)',foldMoreLbl:'Savings, sharing & extra tips — tap to open',badgesLbl:'Achievements',langTip:'Tip: switch EN/NL here any time.',langTipBtn:'Got it',hazardHeroDangerBadge:'Serious hazard',hazardHeroEmergBadge:'Emergency',hazardHeroDangerTtl:'High risk — pause and get help if unsure',hazardHeroEmergTtl:'Possible emergency — call for help',hazardHeroNoDetail:'Our AI thinks this may be unsafe to handle alone. If you smell gas, see sparks or fire, or have major flooding, use the numbers below.',hazardHeroCallSub:'Netherlands — tap to call:',hazardHeroWarnBadge:'Warning',hazardHeroWarnTtl:'Read this before you start',hazardHeroCautBadge:'Caution',hazardHeroCautTtl:'Be careful with this job',hCall112:'112 — Emergency',hCallGas:'0800-9009 — Gas smell / leak',hCallWater:'0900-9994 — Water damage line'},
+  nl:{heroP:'Foto alles thuis — krijg exacte stap-voor-stap instructies',scanLbl:'Scan',ldSub:'Elk detail lezen',toolsLbl:'Gereedschap & Materialen',stepsLbl:'Stap voor Stap',doneLbl:'gedaan',safetyLbl:'Veiligheid',proLbl:'Pro Tip',savLbl:'Besparing vs loodgieter',savSub:'waarom bellen als je het zelf kunt?',shaWa:'Deel via WhatsApp',shCopy:'Link kopiëren',costLbl:'Geschatte kosten:',readAll:'Alle stappen voorlezen',ttsStop:'Stoppen',ttsSpeed:'Snelheid: normaal',doneH:'Klaar!',doneP:'Je hebt het zelf gerepareerd. Die overwinning vergeet je niet.',lockedTtl:'Taak Vergrendeld',lockedP:'3 gevaarswaarschuwingen. Stop en bel een professional.',whenProLbl:'Wanneer een professional bellen:',rstLbl:'Iets anders scannen',adCta:'Winkel →',pmTtl:'Controleer je voortgang',pmUpLbl:'Maak een foto van je voortgang',pmGo:'Analyseer mijn voortgang',pmCancel:'Annuleren',checkProgress:'Voortgang controleren',readStep:'Voorlezen',dockBack:'Terug',dockNext:'Volgende',dockDone:'Klaar',stepPhotoHint:'Dubbeltik op deze kaart voor fotocontrole',eggNavHint:'Tik ei — volgende · Vasthouden — terug',edgeA:'Camera eerst',edgeB:'Stap-foto controle',edgeC:'Heel het huis — niet alleen gadgets',ubLbl:'Eerst checken',qcTtl:'Voordat je start',walkLookLbl:'Wat je zou moeten zien',pmStepMismatch:'Nog geen match met deze stap',glassBadge1:'CONTEXT',glassBadge2:'MATERIAAL',glassBadge3:'X-RAY',scanPhase1Ttl:'Scan 1 — Omgeving',scanPhase1Txt:'Het hele object + stukje ruimte: vloer/muur, snoer, leiding, en waar het op aansluit.',scanPhase2Ttl:'Scan 2 — Materiaal & typenummer',scanPhase2Txt:'Dichterbij: merk/modelsticker, koppelstukken (knel/koper/PVC), slangkleur, schroefkoppen, plaatjes — alles wat onderdelen identificeert.',scanPhase3Ttl:'Scan 3 — X-ray op de fout',scanPhase3Txt:'Zeer dichtbij het probleem: lekbron vs spat, scheur vs kras, slijtage, corrosie, losse verbinding — kalk/vuil versus echte breuk.',glassHint1:'Houd vast — context vastleggen…',glassHint2:'Herkader, tik dan op het ei',glassHint3:'Tik op het ei — X-ray scan',readoutMatLbl:'Materiaal & type',readoutXrayLbl:'X-ray uitlees',agTtl:'Voordat je begint',agSub:'Snel lezen — houdt je veilig.',agLimLbl:'AI Beperkingen',agLim:"chickenegg gebruikt AI-visie om objecten te identificeren. AI kan fouten maken — gebruik altijd je eigen oordeel. Fotografeer geen gezichten; richt de camera op objecten en schade.",agNotLbl:'NIET gebruiken voor',agNot:'<li>Groepenkast of spanningsvoerende draden</li><li>Gasleiding installatie of reparatie</li><li>Constructief draagwerk</li><li>Werk waarvoor een vergunning vereist is</li>',agProLbl:'Hoe we je beschermen',agPro:"AI controleert je voortgangsfoto's bij elke stap. 3 gevaarswaarschuwingen vergrendelt de taak.",agResLbl:'Jouw verantwoordelijkheid',agRes:'Door chickenegg te gebruiken bevestig je dat je 18+ bent en volledige verantwoordelijkheid accepteert voor reparaties.',agAgreeLbl:'Ik heb dit gelezen en accepteer dat ik verantwoordelijk ben voor mijn eigen veiligheid en reparaties.',agBtn:'Ik ga akkoord — Laten we iets repareren 🔧',epTitle:'Dit is jouw moment',epBody:'Start gratis: <strong>3 reparaties/maand</strong>. Upgrade naar <strong>Pro €4,99/maand</strong> voor onbeperkte reparaties.',epPerksTtl:'Wat Pro ontgrendelt',epPerks:'✓ Onbeperkte reparaties &nbsp;✓ Prioriteit AI-checks &nbsp;✓ Geavanceerde veiligheids-triage',epSkip:'Nee bedankt, ik blijf voorlopig gratis',warnTxt:'gevaarswaarschuwing',camReady:'Klaar — tik op ei',camStarting:'Camera starten...',camFail:'Camera-fout — gebruik knop hieronder',camHttpBlocked:'Dit adres is niet beveiligd (http). Op je telefoon werkt live camera alleen via https. Tik “Kies foto” hieronder, of gebruik ngrok (https).',camUploadLbl:'📷 Kies foto',camNotReady:'Kies eerst een foto (knop hierboven), tik dan op het ei.',heroCtaScan:'Start Live Scan',heroCtaDemo:'Foto Uploaden',heroPrivacyLbl:'Privacyverklaring',hazardCaution:'⚠️ Let op: ',hazardWarning:'⚠️ Waarschuwing: ',hazardDanger:'🚨 GEVAAR: ',ldMsgs:['Afbeelding scannen...','Object identificeren...','Reparatiemethode controleren...','Gids bouwen...','Bijna klaar...'],pmSafe:'Ziet er goed uit!',pmCaution:'Klein probleem opgemerkt',pmDanger:'Stop — herstel dit eerst',pmEmergency:'STOP ONMIDDELLIJK',noRepairTitle:'Geen reparatie nodig',noRepairP:'Geniet van je drankje! Geen loodgieter nodig.',noRepairCta:'↩ Probeer opnieuw',toolEmpty:'Geen gereedschap nodig voor dit.',ecH3:'Word Repair Pioneer',ecP:'Hoe was dit? E-mail voor updates — of tik Niet nu. Gereedschap en stappen staan hieronder.',ecSubBtn:'Aanmelden',ecSkip:'Niet nu',ecEmailPh:'jij@voorbeeld.nl',ecNotePh:'Iets om te verbeteren (optioneel)',foldMoreLbl:'Besparing, delen & extra tips — tik om te openen',badgesLbl:'Prestaties',langTip:'Tip: wissel hier tussen EN/NL.',langTipBtn:'Begrepen',hazardHeroDangerBadge:'Ernstig gevaar',hazardHeroEmergBadge:'Noodgeval',hazardHeroDangerTtl:'Hoog risico — twijfel je? Bel hulp',hazardHeroEmergTtl:'Mogelijk noodgeval — bel hulp',hazardHeroNoDetail:'De AI denkt dat je dit beter niet alleen doet. Ruik je gas, zie je vuur/vonk of veel water? Gebruik de nummers hieronder.',hazardHeroCallSub:'Nederland — tik om te bellen:',hazardHeroWarnBadge:'Waarschuwing',hazardHeroWarnTtl:'Lees dit voordat je begint',hazardHeroCautBadge:'Let op',hazardHeroCautTtl:'Wees voorzichtig met deze klus',hCall112:'112 — Noodnummer',hCallGas:'0800-9009 — Gaslucht / gaslek',hCallWater:'0900-9994 — Waterschade melden'}
 };
 
 function setLang(l){
@@ -2535,6 +3504,11 @@ function setLang(l){
     var el=document.getElementById(id);
     if(el)el.textContent=t[ids[id]]||'';
   });
+  var hpr=document.getElementById('hero-privacy');
+  if(hpr){
+    var ha=hpr.querySelector('a');
+    if(ha&&t.heroPrivacyLbl)ha.textContent=t.heroPrivacyLbl;
+  }
   var ecInp=document.getElementById('ec-inp'),ecNoteInp=document.getElementById('ec-note');
   if(ecInp)ecInp.placeholder=t.ecEmailPh||'';
   if(ecNoteInp)ecNoteInp.placeholder=t.ecNotePh||'';
@@ -2553,9 +3527,20 @@ function setLang(l){
     }
   });
   var rb=document.getElementById('results-back-btn');
-  if(rb)rb.textContent=(l==='nl'?'← Camera':'← Camera');
+  if(rb)rb.textContent=(l==='nl'?'← Terug':'← Camera');
+  var ru=CE_RESULT_UI[l]||CE_RESULT_UI.en;
   var rt=document.getElementById('results-title');
-  if(rt)rt.textContent=(l==='nl'?'Scan Resultaten':'Scan Results');
+  if(rt)rt.textContent=ru.hdr;
+  var rr=document.getElementById('results-redo-btn');
+  if(rr)rr.textContent=ru.redo;
+  var t1=document.getElementById('ce-tab-outcome'),t2=document.getElementById('ce-tab-steps'),t3=document.getElementById('ce-tab-details');
+  if(t1)t1.textContent=ru.tabO;if(t2)t2.textContent=ru.tabS;if(t3)t3.textContent=ru.tabD;
+  var cs=document.getElementById('ce-cta-steps'),cx=document.getElementById('ce-cta-share');
+  if(cs)cs.textContent=ru.ctaSteps;if(cx)cx.textContent=ru.ctaShare;
+  var octl=document.getElementById('ce-oc-time-l'),occl=document.getElementById('ce-oc-cost-l'),ocll=document.getElementById('ce-oc-level-l');
+  if(octl)octl.textContent=ru.ocT;if(occl)occl.textContent=ru.ocC;if(ocll)ocll.textContent=ru.ocL;
+  var acc=document.getElementById('ce-ve-acc-sum');
+  if(acc)acc.textContent=ru.accWhy;
   var ea=document.getElementById('edge-a'),eb=document.getElementById('edge-b'),ecEdge=document.getElementById('edge-c');
   if(ea)ea.textContent=t.edgeA||'';
   if(eb)eb.textContent=t.edgeB||'';
@@ -2569,9 +3554,34 @@ function setLang(l){
   var rgm=document.getElementById('rg-mat-lbl'),rgx=document.getElementById('rg-xray-lbl');
   if(rgm)rgm.textContent=t.readoutMatLbl||'';
   if(rgx)rgx.textContent=t.readoutXrayLbl||'';
-  if(lastScanResult&&document.getElementById('results').style.display!=='none')updateHazardHero(lastScanResult);
+  var hs=document.getElementById('hazard-step-unlock');
+  if(hs)hs.textContent=(l==='nl')?'Toon stappen toch':'Show steps anyway';
+  var cgt=document.getElementById('confidence-gate-ttl');
+  if(cgt)cgt.textContent=(l==='nl')?'Bevestig eerst het object':'Confirm object first';
+  var cgm=document.getElementById('confidence-gate-msg');
+  if(cgm)cgm.textContent=(l==='nl')
+    ?'Gemiddelde zekerheid. Bevestig dat dit klopt voordat we alle stappen tonen.'
+    :'Medium confidence. Confirm this looks right before we unlock all steps.';
+  var cgo=document.getElementById('confidence-gate-confirm');
+  if(cgo)cgo.textContent=(l==='nl')?'Ja, toon stappen':'Yes, show steps';
+  var cgr=document.getElementById('confidence-gate-retake');
+  if(cgr)cgr.textContent=(l==='nl')?'Foto opnieuw':'Retake photo';
+  var cgn=document.getElementById('confidence-gate-note');
+  if(cgn)cgn.textContent=(l==='nl')
+    ?'Veiligheidscheck: als dit object niet klopt, maak eerst een nieuwe foto.'
+    :'Safety check: if this object looks wrong, retake before continuing.';
+  if(!document.body.classList.contains('result-open')){
+    if(document.body.classList.contains('ce-can-scan')) setCameraUiState('locked',{copy:true});
+    else if(typeof camReady!=='undefined'&&camReady&&camStream) setCaptureStateCopy('detecting');
+    else setCaptureStateCopy('idle');
+  }
+  if(lastScanResult&&document.getElementById('results').style.display!=='none'){
+    updateHazardHero(lastScanResult);
+    if(typeof renderVisualDecisionEngine==='function')renderVisualDecisionEngine(lastScanResult);
+  }
   if(typeof updateWalkCardUI==='function')try{updateWalkCardUI()}catch(e){}
   if(typeof camReady!=='undefined'&&camReady&&typeof schedulePerception==='function') schedulePerception();
+  applyPaywallModalCopy();
   trackEvent('language_changed',{language:l});
 }
 
@@ -2634,6 +3644,21 @@ function alienEggClickSnd(){
 }
 /* Analog camera shutter sound */
 function shutterSnd(){try{var c=ctx(),now=c.currentTime;var buf=c.createBuffer(1,Math.floor(c.sampleRate*.08),c.sampleRate),d=buf.getChannelData(0);for(var i=0;i<d.length;i++){var t2=i/c.sampleRate;d[i]=(Math.random()*2-1)*(t2<0.005?t2/0.005:Math.pow(1-(t2-0.005)/0.075,2))*.9}var src=c.createBufferSource(),lp=c.createBiquadFilter(),g2=c.createGain();lp.type='lowpass';lp.frequency.value=1800;g2.gain.value=1.2;src.buffer=buf;src.connect(lp);lp.connect(g2);g2.connect(c.destination);src.start(now);tone(80,.06,'sine',.18,0);tone(120,.04,'sine',.12,.01)}catch(e){}}
+function lockTickSnd(){
+  try{
+    var c=ctx(),t0=c.currentTime;
+    var n=c.createBuffer(1,Math.floor(c.sampleRate*0.022),c.sampleRate),d=n.getChannelData(0);
+    for(var i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2.1)*0.48;
+    var src=c.createBufferSource(),bp=c.createBiquadFilter(),g=c.createGain();
+    bp.type='bandpass';bp.frequency.value=2800;bp.Q.value=2.1;
+    g.gain.setValueAtTime(0.11,t0);
+    g.gain.exponentialRampToValueAtTime(0.001,t0+0.04);
+    src.buffer=n;src.connect(bp);bp.connect(g);g.connect(c.destination);
+    src.start(t0);src.stop(t0+0.045);
+    tone(1320,.02,'triangle',.052,0);
+    tone(1860,.026,'sine',.043,.012);
+  }catch(e){}
+}
 function scanStart(){tone(660,.09,'sine',.09,0);tone(880,.09,'sine',.11,.1);tone(1100,.14,'sine',.13,.2);tone(1320,.08,'sine',.09,.35)}
 function scanDone(){tone(523,.18,'sine',.11,0);tone(659,.18,'sine',.11,.09);tone(784,.25,'sine',.13,.18);tone(1047,.18,'sine',.09,.28)}
 var thinkPulseTimer=null;
@@ -2643,20 +3668,28 @@ function thinkPulseTick(){
   if(se) se.style.setProperty('--think-dur',(0.88+Math.random()*0.82)+'s');
   thinkPulseTimer=setTimeout(thinkPulseTick,960+Math.floor(Math.random()*980));
 }
-function setAiThinking(on){
+function setAiThinking(on,opts){
+  opts=opts||{};
   var se=document.getElementById('scan-egg');
   if(on){
     document.body.classList.add('ce-ai-thinking');
+    setCameraUiState('scanning');
     if(se) se.classList.add('thinking');
     if(thinkPulseTimer){clearTimeout(thinkPulseTimer);thinkPulseTimer=null}
     thinkPulseTick();
   }else{
+    var was=document.body.classList.contains('ce-ai-thinking');
     document.body.classList.remove('ce-ai-thinking');
+    document.body.classList.remove('ce-cam-scanning');
     if(se){
       se.classList.remove('thinking');
       se.style.removeProperty('--think-dur');
     }
     if(thinkPulseTimer){clearTimeout(thinkPulseTimer);thinkPulseTimer=null}
+    if(was&&!opts.skipRestore&&document.body.classList.contains('cam-tiktok')&&!document.body.classList.contains('result-open')&&!document.body.classList.contains('ce-cam-error')){
+      if(document.body.classList.contains('ce-can-scan')) setCameraUiState('locked',{copy:true});
+      else if(typeof camReady!=='undefined'&&camReady&&camStream) setCaptureStateCopy('detecting');
+    }
   }
 }
 function snapStepSnd(){tone(784,.06,'sine',.11,0);tone(988,.07,'sine',.1,.06);tone(1319,.11,'sine',.09,.13)}
@@ -2802,11 +3835,37 @@ agBtn.addEventListener('click',function(){if(!agCb.checked)return;clickSnd();hap
 
 /* CAMERA */
 var videoEl=document.getElementById('cam-video'),canvasEl=document.getElementById('cam-canvas'),stillEl=document.getElementById('still-img'),camOverlay=document.getElementById('cam-overlay'),camStatusEl=document.getElementById('cam-status'),camStatusTxt=document.getElementById('cam-status-txt'),retakeBtn=document.getElementById('retake-btn'),camRetryBtn=document.getElementById('cam-retry-btn'),camUploadBtn=document.getElementById('cam-upload-btn'),fallbackFile=document.getElementById('fallback-file'),capturedBlob=null,camStream=null,camReady=false;
+var captureJobTtlEl=document.getElementById('capture-job-ttl'),captureJobSubEl=document.getElementById('capture-job-sub');
 var camStatusLockUntil=0,liveLabelTimer=null,liveLabelCanvas=null,lastLiveLabel='',liveLabelCandidate='',liveLabelHits=0,liveLabelShownAt=0,liveLabelReqInFlight=false;
 var DEMO_MODE=(localStorage.getItem('ce_demo_mode')||'0')==='1'||(new URLSearchParams(location.search).get('demo')==='1');
-var DEMO_LABEL_INTERVAL=DEMO_MODE?2200:1700;
+// Thermal profile: slower live inference cadence dramatically reduces phone heat.
+var DEMO_LABEL_INTERVAL=DEMO_MODE?2800:2300;
 var DEMO_LABEL_SWAP_MIN_MS=DEMO_MODE?1300:950;
 var DEMO_TAP_GUARD_MS=DEMO_MODE?520:420;
+var liveLabelNextAt=0,liveThermalBackoffMs=0,liveLabelErrorStreak=0,lastThermalHintAt=0;
+
+function enterCaptureFocus(){document.body.classList.add('ce-capture-focus')}
+function exitCaptureFocus(){document.body.classList.remove('ce-capture-focus')}
+function setCaptureJob(title,sub,opts){
+  opts=opts||{};
+  var nextTitle=title||((LANG==='nl')?'Richt op het probleem':'Point at the issue');
+  var nextSub=sub||((LANG==='nl')?'Kader het object duidelijk':'Frame the object clearly');
+  if(!opts.skipClip){
+    nextTitle=ceClipCaptureText(nextTitle,30);
+    nextSub=ceClipCaptureText(nextSub,60);
+  }
+  var changed=false;
+  if(captureJobTtlEl&&captureJobTtlEl.textContent!==nextTitle){captureJobTtlEl.textContent=nextTitle;changed=true}
+  if(captureJobSubEl&&captureJobSubEl.textContent!==nextSub){captureJobSubEl.textContent=nextSub;changed=true}
+  if(changed){
+    var card=document.getElementById('capture-job');
+    if(card){
+      card.classList.remove('attn');
+      void card.offsetWidth;
+      card.classList.add('attn');
+    }
+  }
+}
 
 function lockCamStatus(ms){camStatusLockUntil=Date.now()+Math.max(0,ms||0)}
 function setCamStatusSystem(text,ms){
@@ -2823,6 +3882,11 @@ function setCamStatusLabel(text){
   camStatusEl.classList.remove('sys');
   camStatusEl.classList.add('show');
   camStatusEl.classList.remove('label-swap');void camStatusEl.offsetWidth;camStatusEl.classList.add('label-swap');
+  document.body.classList.add('ce-can-scan');
+  setCameraUiState('locked',{copy:false});
+  var cap=(LANG==='nl')?('Object: '+text+' · tik op het ei'):('Object: '+text+' · tap egg');
+  var lk=(CE_STATE_COPY[LANG]||CE_STATE_COPY.en).locked;
+  setCaptureJob(lk[0],ceClipCaptureText(cap,60),{skipClip:true});
 }
 function setCamStatusSoft(text,ms){
   if(!camStatusEl||!camStatusTxt||!text)return;
@@ -2834,6 +3898,68 @@ function setCamStatusSoft(text,ms){
       if(camStatusEl)camStatusEl.classList.remove('sys');
     },ms);
   }
+}
+function hideUxError(){
+  var eb=document.getElementById('err-box');
+  if(!eb)return;
+  eb.style.display='none';
+  eb.innerHTML='';
+  document.body.classList.remove('ce-cam-error');
+  if(document.body.classList.contains('cam-tiktok')&&!document.body.classList.contains('result-open')&&typeof camReady!=='undefined'&&camReady&&camStream&&!document.body.classList.contains('ce-can-scan'))
+    setCaptureStateCopy('detecting');
+}
+function showUxError(kind, detail){
+  var eb=document.getElementById('err-box');
+  if(!eb)return;
+  var isNl=(LANG==='nl');
+  var map={
+    camera_permission:{
+      ttl:isNl?'Camera toestemming nodig':'Camera permission needed',
+      msg:isNl?'Sta camera-toegang toe om live scan te gebruiken. Je kunt ook een foto uploaden.':'Allow camera access to use live scan. You can also upload a photo.',
+      cta:isNl?'Kies foto':'Choose photo',
+      act:function(){if(fallbackFile)fallbackFile.click();}
+    },
+    insecure_context:{
+      ttl:isNl?'Beveiligde verbinding nodig':'Secure connection required',
+      msg:isNl?'Op telefoon werkt live camera alleen via https. Gebruik foto-upload of open een https-link.':'On phones, live camera works only over https. Use photo upload or open an https URL.',
+      cta:isNl?'Kies foto':'Choose photo',
+      act:function(){if(fallbackFile)fallbackFile.click();}
+    },
+    network:{
+      ttl:isNl?'Netwerkprobleem':'Network issue',
+      msg:isNl?'Controleer je verbinding en probeer opnieuw.':'Check your connection and try again.',
+      cta:isNl?'Opnieuw proberen':'Try again',
+      act:function(){if(camReady&&camStream){runEggPrimaryAction();}else{startCamera();}}
+    },
+    server:{
+      ttl:isNl?'Server tijdelijk niet beschikbaar':'Server temporarily unavailable',
+      msg:isNl?'Er ging iets mis op de server. Probeer over een paar seconden opnieuw.':'Something went wrong on the server. Try again in a few seconds.',
+      cta:isNl?'Opnieuw proberen':'Try again',
+      act:function(){if(camReady&&camStream){runEggPrimaryAction();}}
+    },
+    dangerous_task:{
+      ttl:isNl?'Risicovolle taak geblokkeerd':'High-risk task blocked',
+      msg:isNl?'Voor deze taak geven we geen DIY-stappen. Bel een erkende professional.':'DIY steps are blocked for this task. Contact a licensed professional.',
+      cta:isNl?'Bel 112':'Call 112',
+      act:function(){window.location.href='tel:112';}
+    },
+    unclear_image:{
+      ttl:isNl?'Foto niet duidelijk genoeg':'Image not clear enough',
+      msg:isNl?'Maak een scherpere close-up met beter licht en probeer opnieuw.':'Take a sharper close-up with better lighting and try again.',
+      cta:isNl?'Foto opnieuw':'Retake photo',
+      act:function(){retakePhoto();}
+    }
+  };
+  var cfg=map[kind]||map.server;
+  var msg=cfg.msg;
+  if(detail&&typeof detail==='string'&&detail.trim()) msg=detail.trim();
+  eb.innerHTML=
+    '<div class="err-title">'+ceEsc(cfg.ttl)+'</div>'+
+    '<div class="err-msg">'+ceEsc(msg)+'</div>'+
+    '<button type="button" class="err-cta">'+ceEsc(cfg.cta)+'</button>';
+  var btn=eb.querySelector('.err-cta');
+  if(btn)btn.onclick=function(){try{cfg.act&&cfg.act()}catch(_){}};
+  eb.style.display='block';
 }
 function getLiveLabelCanvas(){
   if(!liveLabelCanvas){
@@ -2896,9 +4022,12 @@ function buildLiveLabel(sig){
 }
 function tickLiveLabel(){
   if(!camStatusEl||!camStatusTxt)return;
+  if(Date.now()<liveLabelNextAt)return;
   if(Date.now()<camStatusLockUntil)return;
   if(!camReady||!camStream||liveActive||document.body.classList.contains('result-open')||document.body.classList.contains('fixing')||document.body.classList.contains('ce-step-active'))return;
   if(liveLabelReqInFlight)return;
+  var reqStartedAt=Date.now();
+  var reqHadError=false;
   liveLabelReqInFlight=true;
   var slowTimer=setTimeout(function(){
     var msg=(LANG==='nl')?'Scene lezen...':'Reading scene...';
@@ -2933,6 +4062,7 @@ function tickLiveLabel(){
     liveLabelShownAt=Date.now();
     setCamStatusLabel(aiLabel);
   }).catch(function(){
+    reqHadError=true;
     // Fallback if API fails: keep UX alive with safe generic label.
     var fb=buildLiveLabel(scoreLiveFrame())||'object';
     if(fb!==lastLiveLabel){
@@ -2943,6 +4073,22 @@ function tickLiveLabel(){
   }).finally(function(){
     clearTimeout(slowTimer);
     liveLabelReqInFlight=false;
+    var reqMs=Math.max(0,Date.now()-reqStartedAt);
+    if(reqHadError||reqMs>1800){
+      liveLabelErrorStreak++;
+      liveThermalBackoffMs=Math.min(3200,liveThermalBackoffMs+450);
+    }else{
+      liveLabelErrorStreak=Math.max(0,liveLabelErrorStreak-1);
+      liveThermalBackoffMs=Math.max(0,liveThermalBackoffMs-220);
+    }
+    if(document.hidden){
+      liveThermalBackoffMs=Math.min(3600,liveThermalBackoffMs+700);
+    }
+    liveLabelNextAt=Date.now()+DEMO_LABEL_INTERVAL+liveThermalBackoffMs;
+    if(liveThermalBackoffMs>=1800 && Date.now()-lastThermalHintAt>9000){
+      lastThermalHintAt=Date.now();
+      setCamStatusSoft((LANG==='nl')?'Koelmodus actief...':'Cooling mode active...',1000);
+    }
   });
 }
 function ensureLiveLabelTicker(){
@@ -2971,6 +4117,15 @@ function disableFallbackCapture(){
 
 function applyCamStream(stream){
   camStream=stream;videoEl.srcObject=stream;videoEl.style.display='block';stillEl.style.display='none';retakeBtn.style.display='none';capturedBlob=null;camReady=true;camStatusEl.classList.add('ready');setCamStatusSystem(T[LANG].camReady,1200);
+  enterCaptureFocus();
+  document.body.classList.remove('ce-can-scan');
+  setCaptureStateCopy('detecting');
+  // Force a lower camera FPS target to reduce thermal throttling on phones.
+  try{
+    var vt=stream&&stream.getVideoTracks?stream.getVideoTracks()[0]:null;
+    if(vt&&vt.applyConstraints) vt.applyConstraints({frameRate:{ideal:15,max:18}}).catch(function(){});
+  }catch(_){}
+  liveLabelNextAt=Date.now()+380;
   disableFallbackCapture();
   schedulePerception();
   ensureLockSampler();
@@ -2978,17 +4133,22 @@ function applyCamStream(stream){
 }
 
 function startCamera(){
+  enterCaptureFocus();
+  document.body.classList.remove('ce-can-scan');
+  setCaptureStateCopy('idle');
   if(cameraNeedsHttpsOnPhone()){
     setCamStatusSystem(T[LANG].camHttpBlocked,4000);
     camReady=false;
     enableFallbackCapture({showRetry:false});
     if(camRetryBtn)camRetryBtn.style.display='none';
+    showUxError('insecure_context');
     return;
   }
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
     setCamStatusSystem(T[LANG].camFail,3000);
     camReady=false;
     enableFallbackCapture();
+    showUxError('camera_permission');
     return;
   }
   if(camStream){
@@ -2997,8 +4157,8 @@ function startCamera(){
   }
   setCamStatusSystem(T[LANG].camStarting,2200);
   var tryConstraints=[
-    {video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}},audio:false},
-    {video:{facingMode:'environment'},audio:false},
+    {video:{facingMode:{ideal:'environment'},width:{ideal:960},height:{ideal:540},frameRate:{ideal:15,max:18}},audio:false},
+    {video:{facingMode:'environment',frameRate:{ideal:15,max:18}},audio:false},
     {video:true,audio:false}
   ];
   function attempt(i){
@@ -3006,10 +4166,15 @@ function startCamera(){
       setCamStatusSystem(T[LANG].camFail,3000);
       camReady=false;
       enableFallbackCapture();
+      showUxError('camera_permission');
       return;
     }
     navigator.mediaDevices.getUserMedia(tryConstraints[i]).then(applyCamStream).catch(function(err){
       console.warn('Camera error:',err&&err.name,tryConstraints[i]);
+      if(err&&err.name==='NotAllowedError'){
+        showUxError('camera_permission');
+        return;
+      }
       attempt(i+1);
     });
   }
@@ -3033,12 +4198,15 @@ if(fallbackFile){
     var f=e.target.files&&e.target.files[0];
     if(!f)return;
     capturedBlob=f;
+    document.body.classList.add('ce-can-scan');
     var url=URL.createObjectURL(f);
     stillEl.src=url;stillEl.style.display='block';
     videoEl.style.display='none';
     retakeBtn.style.display='block';
     camStatusEl.classList.add('ready');
     setCamStatusSystem(LANG==='nl'?'Foto klaar — tik op het ei':'Photo ready — tap the egg',2800);
+    setCameraUiState('locked',{copy:false});
+    setCaptureJob((LANG==='nl')?'Foto klaar':'Photo ready',(LANG==='nl')?'Tik op het ei om te analyseren':'Tap the egg to analyze',{skipClip:true});
     shutterSnd();
     var fl=document.getElementById('s-flash');fl.classList.add('fire');setTimeout(function(){fl.classList.remove('fire')},420);
   });
@@ -3062,13 +4230,16 @@ function captureFrame(opts){
         }
         resolve(blob);
       } else reject(new Error('Capture failed'));
-    },'image/jpeg',0.92);
+    },'image/jpeg',0.86);
   });
 }
 
 function retakePhoto(){
   capturedBlob=null;stillEl.style.display='none';stillEl.src='';retakeBtn.style.display='none';videoEl.style.display='block';
   document.body.classList.remove('fixing','result-open');
+  enterCaptureFocus();
+  document.body.classList.remove('ce-can-scan');
+  setCaptureStateCopy('detecting');
   var ds=document.getElementById('done-screen');if(ds)ds.classList.remove('show');
   var rgg=document.getElementById('readout-glass');if(rgg)rgg.classList.add('off');
   var cs=document.getElementById('cam-step');if(cs){cs.classList.remove('show');cs.classList.add('off')}
@@ -3078,7 +4249,7 @@ function retakePhoto(){
     rsl.style.display='none';
     rsl.classList.remove('ce-stagger-reveal','ce-stagger-armed');
   }
-  document.getElementById('err-box').style.display='none';document.getElementById('hazard-banner').classList.remove('show');
+  hideUxError();document.getElementById('hazard-banner').classList.remove('show');
   if(!camReady)enableFallbackCapture({showRetry:!cameraNeedsHttpsOnPhone()});
   if(camReady&&typeof schedulePerception==='function') schedulePerception();
   clearLockOn();
@@ -3143,8 +4314,32 @@ scanEgg.addEventListener('click',function(){
 });
 }
 
+(function(){
+  var back=document.getElementById('cam-back-btn'),help=document.getElementById('cam-help-btn');
+  if(back) back.addEventListener('click',function(){
+    if(typeof clickSnd==='function') clickSnd();
+    hap(12);
+    if(typeof exitCaptureFocus==='function') exitCaptureFocus();
+    document.body.classList.remove('cam-tiktok','ce-cam-idle','ce-cam-detecting','ce-cam-locked','ce-cam-scanning','ce-cam-error');
+  });
+  if(help) help.addEventListener('click',function(){
+    if(typeof clickSnd==='function') clickSnd();
+    hap(10);
+    var msg=(LANG==='nl')
+      ?'Eén object, goed licht. Tik op het ei als de ring oplicht — of upload een foto.'
+      :'Frame one object in good light. Tap the egg when the ring glows — or upload a photo.';
+    alert(msg);
+  });
+})();
+
 async function runEggPrimaryAction(){
   if(!scanEgg)return;
+  if(document.body.classList.contains('ce-capture-focus') && camReady && camStream && !document.body.classList.contains('ce-can-scan')){
+    setCameraUiState('detecting',{copy:false});
+    var det=(CE_STATE_COPY[LANG]||CE_STATE_COPY.en).detecting;
+    setCaptureJob(det[0],(LANG==='nl')?'Wacht op object lock':'Wait for object lock',{skipClip:true});
+    return;
+  }
   if(liveActive){
     alienEggClickSnd();hap([16,8,24,12,40]);popScanLabel();trackEvent('scan_button_tap');
     scanEgg.classList.remove('vibrating');void scanEgg.offsetWidth;scanEgg.classList.add('vibrating');
@@ -3171,15 +4366,15 @@ async function runEggPrimaryAction(){
   scanEgg.classList.remove('vibrating');void scanEgg.offsetWidth;scanEgg.classList.add('vibrating');
   setTimeout(function(){scanEgg.classList.remove('vibrating')},280);
 
-  document.getElementById('err-box').style.display='none';
+  hideUxError();
 
   // Hide still frame UI if we have camera.
   if(camReady && camStream){
     if(stillEl){stillEl.style.display='none';stillEl.src='';}
     if(retakeBtn){retakeBtn.style.display='none'}
     startLiveScanSession(3).catch(function(e){
-      document.getElementById('err-box').textContent=(e&&e.message)||(typeof e==='string'?e:'')||'Scan failed. Try again.';
-      document.getElementById('err-box').style.display='block';
+      var msg=(e&&e.message)||(typeof e==='string'?e:'')||'Scan failed. Try again.';
+      showUxError('server',msg);
     });
     return;
   }
@@ -3187,8 +4382,8 @@ async function runEggPrimaryAction(){
   // Fallback: if camera is not available, use the last captured/uploaded frame.
   if(capturedBlob){
     startLiveScanSession(1,capturedBlob).catch(function(e){
-      document.getElementById('err-box').textContent=(e&&e.message)||(typeof e==='string'?e:'')||'Scan failed. Try again.';
-      document.getElementById('err-box').style.display='block';
+      var msg=(e&&e.message)||(typeof e==='string'?e:'')||'Scan failed. Try again.';
+      showUxError('server',msg);
     });
     return;
   }
@@ -3199,8 +4394,7 @@ async function runEggPrimaryAction(){
     setCamStatusSystem(LANG==='nl'?'Kies een foto en tik weer op het ei':'Choose a photo, then tap egg again',2500);
     return;
   }
-  document.getElementById('err-box').textContent=T[LANG].camNotReady;
-  document.getElementById('err-box').style.display='block';
+  showUxError('camera_permission',T[LANG].camNotReady);
 }
 
 var liveActive=false;
@@ -3347,9 +4541,16 @@ function tickLockSampler(){
     if(lockStab>=3){
       if(cc&&!cc.classList.contains('ce-lock-on')){
         cc.classList.add('ce-lock-on');
+        var ring=document.getElementById('snap-shutter-ring');
+        if(ring){
+          ring.classList.remove('lock-flash');
+          void ring.offsetWidth;
+          ring.classList.add('lock-flash');
+          setTimeout(function(){ring.classList.remove('lock-flash')},220);
+        }
         if(egg){
           egg.classList.add('orb-lock-focused');
-          try{tone(720,.028,'sine',.055,0);hap(6)}catch(e){}
+          try{lockTickSnd();hap(6)}catch(e){}
         }
       }
     }else if(lockStab===0){
@@ -3363,7 +4564,7 @@ function ensureLockSampler(){
   window._ceLockIv=setInterval(tickLockSampler,425);
 }
 (function(){
-  var egg=document.getElementById('scan-egg'),lastMot=0;
+  var egg=document.getElementById('scan-egg'),ring=document.getElementById('snap-shutter-ring'),lastMot=0;
   if(egg&&window.DeviceOrientationEvent){
     window.addEventListener('deviceorientation',function(e){
       if(document.body.classList.contains('ce-ai-thinking')||document.body.classList.contains('result-open')) return;
@@ -3371,6 +4572,12 @@ function ensureLockSampler(){
       var gy=typeof e.beta==='number'?Math.max(-14,Math.min(14,e.beta-40)):0;
       egg.style.setProperty('--orb-glx',(gx*0.48)+'px');
       egg.style.setProperty('--orb-gly',(6+gy*0.26)+'px');
+      egg.style.setProperty('--orb-gltx',(gx*0.12)+'px');
+      egg.style.setProperty('--orb-glty',(gy*0.09)+'px');
+      if(ring){
+        ring.style.setProperty('--ring-glx',(gx*0.08)+'px');
+        ring.style.setProperty('--ring-gly',(gy*0.04)+'px');
+      }
     },true);
   }
   if(window.DeviceMotionEvent){
@@ -3434,7 +4641,10 @@ function setGlassPhase(phase, total){
 }
 async function startLiveScanSession(viewsTarget, initialBlob){
   if(liveActive)return;
+  var liveScanSucceeded=false;
   liveActive=true;
+  document.body.classList.remove('ce-can-scan');
+  setCameraUiState('detecting',{copy:false});
   stopPerceptionLayer();
 
   var lp=document.getElementById('live-prompt');
@@ -3461,11 +4671,13 @@ async function startLiveScanSession(viewsTarget, initialBlob){
   if(lp){lp.classList.remove('show');lp.classList.remove('mini')}
   if(lpMiniTimer){clearTimeout(lpMiniTimer);lpMiniTimer=null}
   if(lpNext){lpNext.disabled=true}
-  document.getElementById('err-box').style.display='none';
+  hideUxError();
   document.getElementById('hazard-banner').classList.remove('show');
   document.getElementById('results').style.display='none';
 
   document.getElementById('ld').style.display='none';
+  var stage1ConfirmEl=document.getElementById('stage1-confirm');
+  if(stage1ConfirmEl){stage1ConfirmEl.classList.remove('show');stage1ConfirmEl.textContent='';}
   camOverlay.classList.remove('scanning');
   stopHum();
   xrayOn(false);
@@ -3479,10 +4691,11 @@ async function startLiveScanSession(viewsTarget, initialBlob){
       if(viewsTarget>1){
         if(lp){
           setGlassPhase(phase, viewsTarget);
-          var phaseMsgEn = phase===1 ? 'Hold steady...' : (phase===2 ? 'Go closer to the problem area.' : 'Keep centered for final detail.');
-          var phaseMsgNl = phase===1 ? 'Houd stil...' : (phase===2 ? 'Ga dichter naar het probleem.' : 'Houd gecentreerd voor laatste detail.');
+          var phaseMsgEn = phase===1 ? 'Hold steady. Locking target...' : (phase===2 ? 'Move closer to the exact problem area.' : 'Keep centered for final detail pass.');
+          var phaseMsgNl = phase===1 ? 'Houd stil. Doel wordt vergrendeld...' : (phase===2 ? 'Ga dichter naar het exacte probleemgebied.' : 'Houd gecentreerd voor de laatste detailscan.');
           var txtEl = document.getElementById('live-prompt-txt');
           if(txtEl) txtEl.textContent = (LANG==='nl' ? phaseMsgNl : phaseMsgEn);
+          setCaptureJob((LANG==='nl')?'Richt op het probleem':'Point at the problem',(LANG==='nl' ? phaseMsgNl : phaseMsgEn));
           lp.classList.remove('mini');
           lp.classList.add('show');
         }
@@ -3530,41 +4743,90 @@ async function startLiveScanSession(viewsTarget, initialBlob){
       if(slblThink) slblThink.textContent=ldMsgs[ldI];
     },850);
 
+    var qInput=(document.getElementById('q-inp').value||'').trim();
     var fd=new FormData();
     var jid=ensureJobId();
     fd.append('image',blobs[0],'scan1.jpg');
     if(blobs[1]) fd.append('image_2',blobs[1],'scan2.jpg');
     if(blobs[2]) fd.append('image_3',blobs[2],'scan3.jpg');
-    fd.append('question',document.getElementById('q-inp').value.trim());
+    fd.append('question',qInput);
     fd.append('language',LANG);
     fd.append('session_id',window.CE_SESSION_ID||'');
     fd.append('job_id',jid);
     fd.append('source_channel','app');
-
-    var resp=await fetch('/analyze',{method:'POST',body:fd});
-    var data=await resp.json();
+    // Two-stage architecture: fast stage-1 feedback + full deep analysis.
+    var fdStage1=new FormData();
+    fdStage1.append('image',blobs[0],'stage1.jpg');
+    fdStage1.append('question',qInput);
+    fdStage1.append('language',LANG);
+    var deepPromise=fetch('/analyze',{method:'POST',body:fd}).then(function(resp){return resp.json()});
+    var stage1Promise=fetch('/analyze-stage1',{method:'POST',body:fdStage1})
+      .then(function(resp){return resp.json()})
+      .catch(function(){return null});
+    var stage1Data=await Promise.race([stage1Promise,_ceSleep(2400).then(function(){return null})]);
+    if(stage1Data&&stage1Data.success&&stage1Data.result){
+      var s1=stage1Data.result||{};
+      var ql=(s1.quick_label||'').toString().trim();
+      var qa=(s1.quick_action||'').toString().trim();
+      if(ldTxtEl) ldTxtEl.textContent=(ql&&qa)?(ql+' · '+qa):(ql||qa||ldTxtEl.textContent);
+      var ldSubEl=document.getElementById('ld-sub');
+      if(ldSubEl){
+        var okTxt=(LANG==='nl')?'Object bevestigd':'Object confirmed';
+        ldSubEl.textContent=ql?('✓ '+okTxt+': '+ql):('✓ '+okTxt);
+      }
+      if(stage1ConfirmEl){
+        var sTxt=(LANG==='nl')?'Object bevestigd':'Object confirmed';
+        stage1ConfirmEl.textContent='✅ '+sTxt+(ql?(': '+ql):'');
+        stage1ConfirmEl.classList.add('show');
+      }
+      if(slblThink){
+        slblThink.textContent=(LANG==='nl')
+          ? 'Snelle check klaar'
+          : 'Quick check ready';
+      }
+      if(s1.hard_stop_triggered){
+        setCamStatusSystem((LANG==='nl')?'Risico gedetecteerd. Voorzichtig.':'Risk detected. Proceed safely.',1400);
+      }else if(s1.needs_retake&&s1.retake_guidance){
+        setCamStatusSoft(s1.retake_guidance,1300);
+      }else if(ql){
+        setCamStatusSoft(ql,900);
+      }
+    }
+    var data=await deepPromise;
     if(!data.success) throw new Error(data.error||'Analysis failed');
 
     if(LI){clearInterval(LI);LI=null}
     stopHum();
     document.getElementById('ld').style.display='none';
-    setAiThinking(false);
+    if(stage1ConfirmEl)stage1ConfirmEl.classList.remove('show');
+    setAiThinking(false,{skipRestore:true});
     var slblDone=document.getElementById('scan-lbl-text');
     if(slblDone) slblDone.textContent=(T[LANG]&&T[LANG].scanLbl)?T[LANG].scanLbl:'Scan';
+    setCaptureJob((LANG==='nl')?'Object bevestigd':'Object confirmed',(LANG==='nl')?'Resultaat laden — bijna klaar...':'Loading result — almost there...');
     camOverlay.classList.remove('scanning');
     xrayOn(false);
     xrayDeep(false);
 
+    liveScanSucceeded=true;
     scanDone();hap([35,16,50,16,80]);trackEvent('scan_completed',{views:viewsTarget});
     var s=loadS();s.ts++;saveS(s);addXP(10);checkBadges();rotateAd();
+
+    var resObj=data.result||{};
+    var lowNeedsRetake = (!!resObj.needs_retake) && String(resObj.confidence||'').toLowerCase()==='low';
+    var hzGate=(resObj.hazard_level||'').toLowerCase();
+    if(lowNeedsRetake && hzGate!=='danger' && hzGate!=='emergency'){
+      showUxError('unclear_image',resObj.retake_guidance||'');
+      if(document.getElementById('results'))document.getElementById('results').style.display='none';
+      return;
+    }
 
     showHazard(data.result);
     var hzLv=(data.result.hazard_level||'').toLowerCase();
     if(hzLv==='danger'||hzLv==='emergency'){dangerSnd();hap([200,100,200])}
     setTimeout(function(){
-      renderResults(data.result);
       triggerPaywallFlow();
-      document.getElementById('results').querySelectorAll('.hazard-hero.show,.r-hdr,.meta-row,.ec,.warn-ctr,.card,#tip-safety,.ad-banner,.fold-more,.rst-btn,.tts-bar,.tip.pro').forEach(function(el,i){el.classList.remove('si');void el.offsetWidth;el.style.animationDelay=(i*40)+'ms';el.classList.add('si')});
+      renderResults(data.result);
+      document.getElementById('results').querySelectorAll('#r-confidence,.hazard-hero.show,.r-hdr,.meta-row,.ec,.warn-ctr,.card,#tip-safety,.ad-banner,.fold-more,.rst-btn,.tts-bar,.tip.pro').forEach(function(el,i){el.classList.remove('si');void el.offsetWidth;el.style.animationDelay=(i*40)+'ms';el.classList.add('si')});
     },120);
 
   }catch(err){
@@ -3574,9 +4836,18 @@ async function startLiveScanSession(viewsTarget, initialBlob){
     xrayOn(false);
     xrayDeep(false);
     document.getElementById('ld').style.display='none';
-    setAiThinking(false);
-    document.getElementById('err-box').textContent=(err&&err.message)||(typeof err==='string'?err:'')||'Something went wrong. Try again.';
-    document.getElementById('err-box').style.display='block';
+    if(stage1ConfirmEl)stage1ConfirmEl.classList.remove('show');
+    setAiThinking(false,{skipRestore:true});
+    var em=(err&&err.message)||(typeof err==='string'?err:'')||'Something went wrong. Try again.';
+    setCameraUiState('error',{copy:false});
+    setCaptureJob((LANG==='nl')?'Scan mislukt':'Scan failed',ceClipCaptureText(em,60),{skipClip:true});
+    if(!navigator.onLine||/network|fetch|timeout/i.test(em)){
+      showUxError('network');
+    }else if(/no image|blurry|unclear|retake/i.test(em)){
+      showUxError('unclear_image');
+    }else{
+      showUxError('server',em);
+    }
   }finally{
     liveActive=false;
     liveResolveNext=null;
@@ -3585,7 +4856,14 @@ async function startLiveScanSession(viewsTarget, initialBlob){
     if(lpMiniTimer){clearTimeout(lpMiniTimer);lpMiniTimer=null}
     xrayDeep(false);
     xrayOn(false);
-    if(document.getElementById('ld').style.display!=='block')setAiThinking(false);
+    if(document.getElementById('ld').style.display!=='block'&&document.body.classList.contains('ce-ai-thinking'))
+      setAiThinking(false);
+    if(!liveScanSucceeded&&!document.body.classList.contains('ce-cam-error')&&!document.body.classList.contains('result-open')){
+      if(camReady&&camStream&&!document.body.classList.contains('ce-can-scan'))
+        setCameraUiState('detecting',{copy:false});
+      else if(document.body.classList.contains('ce-can-scan'))
+        setCameraUiState('locked',{copy:true});
+    }
     if(camReady) schedulePerception();
   }
 }
@@ -3602,9 +4880,13 @@ function updateHazardHero(r){
   var t=T[LANG],lv=(r.hazard_level||'safe').toLowerCase(),note=(r.hazard_note||'').trim();
   var act=document.getElementById('hazard-hero-actions');
   var sub=document.getElementById('hazard-hero-sub');
+  var inlineAct=document.getElementById('hazard-inline-actions');
+  var unlockBtn=document.getElementById('hazard-step-unlock');
   el.className='hazard-hero';
   if(act)act.classList.remove('show');
   if(sub)sub.textContent='';
+  if(inlineAct)inlineAct.classList.remove('show');
+  if(unlockBtn)unlockBtn.textContent=(LANG==='nl')?'Toon stappen toch':'Show steps anyway';
 
   if(lv==='danger'||lv==='emergency'){
     el.classList.add('hazard-hero--critical','show','hazard-mood-critical');
@@ -3623,6 +4905,7 @@ function updateHazardHero(r){
     document.getElementById('hazard-hero-badge').textContent='⚠️ '+t.hazardHeroWarnBadge;
     document.getElementById('hazard-hero-ttl').textContent=t.hazardHeroWarnTtl;
     document.getElementById('hazard-hero-note').textContent=note;
+    if(inlineAct)inlineAct.classList.add('show');
     return true;
   }
   if(lv==='caution'&&note){
@@ -3666,6 +4949,9 @@ function showStepOnIsland(stepText, idx){
 
 /* RESULTS */
 var lastScanResult=null;
+var ceMediumConfirmRequired=false;
+var ceWarningUnlockRequired=false;
+var ceDangerLocked=false;
 window.CE_SESSION_ID = (function(){
   var k='ce_session_id';
   var v=localStorage.getItem(k);
@@ -3677,6 +4963,28 @@ window.CE_SESSION_ID = (function(){
 })();
 window.CE_CURRENT_JOB_ID='';
 var ceOutcomeSubmittedForJob='';
+
+function setResultVisibility(cfg){
+  cfg=cfg||{};
+  var showSteps=cfg.showSteps!==false;
+  var showTools=cfg.showTools!==false;
+  var showTts=cfg.showTts!==false;
+  var showFold=cfg.showFold!==false;
+  var showAd=cfg.showAd!==false;
+  var stepsCard=document.getElementById('steps-card');
+  var toolsCard=document.getElementById('tools-card');
+  var ttsBar=document.getElementById('tts-bar');
+  var foldMore=document.getElementById('fold-more');
+  var adBanner=document.getElementById('ad-banner');
+  if(stepsCard)stepsCard.style.display=showSteps?'':'none';
+  if(toolsCard)toolsCard.style.display=showTools?'':'none';
+  if(ttsBar){
+    if(!showTts)ttsBar.classList.remove('show');
+    ttsBar.style.display=showTts?'':'none';
+  }
+  if(foldMore)foldMore.style.display=showFold?'':'none';
+  if(adBanner)adBanner.style.display=showAd?'':'none';
+}
 
 function ensureJobId(){
   if(window.CE_CURRENT_JOB_ID)return window.CE_CURRENT_JOB_ID;
@@ -3900,6 +5208,7 @@ if(dockNextBtn){
 }
 if(walkCheckBtn){
   walkCheckBtn.addEventListener('click',function(){
+    if(walkCheckBtn.disabled)return;
     if(curSteps.length<=0) return;
     openPM(walkIdx,curSteps[walkIdx]);
   });
@@ -4056,16 +5365,265 @@ function openResultScreen(){
   if(!results)return;
   results.style.display='block';
   document.body.classList.add('result-open');
+  exitCaptureFocus();
 }
 
 function closeResultScreen(){
   document.body.classList.remove('result-open','mailbox-open','fixing','ce-step-active');
+  enterCaptureFocus();
   var ecBox=document.getElementById('ec');
   if(ecBox)ecBox.classList.remove('ec-sheet');
   var camStep=document.getElementById('cam-step');
   if(camStep){camStep.classList.remove('show');camStep.classList.add('off')}
   var rs=document.getElementById('results');
   if(rs) rs.classList.remove('ce-stagger-reveal','ce-stagger-armed');
+  var gate=document.getElementById('confidence-gate');
+  if(gate)gate.classList.remove('show');
+  var hs=document.getElementById('hazard-inline-actions');
+  if(hs)hs.classList.remove('show');
+  var ve=document.getElementById('ce-visual-engine');
+  if(ve)ve.classList.remove('ce-ve-ready');
+  hideUxError();
+}
+
+function renderVisualDecisionEngine(r){
+  var root=document.getElementById('ce-visual-engine');
+  if(!root)return;
+  root.classList.remove('ce-ve-ready');
+  var accEl=document.getElementById('ce-ve-acc');
+  if(accEl)accEl.open=false;
+  var isNl=LANG==='nl';
+  var pay=document.getElementById('ce-ve-paywall-hint');
+  if(pay){
+    if(typeof CE_FREE_LIMIT!=='undefined'&&typeof getCeScans==='function'&&getCeScans()>=CE_FREE_LIMIT){
+      pay.classList.remove('off');
+      pay.textContent=isNl
+        ? 'Weet wat het is. Los het veilig op — Pro €4,99/m of jaar €34,99 (o.a. fotoverificatie).'
+        : 'Know what it is. Fix it safely — Pro €4.99/mo or €34.99/yr (incl. photo verification).';
+    }else{
+      pay.classList.add('off');
+    }
+  }
+  var kP=document.getElementById('ce-ve-kicker-perc');
+  if(kP)kP.textContent=isNl?'Waarneming':'Perception';
+  var oL=document.getElementById('ce-ve-obs-lbl'),iL=document.getElementById('ce-ve-issues-lbl');
+  if(oL)oL.textContent=isNl?'Belangrijkste waarnemingen':'Key observations';
+  if(iL)iL.textContent=isNl?'Mogelijke problemen':'Possible issues';
+  var wEl=document.getElementById('ce-ve-what');
+  if(wEl)wEl.textContent=r.what_i_see||'';
+  function fillList(id, items){
+    var ul=document.getElementById(id);
+    if(!ul)return;
+    ul.innerHTML='';
+    (items||[]).forEach(function(x){
+      if(!x)return;
+      var li=document.createElement('li');
+      li.textContent=String(x);
+      ul.appendChild(li);
+    });
+  }
+  fillList('ce-ve-obs',r.key_observations||[]);
+  fillList('ce-ve-issues',r.possible_issues||[]);
+  var dec=r.decision_outcome||'safe_to_proceed';
+  var sev=r.severity_ui||'safe_cosmetic';
+  var ruSticky=CE_RESULT_UI[LANG]||CE_RESULT_UI.en;
+  var taskLine=(r.task||r.what_i_see||'').trim();
+  var stickyTask=document.getElementById('ce-sticky-task');
+  if(stickyTask)stickyTask.textContent=taskLine;
+  var stickySev=document.getElementById('ce-sticky-sev');
+  var stSticky='safe';
+  if(stickySev){
+    stickySev.classList.remove('ce-sticky-caution','ce-sticky-stop');
+    if(dec==='do_not_proceed'){
+      stickySev.textContent=ruSticky.stStop;
+      stickySev.classList.add('ce-sticky-stop');
+      stSticky='stop';
+    }else if(dec==='proceed_with_caution'||sev==='needs_attention'){
+      stickySev.textContent=ruSticky.stCaut;
+      stickySev.classList.add('ce-sticky-caution');
+      stSticky='caution';
+    }else if(sev==='potentially_dangerous'){
+      stickySev.textContent=ruSticky.stStop;
+      stickySev.classList.add('ce-sticky-stop');
+      stSticky='stop';
+    }else{
+      stickySev.textContent=ruSticky.stSafe;
+    }
+  }
+  var shell=document.getElementById('ce-results-shell');
+  if(shell){
+    shell.classList.remove('ce-sev-safe','ce-sev-attn','ce-sev-stop');
+    if(stSticky==='stop')shell.classList.add('ce-sev-stop');
+    else if(stSticky==='caution')shell.classList.add('ce-sev-attn');
+    else shell.classList.add('ce-sev-safe');
+  }
+  var wrap=document.getElementById('ce-oh-ico-wrap'),ohi=document.getElementById('ce-oh-ico');
+  if(wrap&&ohi){
+    wrap.classList.remove('ce-oh-caution','ce-oh-stop');
+    if(dec==='do_not_proceed'||sev==='potentially_dangerous'){
+      wrap.classList.add('ce-oh-stop');
+      ohi.textContent=(dec==='do_not_proceed')?'✕':'⚠️';
+    }else if(dec==='proceed_with_caution'||sev==='needs_attention'){
+      wrap.classList.add('ce-oh-caution');
+      ohi.textContent='⚠️';
+    }else{
+      ohi.textContent='✓';
+    }
+  }
+  var oht=document.getElementById('ce-oh-title');
+  if(oht)oht.textContent=taskLine||(r.what_i_see||'');
+  var hook=(r.what_i_see||'').trim();
+  var taskT=taskLine;
+  if(taskT&&hook&&hook!==taskT)hook=ceClipCaptureText(hook,80);
+  else{
+    var pi0=(r.possible_issues&&r.possible_issues[0])?String(r.possible_issues[0]).trim():'';
+    hook=pi0||ceClipCaptureText(hook,80);
+  }
+  var diffShown=(r.difficulty||'').trim();
+  var ohs=document.getElementById('ce-oh-sub');
+  if(ohs){
+    var diffLbl=diffShown;
+    if(isNl){
+      var dlow=diffShown.toLowerCase();
+      if(dlow==='easy'||dlow.indexOf('gemakkelijk')!==-1)diffLbl='Makkelijk';
+      else if(dlow==='medium'||dlow.indexOf('gemiddeld')!==-1)diffLbl='Gemiddeld';
+      else if(dlow==='hard'||dlow.indexOf('moeilijk')!==-1)diffLbl='Moeilijk';
+    }
+    var pre=isNl?'Moeilijkheid: ':'Difficulty: ';
+    ohs.textContent=(hook?hook+' · ':'')+pre+(diffLbl||'—');
+  }
+  var ov=document.getElementById('ce-outcome-verdict');
+  if(ov){
+    ov.classList.remove('ce-sev-band-safe','ce-sev-band-attn','ce-sev-band-stop');
+    if(stSticky==='stop')ov.classList.add('ce-sev-band-stop');
+    else if(stSticky==='caution')ov.classList.add('ce-sev-band-attn');
+    else ov.classList.add('ce-sev-band-safe');
+  }
+  var sevEl=document.getElementById('ce-ve-severity');
+  if(sevEl){
+    sevEl.classList.remove('ce-sev-safe','ce-sev-attn','ce-sev-danger');
+    var icon=document.getElementById('ce-ve-sev-icon');
+    var st=document.getElementById('ce-ve-sev-title');
+    var sx=document.getElementById('ce-ve-sev-txt');
+    if(sev==='potentially_dangerous'){
+      sevEl.classList.add('ce-sev-danger');
+      if(icon)icon.textContent='🔴';
+      if(st)st.textContent=isNl?'Mogelijk gevaarlijk':'Potentially dangerous';
+      if(sx)sx.textContent=(String(r.hazard_note||'').trim())||(isNl?'Stop bij gas, vonken, grote lekkage of twijfel over spanning.':'Stop if you smell gas, see sparks, major leaks, or are unsure about voltage.');
+    }else if(sev==='needs_attention'){
+      sevEl.classList.add('ce-sev-attn');
+      if(icon)icon.textContent='🟡';
+      if(st)st.textContent=isNl?'Heeft aandacht nodig':'Needs attention';
+      if(sx)sx.textContent=isNl?'Kan escaleren. Werk gecontroleerd en stop bij twijfel.':'Could escalate. Work in a controlled way and stop if unsure.';
+    }else{
+      sevEl.classList.add('ce-sev-safe');
+      if(icon)icon.textContent='🟢';
+      if(st)st.textContent=isNl?'Veilig / cosmetisch':'Safe / cosmetic';
+      if(sx)sx.textContent=isNl?'Lagere risicoklasse bij normale voorzichtigheid.':'Lower risk if you follow guidance.';
+    }
+  }
+  var pill=document.getElementById('ce-ve-dec-pill');
+  if(pill){
+    pill.classList.remove('ce-dec-safe','ce-dec-caution','ce-dec-stop');
+    var di=document.getElementById('ce-ve-dec-icon');
+    var dl=document.getElementById('ce-ve-dec-label');
+    if(dec==='do_not_proceed'){
+      pill.classList.add('ce-dec-stop');
+      if(di)di.textContent='❌';
+      if(dl)dl.textContent=isNl?'Niet zelf doorgaan':'Do not proceed';
+    }else if(dec==='proceed_with_caution'){
+      pill.classList.add('ce-dec-caution');
+      if(di)di.textContent='⚠️';
+      if(dl)dl.textContent=isNl?'Voorzichtig doorgaan':'Proceed with caution';
+    }else{
+      pill.classList.add('ce-dec-safe');
+      if(di)di.textContent='✅';
+      if(dl)dl.textContent=isNl?'Veilig om door te gaan':'Safe to proceed';
+    }
+  }
+  var dr=document.getElementById('ce-ve-dec-rationale');
+  if(dr)dr.textContent=r.decision_rationale||'';
+  var rw=document.getElementById('ce-ve-rental-wrap');
+  var rv=document.getElementById('ce-ve-rental-verdict');
+  var rn=document.getElementById('ce-ve-rental-ai-note');
+  var rl=document.getElementById('ce-ve-rental-legal');
+  var rlab=document.getElementById('ce-ve-rental-lbl');
+  var hint=r.rental_liability_hint||'not_applicable';
+  if(rw&&rv&&rl){
+    if(hint&&hint!=='not_applicable'){
+      rw.classList.remove('off');
+      if(rlab)rlab.textContent=isNl?'Verhuurder of huurder?':'Landlord or tenant?';
+      var line='';
+      if(hint==='landlord_likely')line=isNl?'Lijkt op basis van de foto: waarschijnlijk verhuurdersdomein.':'Based on the photo: likely landlord responsibility.';
+      else if(hint==='tenant_likely')line=isNl?'Lijkt op basis van de foto: waarschijnlijk huurdersdomein.':'Based on the photo: likely tenant responsibility.';
+      else line=isNl?'Onduidelijk uit de foto — check je huurcontract of verhuurder.':'Unclear from the photo — check your lease or landlord.';
+      rv.textContent=line;
+      var note=String(r.rental_liability_note||'').trim();
+      if(rn){
+        if(note){rn.classList.remove('off');rn.style.display='';rn.textContent=note;}
+        else{rn.textContent='';rn.style.display='none';}
+      }
+      rl.textContent=isNl
+        ? 'Geen juridisch advies. Bij twijfel: juridisch loket, verhuurdersvereniging of professional.'
+        : 'Not legal advice. If unsure, use a legal help desk or a qualified professional.';
+    }else{
+      rw.classList.add('off');
+      rv.textContent='';
+      if(rn){rn.textContent='';rn.style.display='none';}
+      rl.textContent='';
+    }
+  }
+  var ww=document.getElementById('ce-ve-why-wrap');
+  var wt=document.getElementById('ce-ve-why');
+  var why=String(r.why_safety_matters||'').trim();
+  if(ww&&wt){
+    if(why){
+      ww.classList.remove('off');
+      wt.textContent=why;
+      var wl=document.getElementById('ce-ve-why-lbl');
+      if(wl)wl.textContent=isNl?'Waarom dit belangrijk is':'Why this matters';
+    }else{
+      ww.classList.add('off');
+    }
+  }
+  var sw=document.getElementById('ce-ve-stop-wrap');
+  var sl=document.getElementById('ce-ve-stop-list');
+  var stops=r.when_to_stop||[];
+  if(sw&&sl){
+    if(stops&&stops.length){
+      sw.classList.remove('off');
+      var sLab=document.getElementById('ce-ve-stop-lbl');
+      if(sLab)sLab.textContent=isNl?'Wanneer stoppen':'When to stop';
+      sl.innerHTML='';
+      stops.forEach(function(t){
+        var li=document.createElement('li');
+        li.textContent=String(t);
+        sl.appendChild(li);
+      });
+    }else{
+      sw.classList.add('off');
+      sl.innerHTML='';
+    }
+  }
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){root.classList.add('ce-ve-ready');});
+  });
+}
+
+function syncWalkVerificationPaywall(){
+  var btn=document.getElementById('walk-check');
+  if(!btn)return;
+  try{
+    if(typeof CE_FREE_LIMIT!=='undefined'&&typeof getCeScans==='function'&&getCeScans()>=CE_FREE_LIMIT){
+      btn.disabled=true;
+      btn.setAttribute('aria-disabled','true');
+      btn.title=LANG==='nl'?'Pro: ontgrendel stap-fotoverificatie':'Pro: unlock step photo verification';
+    }else{
+      btn.disabled=false;
+      btn.removeAttribute('aria-disabled');
+      btn.title='';
+    }
+  }catch(_){}
 }
 
 function renderResults(r){
@@ -4117,6 +5675,9 @@ function renderResults(r){
   document.body.classList.remove('fixing','ce-step-active');
   document.body.classList.remove('mailbox-open');
   openResultScreen();
+  var shellEl=document.getElementById('ce-results-shell');
+  if(shellEl)shellEl.classList.remove('ce-results-shell--locked');
+  if(typeof ceSwitchTab==='function')ceSwitchTab('outcome');
   var ecSheet=document.getElementById('ec');if(ecSheet) ecSheet.classList.remove('ec-sheet');
   var costStr = (r.estimated_cost||'').toString().trim().toLowerCase();
   var hasCost = !!costStr && costStr !== 'n/a' && costStr !== 'na';
@@ -4141,6 +5702,7 @@ function renderResults(r){
   }
   document.getElementById('r-title').textContent=r.what_i_see||'';
   document.getElementById('r-task2').textContent=r.task||'';
+  renderVisualDecisionEngine(r);
   var tloc=T[LANG]||T.en;
   var e1=document.getElementById('edge-a'),e2=document.getElementById('edge-b'),e3=document.getElementById('edge-c');
   if(e1)e1.textContent=tloc.edgeA||'';
@@ -4187,31 +5749,58 @@ function renderResults(r){
     }else rgg.classList.add('off');
   }
   var conf=(r.confidence_tier||'DIY-safe').toLowerCase();
+  var confBand=((r.confidence||'').toLowerCase()||((conf.indexOf('call')!==-1)?'low':(conf.indexOf('caution')!==-1?'medium':'high')));
+  var hazardLv=(r.hazard_level||'safe').toLowerCase();
+  ceDangerLocked = (hazardLv==='danger'||hazardLv==='emergency'||!!r.hard_stop_triggered);
+  ceWarningUnlockRequired = (hazardLv==='warning');
+  ceMediumConfirmRequired = (!ceDangerLocked && confBand==='medium');
   var confEl=document.getElementById('r-confidence');
   if(confEl){
-    if(conf.indexOf('call')!==-1){
+    if(ceDangerLocked||conf.indexOf('call')!==-1){
       confEl.className='conf-tier pro';
-      confEl.textContent='🚫 Call a pro';
-    }else if(conf.indexOf('caution')!==-1){
+      confEl.textContent=(LANG==='nl')?'Laag vertrouwen':'Low confidence';
+    }else if(confBand==='medium'||conf.indexOf('caution')!==-1){
       confEl.className='conf-tier caution';
-      confEl.textContent='⚠️ Proceed with caution';
+      confEl.textContent=(LANG==='nl')?'Mogelijk risico':'Possible issue';
     }else{
       confEl.className='conf-tier safe';
-      confEl.textContent='✅ DIY-safe';
+      confEl.textContent=(LANG==='nl')?'Hoge zekerheid':'High confidence';
     }
   }
   var sig=document.getElementById('ce-conf-signal');
   if(sig){
     sig.classList.remove('ce-conf-high','ce-conf-mid','ce-conf-low');
-    if(conf.indexOf('call')!==-1){
+    if(ceDangerLocked||conf.indexOf('call')!==-1){
       sig.textContent=LANG==='nl'?'Zwak beeld — stop bij twijfel':'Weak framing — stop if unsure';
       sig.classList.add('ce-conf-low');
-    }else if(conf.indexOf('caution')!==-1){
+    }else if(confBand==='medium'||conf.indexOf('caution')!==-1){
       sig.textContent=LANG==='nl'?'Mogelijk probleem — even verifiëren':'Possible issue — verify';
       sig.classList.add('ce-conf-mid');
     }else{
       sig.textContent=LANG==='nl'?'Sterke scan — hoge zekerheid':'Strong scan — high confidence';
       sig.classList.add('ce-conf-high');
+    }
+  }
+  var ruO=CE_RESULT_UI[LANG]||CE_RESULT_UI.en;
+  var oct=document.getElementById('ce-oc-time');
+  if(oct)oct.textContent=(String(r.time_needed||'').trim())||'—';
+  var occ=document.getElementById('ce-oc-cost');
+  if(occ){
+    if(repairNeeded && hasCost && r.estimated_cost)occ.textContent=String(r.estimated_cost).trim();
+    else occ.textContent='—';
+  }
+  var ocl=document.getElementById('ce-oc-level');
+  if(ocl){
+    var callPro=conf.indexOf('call')!==-1||ceDangerLocked;
+    ocl.textContent=callPro?ruO.ocPro:ruO.ocDIY;
+  }
+  if(ceDangerLocked){
+    if(shellEl)shellEl.classList.add('ce-results-shell--locked');
+    var ss=document.getElementById('ce-sticky-sev');
+    if(ss){
+      ss.textContent=ruO.stStop;
+      ss.classList.add('ce-sticky-stop');
+      ss.classList.remove('ce-sticky-caution');
     }
   }
   document.getElementById('r-time').textContent=r.time_needed||'';
@@ -4234,6 +5823,24 @@ function renderResults(r){
   var wpBox=document.getElementById('when-pro-box');
   if(r.when_to_call_pro){document.getElementById('r-when-pro').textContent=r.when_to_call_pro;document.getElementById('when-pro-lbl').textContent=T[LANG].whenProLbl;wpBox.classList.add('show')}else wpBox.classList.remove('show');
 
+  var gate=document.getElementById('confidence-gate');
+  if(gate){
+    if(ceMediumConfirmRequired){
+      gate.classList.add('show');
+      document.getElementById('confidence-gate-ttl').textContent=(LANG==='nl')?'Bevestig eerst het object':'Confirm object first';
+      document.getElementById('confidence-gate-msg').textContent=(LANG==='nl')
+        ?'Gemiddelde zekerheid. Bevestig dat dit klopt voordat we alle stappen tonen.'
+        :'Medium confidence. Confirm this looks right before we unlock all steps.';
+      document.getElementById('confidence-gate-confirm').textContent=(LANG==='nl')?'Ja, toon stappen':'Yes, show steps';
+      document.getElementById('confidence-gate-retake').textContent=(LANG==='nl')?'Foto opnieuw':'Retake photo';
+        document.getElementById('confidence-gate-note').textContent=(LANG==='nl')
+          ?'Veiligheidscheck: als dit object niet klopt, maak eerst een nieuwe foto.'
+          :'Safety check: if this object looks wrong, retake before continuing.';
+    }else{
+      gate.classList.remove('show');
+    }
+  }
+
   var diffKey=diff.replace('gemakkelijk','easy').replace('gemiddeld','medium').replace('moeilijk','hard');
   document.getElementById('sav-lbl').textContent=T[LANG].savLbl;
   document.getElementById('sav-sub').textContent=T[LANG].savSub;
@@ -4246,6 +5853,10 @@ function renderResults(r){
 
   var shareText=(LANG==='nl'?'Ik heb net mijn ':'I just fixed my ')+(r.what_i_see||'home')+(LANG==='nl'?' gerepareerd met chickenegg — stap voor stap! Probeer het gratis 🥚':' with chickenegg — step by step! Try it free 🥚');
   document.getElementById('sh-wa').onclick=function(){var s=loadS();s.sh=(s.sh||0)+1;saveS(s);checkBadges();window.open('https://wa.me/?text='+encodeURIComponent(shareText),'_blank')};
+  var ceShareBtn=document.getElementById('ce-cta-share');
+  if(ceShareBtn){
+    ceShareBtn.onclick=function(){var s=loadS();s.sh=(s.sh||0)+1;saveS(s);checkBadges();window.open('https://wa.me/?text='+encodeURIComponent(shareText),'_blank')};
+  }
   document.getElementById('sh-copy').onclick=function(){
     navigator.clipboard&&navigator.clipboard.writeText(shareText).catch(function(){});
     var b=document.getElementById('sh-copy');b.querySelector('span').textContent=LANG==='nl'?'✓ Gekopieerd!':'✓ Copied!';
@@ -4278,8 +5889,22 @@ function renderResults(r){
     });
   }
 
+  var allowSteps = repairNeeded && !ceDangerLocked && !ceWarningUnlockRequired && !ceMediumConfirmRequired;
+  var ctaStepsEl=document.getElementById('ce-cta-steps');
+  if(ctaStepsEl)ctaStepsEl.style.display=repairNeeded?'':'none';
+  if(ceDangerLocked){
+    setResultVisibility({showSteps:false,showTools:false,showTts:false,showFold:false,showAd:false});
+    showUxError('dangerous_task');
+  }else if(ceWarningUnlockRequired){
+    setResultVisibility({showSteps:false,showTools:repairNeeded,showTts:false,showFold:true,showAd:true});
+  }else if(ceMediumConfirmRequired){
+    setResultVisibility({showSteps:false,showTools:repairNeeded,showTts:false,showFold:true,showAd:true});
+  }else{
+    setResultVisibility({showSteps:repairNeeded,showTools:repairNeeded,showTts:repairNeeded,showFold:true,showAd:true});
+  }
+
   /* One-step-at-a-time flow on results page */
-  if(repairNeeded){
+  if(allowSteps){
     var sl=document.getElementById('r-steps');
     if(sl){
       sl.innerHTML='';
@@ -4291,6 +5916,7 @@ function renderResults(r){
   }else{
     document.getElementById('r-steps').innerHTML='';
   }
+  syncWalkVerificationPaywall();
   renderBadges();
   var hz=updateHazardHero(r);
   if(resultsEl && document.body.classList.contains('cam-tiktok')){
@@ -4302,6 +5928,48 @@ function renderResults(r){
     });
   }
   return hz;
+}
+
+var hazardUnlockBtn=document.getElementById('hazard-step-unlock');
+if(hazardUnlockBtn){
+  hazardUnlockBtn.addEventListener('click',function(){
+    ceWarningUnlockRequired=false;
+    setResultVisibility({showSteps:true,showTools:true,showTts:true,showFold:true,showAd:true});
+    var gate=document.getElementById('confidence-gate');
+    if(gate)gate.classList.remove('show');
+    document.getElementById('hazard-inline-actions').classList.remove('show');
+    if(curSteps&&curSteps.length){
+      walkIdx=0;
+      updateWalkCardUI();
+      syncWalkVerificationPaywall();
+      document.getElementById('tts-bar').classList.add('show');
+      document.getElementById('tts-read-lbl').textContent=T[LANG].readAll;
+    }
+    if(typeof ceSwitchTab==='function')ceSwitchTab('steps');
+  });
+}
+var confGateOk=document.getElementById('confidence-gate-confirm');
+if(confGateOk){
+  confGateOk.addEventListener('click',function(){
+    ceMediumConfirmRequired=false;
+    var gate=document.getElementById('confidence-gate');
+    if(gate)gate.classList.remove('show');
+    setResultVisibility({showSteps:true,showTools:true,showTts:true,showFold:true,showAd:true});
+    if(curSteps&&curSteps.length){
+      walkIdx=0;
+      updateWalkCardUI();
+      syncWalkVerificationPaywall();
+      document.getElementById('tts-bar').classList.add('show');
+      document.getElementById('tts-read-lbl').textContent=T[LANG].readAll;
+    }
+    if(typeof ceSwitchTab==='function')ceSwitchTab('steps');
+  });
+}
+var confGateRetake=document.getElementById('confidence-gate-retake');
+if(confGateRetake){
+  confGateRetake.addEventListener('click',function(){
+    retakePhoto();
+  });
 }
 
 function updateStepUI(){
@@ -4362,6 +6030,12 @@ function confetti(){
 var pmModal=document.getElementById('pm'),pmFile=document.getElementById('pm-file'),pmPrev=document.getElementById('pm-prev'),pmGo=document.getElementById('pm-go'),pmCancel=document.getElementById('pm-cancel'),pmRes=document.getElementById('pm-res'),pmIdx=0,pmTxtVal='',pmFile2=null;
 
 function openPM(idx,txt){
+  try{
+    if(typeof CE_FREE_LIMIT!=='undefined'&&typeof getCeScans==='function'&&getCeScans()>=CE_FREE_LIMIT){
+      showAch('🔒',LANG==='nl'?'ChickenEgg Pro':'ChickenEgg Pro',LANG==='nl'?'Stap-fotoverificatie zit in Pro.':'Step photo verification is part of Pro.');
+      return;
+    }
+  }catch(_){}
   pmIdx=idx;
   var vt=(curVisualTips[idx]||'').trim();
   pmTxtVal=vt?(txt+'\n'+(LANG==='nl'?'Zo hoort het te lijken: ':'You should see: ')+vt):txt;
@@ -4461,8 +6135,14 @@ document.getElementById('rst-btn').addEventListener('click',function(){
   if(camStream){videoEl.style.display='block'}
   var fm=document.getElementById('fold-more');if(fm)fm.open=false;
   var hz=document.getElementById('hazard-hero');
-  if(hz){hz.className='hazard-hero';var hzA=document.getElementById('hazard-hero-actions');if(hzA)hzA.classList.remove('show')}
-  document.getElementById('results').style.display='none';document.getElementById('err-box').style.display='none';
+  if(hz){
+    hz.className='hazard-hero';
+    var hzA=document.getElementById('hazard-hero-actions');if(hzA)hzA.classList.remove('show');
+    var hzI=document.getElementById('hazard-inline-actions');if(hzI)hzI.classList.remove('show');
+  }
+  var cg=document.getElementById('confidence-gate');if(cg)cg.classList.remove('show');
+  ceMediumConfirmRequired=false;ceWarningUnlockRequired=false;ceDangerLocked=false;
+  document.getElementById('results').style.display='none';hideUxError();
   document.getElementById('results').classList.remove('fix-mode');
   var camStep=document.getElementById('cam-step');if(camStep){camStep.classList.remove('show');camStep.classList.add('off')}
   document.getElementById('hazard-banner').classList.remove('show');document.getElementById('q-inp').value='';
@@ -4491,6 +6171,27 @@ if(resultsBackBtn){
   resultsBackBtn.addEventListener('click',function(){
     clickSnd();hap([8,5,14]);
     closeResultScreen();
+  });
+}
+document.querySelectorAll('[data-ce-tab]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var t=btn.getAttribute('data-ce-tab');
+    if(t&&typeof ceSwitchTab==='function'){clickSnd();ceSwitchTab(t);}
+  });
+});
+var ceCtaSteps=document.getElementById('ce-cta-steps');
+if(ceCtaSteps){
+  ceCtaSteps.addEventListener('click',function(){
+    clickSnd();hap([6,4,10]);
+    if(typeof ceSwitchTab==='function')ceSwitchTab('steps');
+  });
+}
+var resultsRedoBtn=document.getElementById('results-redo-btn');
+if(resultsRedoBtn){
+  resultsRedoBtn.addEventListener('click',function(){
+    clickSnd();
+    var r=document.getElementById('rst-btn');
+    if(r)r.click();
   });
 }
 
@@ -4564,26 +6265,17 @@ var btnEnFab=document.getElementById('btn-en-fab'),btnNlFab=document.getElementB
 if(btnEnFab)btnEnFab.addEventListener('click',function(){setLang('en');hideLangTip(true);clickSnd();hap([6,4,8])});
 if(btnNlFab)btnNlFab.addEventListener('click',function(){setLang('nl');hideLangTip(true);clickSnd();hap([6,4,8])});
 
-/* INIT */
-setLang(LANG);updateHdr();checkStreak();renderBadges();
-showLangTip();
-// Fetch build/version from server so we can tell which deployment the PWA is serving.
-(function(){
-  try{
-    var el=document.getElementById('app-version-pill');
-    if(!el||!window.fetch)return;
-    var url='/app-build?t='+(Date.now());
-    fetch(url).then(function(r){return r.json()}).then(function(d){
-      if(d&&d.success&&d.version){
-        el.textContent='v'+d.version;
-      }
-    }).catch(function(){});
-  }catch(e){}
-})();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=9').catch(function(){});
-
-/* ── PAYWALL & FOUNDING MEMBER SYSTEM ── */
+/* ── PAYWALL (defined before INIT so setLang can refresh checkout copy) ── */
 var CE_FREE_LIMIT = 5;
+
+/**
+ * Paste your Gumroad product links (year + month). Share → copy full https://… link.
+ * Leave '' until set; buttons fall back to gumroad.com homepage.
+ */
+var CE_CHECKOUT_URLS = {
+  year: 'https://pepesoup1000.gumroad.com/l/pnpfz',
+  month: 'https://pepesoup1000.gumroad.com/l/tarwyk'
+};
 
 function getCeScans(){
   return parseInt(localStorage.getItem('ce_free_scans')||'0');
@@ -4593,7 +6285,34 @@ function incCeScans(){
   localStorage.setItem('ce_free_scans',String(n));
   return n;
 }
+function applyPaywallModalCopy(){
+  var isNl=LANG==='nl';
+  var lead=document.getElementById('pw-lead');
+  var anch=document.getElementById('pw-anchor');
+  var by=document.getElementById('pw-btn-year');
+  var bm=document.getElementById('pw-btn-month');
+  var cl=document.getElementById('pw-close');
+  if(lead)lead.textContent=isNl
+    ?'Je gratis scans zijn op. Een jaarabonnement kost minder dan één typische voorrijden van een monteur.'
+    :"You've used your free scans. A yearly plan costs less than one typical tradesperson call-out.";
+  if(anch)anch.textContent=isNl
+    ?'Pro €4,99/maand · Jaar €34,99 (~€2,92/m)'
+    :'Pro €4.99/month · Year €34.99 (~€2.92/mo)';
+  if(by)by.textContent=isNl?'Jaarabonnement — €34,99':'Yearly — €34.99';
+  if(bm)bm.textContent=isNl?'Maandelijks — €4,99':'Monthly — €4.99';
+  if(cl)cl.textContent=isNl?'Sluiten':'Close';
+  applyCheckoutHrefs();
+}
+function applyCheckoutHrefs(){
+  [['pw-btn-year',CE_CHECKOUT_URLS.year],['pw-btn-month',CE_CHECKOUT_URLS.month]].forEach(function(x){
+    var el=document.getElementById(x[0]);
+    if(!el)return;
+    var u=(x[1]||'').trim();
+    el.href=u||'https://gumroad.com';
+  });
+}
 function showPaywall(){
+  applyPaywallModalCopy();
   var m=document.getElementById('pw-modal');
   if(m)m.classList.add('show');
 }
@@ -4601,8 +6320,8 @@ function closePaywall(){
   var m=document.getElementById('pw-modal');
   if(m)m.classList.remove('show');
 }
-function trackGumroad(){
-  try{fetch('/track-click',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({store:'gumroad',tool:'founding-member-29eur'})}).catch(function(){})}catch(e){}
+function trackGumroad(which){
+  try{fetch('/track-click',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({store:'gumroad',tool:which||'pro-checkout'})}).catch(function(){})}catch(e){}
 }
 
 function triggerPaywallFlow(){
@@ -4610,13 +6329,18 @@ function triggerPaywallFlow(){
   var left=Math.max(0,CE_FREE_LIMIT-n);
   var fmEl=document.getElementById('fm-cta');
   var fmNote=document.getElementById('fm-free-note');
+  var isNl=LANG==='nl';
   if(fmEl){
     fmEl.classList.add('show');
     if(fmNote){
       if(left>0){
-        fmNote.textContent=left+' free scan'+(left===1?'':'s')+' left — then €9.99/month forever';
+        fmNote.textContent=isNl
+          ?(left+' gratis '+(left===1?'scan':'scannen')+' — daarna Pro €4,99/m of jaar €34,99')
+          :(left+' free scan'+(left===1?'':'s')+' left — then Pro €4.99/mo or €34.99/yr');
       } else {
-        fmNote.textContent='Free scans used up — get lifetime access below';
+        fmNote.textContent=isNl
+          ?'Gratis scans op — kies Pro (€4,99) of jaar €34,99'
+          :'Free scans used — choose Pro (€4.99/mo) or €34.99/yr';
       }
     }
   }
@@ -4639,7 +6363,53 @@ function triggerPaywallFlow(){
       if(e.target===pwModal)closePaywall();
     });
   }
+  var pwClose=document.getElementById('pw-close');
+  if(pwClose)pwClose.addEventListener('click',closePaywall);
 })();
+
+/* INIT */
+setLang(LANG);updateHdr();checkStreak();renderBadges();
+showLangTip();
+// Fetch build/version from server so we can tell which deployment the PWA is serving.
+(function(){
+  try{
+    var el=document.getElementById('app-version-pill');
+    var flg=document.getElementById('build-flag');
+    var lfg=document.getElementById('live-build-flag');
+    if(!window.fetch)return;
+    var url='/app-build?t='+(Date.now());
+    fetch(url).then(function(r){return r.json()}).then(function(d){
+      if(d&&d.success&&d.version){
+        var txt='SAFETY V2 · v'+d.version;
+        if(el)el.textContent=txt;
+        if(flg)flg.innerHTML='<span class="dot"></span>'+txt;
+        if(lfg)lfg.textContent=txt;
+      }
+    }).catch(function(){});
+  }catch(e){}
+})();
+// Optional hard refresh helper: ?refresh=2 clears SW + caches once.
+(function(){
+  try{
+    var qp=new URLSearchParams(location.search);
+    if(qp.get('refresh')!=='2')return;
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.getRegistrations().then(function(regs){
+        return Promise.all((regs||[]).map(function(r){return r.unregister();}));
+      }).catch(function(){});
+    }
+    if(window.caches&&caches.keys){
+      caches.keys().then(function(keys){
+        return Promise.all((keys||[]).map(function(k){return caches.delete(k);}));
+      }).then(function(){
+        qp.delete('refresh');
+        var clean=location.pathname+(qp.toString()?('?'+qp.toString()):'');
+        location.replace(clean||'/');
+      }).catch(function(){});
+    }
+  }catch(_){}
+})();
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=12').catch(function(){});
 
 /* ── BOL.NL AFFILIATE
    1. Sign up FREE at: https://partner.bol.com

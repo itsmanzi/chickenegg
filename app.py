@@ -18,8 +18,20 @@ from anthropic import (
 
 app = Flask(__name__)
 
+DATABASE_URL = (os.getenv("DATABASE_URL") or "").strip()
+DB_BACKEND = "postgres" if DATABASE_URL else "sqlite"
 DEFAULT_DB_PATH = "/tmp/metrics.db" if os.getenv("VERCEL") else os.path.join(app.root_path, "metrics.db")
 DB_PATH = os.getenv("METRICS_DB_PATH", DEFAULT_DB_PATH)
+
+_pg_connect = None
+_pg_dict_row = None
+if DB_BACKEND == "postgres":
+    try:
+        from psycopg import connect as _pg_connect
+        from psycopg.rows import dict_row as _pg_dict_row
+    except Exception as _pg_import_err:
+        print(f"[db-init] psycopg import failed; falling back to sqlite: {_pg_import_err}")
+        DB_BACKEND = "sqlite"
 
 REQUIRED_EVENTS = {
     "scan_started",
@@ -47,6 +59,29 @@ ALLOWED_EVENTS = REQUIRED_EVENTS | {
     "mailbox_opened",
 }
 
+# Never return DIY steps for these high-risk domains.
+HARD_STOP_KEYWORDS = {
+    "groepenkast",
+    "meterkast",
+    "zekeringkast",
+    "hoofdschakelaar",
+    "gasleiding",
+    "gasmeter",
+    "cv ketel",
+    "cv-ketel",
+    "ketel intern",
+    "boiler internals",
+    "fuse box",
+    "breaker panel",
+    "electrical panel",
+    "main breaker",
+    "live wire",
+    "mains voltage",
+    "gas line",
+}
+
+TEST_SOURCE_CHANNELS = ("smoke_test", "test", "dev")
+
 # Lazy client so missing env fails on first request with a clear message, not at import.
 _client = None
 
@@ -55,75 +90,186 @@ def _utc_now_iso():
     return datetime.now(timezone.utc).isoformat()
 
 
+def _to_backend_sql(sql):
+    # Existing queries use sqlite-style "?" placeholders. Translate for psycopg.
+    if DB_BACKEND == "postgres":
+        return sql.replace("?", "%s")
+    return sql
+
+
+def _sql_day_expr(column_name="created_at"):
+    # Normalize day bucketing across sqlite (TEXT timestamps) and postgres (TIMESTAMPTZ).
+    if DB_BACKEND == "postgres":
+        return f"to_char({column_name} AT TIME ZONE 'UTC', 'YYYY-MM-DD')"
+    return f"substr({column_name},1,10)"
+
+
+def _metrics_filter_sql(include_test, table_alias=""):
+    """Default KPI views exclude smoke/dev traffic unless include_test=1."""
+    if include_test:
+        return "", []
+    p = f"{table_alias}." if table_alias else ""
+    placeholders = ", ".join(["?"] * len(TEST_SOURCE_CHANNELS))
+    clause = (
+        f" AND COALESCE({p}source_channel, '') NOT IN ({placeholders})"
+        f" AND LOWER(COALESCE({p}session_id, '')) NOT LIKE ?"
+    )
+    return clause, [*TEST_SOURCE_CHANNELS, "smoke-%"]
+
+
+class _ConnAdapter:
+    def __init__(self, raw_conn):
+        self._conn = raw_conn
+
+    def execute(self, sql, params=()):
+        return self._conn.execute(_to_backend_sql(sql), params)
+
+    def commit(self):
+        return self._conn.commit()
+
+    def __enter__(self):
+        self._conn.__enter__()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        return self._conn.__exit__(exc_type, exc_val, exc_tb)
+
+
 def _db():
+    if DB_BACKEND == "postgres":
+        if _pg_connect is None:
+            raise RuntimeError("DATABASE_URL is set but psycopg is unavailable")
+        raw = _pg_connect(DATABASE_URL, row_factory=_pg_dict_row, connect_timeout=8)
+        return _ConnAdapter(raw)
+
     db_dir = os.path.dirname(DB_PATH)
     if db_dir:
         os.makedirs(db_dir, exist_ok=True)
-    conn = sqlite3.connect(DB_PATH, timeout=8)
-    conn.row_factory = sqlite3.Row
-    return conn
+    raw = sqlite3.connect(DB_PATH, timeout=8)
+    raw.row_factory = sqlite3.Row
+    return _ConnAdapter(raw)
 
 
 def _init_metrics_db():
     with _db() as conn:
-        conn.execute(
-            """
-            CREATE TABLE IF NOT EXISTS events (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                created_at TEXT NOT NULL,
-                event_raw TEXT NOT NULL,
-                event_name TEXT NOT NULL,
-                language TEXT,
-                session_id TEXT,
-                user_id TEXT,
-                job_id TEXT,
-                task_category TEXT,
-                hazard_level TEXT,
-                source_channel TEXT,
-                meta_json TEXT,
-                ip TEXT,
-                user_agent TEXT
+        if DB_BACKEND == "postgres":
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS events (
+                    id BIGSERIAL PRIMARY KEY,
+                    created_at TIMESTAMPTZ NOT NULL,
+                    event_raw TEXT NOT NULL,
+                    event_name TEXT NOT NULL,
+                    language TEXT,
+                    session_id TEXT,
+                    user_id TEXT,
+                    job_id TEXT,
+                    task_category TEXT,
+                    hazard_level TEXT,
+                    source_channel TEXT,
+                    meta_json TEXT,
+                    ip TEXT,
+                    user_agent TEXT
+                )
+                """
             )
-            """
-        )
-        conn.execute(
-            """
-            CREATE TABLE IF NOT EXISTS emails (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                created_at TEXT NOT NULL,
-                email TEXT NOT NULL,
-                language TEXT,
-                source_channel TEXT,
-                session_id TEXT,
-                user_id TEXT,
-                job_id TEXT,
-                ip TEXT
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS emails (
+                    id BIGSERIAL PRIMARY KEY,
+                    created_at TIMESTAMPTZ NOT NULL,
+                    email TEXT NOT NULL,
+                    language TEXT,
+                    source_channel TEXT,
+                    session_id TEXT,
+                    user_id TEXT,
+                    job_id TEXT,
+                    ip TEXT
+                )
+                """
             )
-            """
-        )
-        conn.execute(
-            """
-            CREATE TABLE IF NOT EXISTS outcomes (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                created_at TEXT NOT NULL,
-                success INTEGER NOT NULL,
-                rating TEXT,
-                reason TEXT,
-                language TEXT,
-                session_id TEXT,
-                user_id TEXT,
-                job_id TEXT,
-                source_channel TEXT,
-                task_category TEXT,
-                task_text TEXT,
-                what_i_see TEXT,
-                hazard_level TEXT,
-                steps_json TEXT,
-                tools_json TEXT,
-                materials_json TEXT
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS outcomes (
+                    id BIGSERIAL PRIMARY KEY,
+                    created_at TIMESTAMPTZ NOT NULL,
+                    success INTEGER NOT NULL,
+                    rating TEXT,
+                    reason TEXT,
+                    language TEXT,
+                    session_id TEXT,
+                    user_id TEXT,
+                    job_id TEXT,
+                    source_channel TEXT,
+                    task_category TEXT,
+                    task_text TEXT,
+                    what_i_see TEXT,
+                    hazard_level TEXT,
+                    steps_json TEXT,
+                    tools_json TEXT,
+                    materials_json TEXT
+                )
+                """
             )
-            """
-        )
+        else:
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS events (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    created_at TEXT NOT NULL,
+                    event_raw TEXT NOT NULL,
+                    event_name TEXT NOT NULL,
+                    language TEXT,
+                    session_id TEXT,
+                    user_id TEXT,
+                    job_id TEXT,
+                    task_category TEXT,
+                    hazard_level TEXT,
+                    source_channel TEXT,
+                    meta_json TEXT,
+                    ip TEXT,
+                    user_agent TEXT
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS emails (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    created_at TEXT NOT NULL,
+                    email TEXT NOT NULL,
+                    language TEXT,
+                    source_channel TEXT,
+                    session_id TEXT,
+                    user_id TEXT,
+                    job_id TEXT,
+                    ip TEXT
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS outcomes (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    created_at TEXT NOT NULL,
+                    success INTEGER NOT NULL,
+                    rating TEXT,
+                    reason TEXT,
+                    language TEXT,
+                    session_id TEXT,
+                    user_id TEXT,
+                    job_id TEXT,
+                    source_channel TEXT,
+                    task_category TEXT,
+                    task_text TEXT,
+                    what_i_see TEXT,
+                    hazard_level TEXT,
+                    steps_json TEXT,
+                    tools_json TEXT,
+                    materials_json TEXT
+                )
+                """
+            )
         conn.execute("CREATE INDEX IF NOT EXISTS idx_events_created_at ON events(created_at)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_events_event_name ON events(event_name)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_events_session ON events(session_id)")
@@ -386,6 +532,100 @@ def _strip_step_prefix(txt):
     return re.sub(r"^(step|stap)\s*\d+[:\-.]?\s*", "", s, flags=re.I).strip()
 
 
+def _confidence_bucket_and_flags(raw_confidence_tier, uncertainty_note, what_i_see):
+    tier = _clean_str(raw_confidence_tier, "").lower().replace("_", "-")
+    if "call" in tier or "not-diy" in tier:
+        bucket = "low"
+    elif "caution" in tier or "careful" in tier:
+        bucket = "medium"
+    elif tier:
+        bucket = "high"
+    else:
+        bucket = "medium"
+
+    uncertainty = _clean_str(uncertainty_note, "")
+    seen_txt = _clean_str(what_i_see, "").lower()
+    looks_unknown = ("unknown" in seen_txt) or ("onbekend" in seen_txt)
+    needs_retake = bucket == "low" or bool(uncertainty) or looks_unknown
+    return bucket, needs_retake
+
+
+def _hard_stop_match_text(result, user_question):
+    fields = []
+    if isinstance(result, dict):
+        fields.extend(
+            [
+                _clean_str(result.get("job_category"), ""),
+                _clean_str(result.get("what_i_see"), ""),
+                _clean_str(result.get("task"), ""),
+                _clean_str(result.get("hazard_note"), ""),
+                _clean_str(result.get("when_to_call_pro"), ""),
+                " ".join(_to_list(result.get("steps") or [])),
+                " ".join(_to_list(result.get("tools_needed") or [])),
+                " ".join(_to_list(result.get("materials_needed") or [])),
+            ]
+        )
+    fields.append(_clean_str(user_question, ""))
+    return " ".join([f for f in fields if f]).lower()
+
+
+def _apply_server_hard_stop(result, user_question, language):
+    """Final backend safety layer: blocks risky DIY classes regardless of model output."""
+    if not isinstance(result, dict):
+        return result, []
+
+    blob = _hard_stop_match_text(result, user_question)
+    triggers = [kw for kw in HARD_STOP_KEYWORDS if kw in blob]
+    if not triggers:
+        return result, []
+
+    is_nl = (language or "").lower() == "nl"
+    hard_stop_result = dict(result)
+    if is_nl:
+        hard_stop_result.update(
+            {
+                "confidence_tier": "call-pro",
+                "confidence": "low",
+                "needs_retake": False,
+                "job_category": result.get("job_category") or "other",
+                "hazard_level": "danger",
+                "hazard_note": "Hoog risico gedetecteerd. Stop direct en schakel een erkende professional in.",
+                "when_to_call_pro": "Altijd bij groepenkast, hoofdspanning, gasleiding of ketel-internals.",
+                "task": "Stop en bel een professional",
+                "steps": [
+                    "Stop onmiddellijk met DIY-werk aan dit onderdeel.",
+                    "Schakel indien veilig de hoofdtoevoer uit en raak geen interne delen aan.",
+                    "Neem contact op met een erkende elektricien/installateur.",
+                ],
+                "safety_tip": "Veiligheid eerst: geen DIY op hoofdspanning of gascomponenten.",
+                "pro_tip": "Maak duidelijke foto's voor de vakman zodat diagnose sneller gaat.",
+                "retake_guidance": "",
+            }
+        )
+    else:
+        hard_stop_result.update(
+            {
+                "confidence_tier": "call-pro",
+                "confidence": "low",
+                "needs_retake": False,
+                "job_category": result.get("job_category") or "other",
+                "hazard_level": "danger",
+                "hazard_note": "High-risk scenario detected. Stop and contact a licensed professional.",
+                "when_to_call_pro": "Always for fuse/electrical panels, mains voltage, gas lines, or boiler internals.",
+                "task": "Stop and call a professional",
+                "steps": [
+                    "Stop DIY work on this component immediately.",
+                    "If safe, isolate supply and do not touch internal parts.",
+                    "Contact a licensed electrician/installer.",
+                ],
+                "safety_tip": "Safety first: no DIY work on mains electrical or gas systems.",
+                "pro_tip": "Share clear photos with your professional to speed diagnosis.",
+                "retake_guidance": "",
+            }
+        )
+    return hard_stop_result, triggers
+
+
 def _normalize_result(raw):
     if not isinstance(raw, dict):
         raw = {}
@@ -515,6 +755,147 @@ def _normalize_result(raw):
         "xray_readout": _clean_str(raw.get("xray_readout") or raw.get("defect_vs_cleaning"), ""),
         "material_readout": _clean_str(raw.get("material_readout") or raw.get("materials_spotted"), ""),
     }
+    confidence_bucket, needs_retake = _confidence_bucket_and_flags(
+        normalized.get("confidence_tier"),
+        normalized.get("uncertainty_note"),
+        normalized.get("what_i_see"),
+    )
+    normalized["confidence"] = confidence_bucket
+    normalized["needs_retake"] = bool(needs_retake)
+    if needs_retake:
+        normalized["retake_guidance"] = (
+            "Maak nog een foto van dichterbij met betere verlichting."
+            if confidence_bucket == "low"
+            else "Maak nog een extra detailfoto voor hogere zekerheid."
+        )
+    else:
+        normalized["retake_guidance"] = ""
+
+    def _ve_bullets(src_dict, key, max_n):
+        raw_list = src_dict.get(key) or []
+        out = []
+        if isinstance(raw_list, list):
+            for x in raw_list[: max_n + 2]:
+                s = _clean_str(
+                    x
+                    if isinstance(x, str)
+                    else ((x.get("text") or x.get("item")) if isinstance(x, dict) else str(x)),
+                    "",
+                )
+                if s:
+                    out.append(s)
+        return out[:max_n]
+
+    key_obs = _ve_bullets(raw, "key_observations", 5)
+    poss = _ve_bullets(raw, "possible_issues", 5)
+    when_stop = _ve_bullets(raw, "when_to_stop", 4)
+
+    sev_raw = _clean_str(raw.get("severity_ui"), "").lower().replace("-", "_").replace(" ", "_")
+    if sev_raw in ("safe", "cosmetic", "safecosmetic", "green"):
+        sev = "safe_cosmetic"
+    elif sev_raw in ("attention", "needs_attention", "caution", "yellow"):
+        sev = "needs_attention"
+    elif sev_raw in ("dangerous", "potentially_dangerous", "danger", "red"):
+        sev = "potentially_dangerous"
+    elif sev_raw in ("safe_cosmetic", "needs_attention", "potentially_dangerous"):
+        sev = sev_raw
+    else:
+        sev = ""
+
+    hz_n = (normalized.get("hazard_level") or "safe").lower()
+    ct_n = (normalized.get("confidence_tier") or "").lower()
+    if not sev:
+        if hz_n in ("danger", "emergency") or "call" in ct_n:
+            sev = "potentially_dangerous"
+        elif hz_n in ("warning", "caution") or confidence_bucket == "low":
+            sev = "needs_attention"
+        else:
+            sev = "safe_cosmetic"
+
+    dec_raw = _clean_str(raw.get("decision_outcome"), "").lower().replace("-", "_").replace(" ", "_")
+    if dec_raw in ("safe", "safe_to_proceed", "ok", "green"):
+        dec = "safe_to_proceed"
+    elif dec_raw in ("caution", "proceed_with_caution", "careful", "yellow"):
+        dec = "proceed_with_caution"
+    elif dec_raw in ("stop", "do_not_proceed", "dont", "no", "red"):
+        dec = "do_not_proceed"
+    elif dec_raw in ("safe_to_proceed", "proceed_with_caution", "do_not_proceed"):
+        dec = dec_raw
+    else:
+        dec = ""
+
+    if not dec:
+        if sev == "potentially_dangerous" or "call" in ct_n:
+            dec = "do_not_proceed"
+        elif sev == "needs_attention":
+            dec = "proceed_with_caution"
+        else:
+            dec = "safe_to_proceed"
+
+    rationale = _clean_str(raw.get("decision_rationale"), "")
+    if not rationale:
+        if dec == "do_not_proceed":
+            rationale = _clean_str(
+                normalized.get("hazard_note") or normalized.get("when_to_call_pro"),
+                "Do not continue without qualified help if you see risk signs.",
+            )
+        elif dec == "proceed_with_caution":
+            rationale = (
+                "You may proceed carefully if you follow checks, use the right tools, and stop if anything feels unsafe."
+            )
+        else:
+            rationale = "This looks suitable for careful DIY if you follow the steps and safety guidance."
+
+    why_matters = _clean_str(raw.get("why_safety_matters"), "")
+
+    if not key_obs and normalized.get("material_readout"):
+        key_obs = [normalized["material_readout"]]
+    if not poss and normalized.get("xray_readout"):
+        poss = [normalized["xray_readout"]]
+    if not when_stop and normalized.get("when_to_call_pro"):
+        for part in re.split(r"[.;•]\s*", normalized["when_to_call_pro"]):
+            p = _clean_str(part, "")
+            if p and len(when_stop) < 3:
+                when_stop.append(p)
+
+    normalized["key_observations"] = key_obs[:4]
+    normalized["possible_issues"] = poss[:4]
+    normalized["severity_ui"] = sev
+    normalized["decision_outcome"] = dec
+    normalized["decision_rationale"] = rationale[:480]
+    normalized["why_safety_matters"] = why_matters[:320]
+    normalized["when_to_stop"] = when_stop[:3]
+
+    rl_raw = _clean_str(
+        raw.get("rental_liability_hint") or raw.get("huur_verhuur_hint") or raw.get("landlord_tenant_hint"),
+        "",
+    ).lower()
+    rl_raw = rl_raw.replace("-", "_").replace(" ", "_")
+    alias_map = {
+        "verhuurder": "landlord_likely",
+        "landlord": "landlord_likely",
+        "huurder": "tenant_likely",
+        "tenant": "tenant_likely",
+        "nvt": "not_applicable",
+        "n_a": "not_applicable",
+        "na": "not_applicable",
+        "none": "not_applicable",
+        "onzeker": "unclear",
+        "unknown": "unclear",
+    }
+    if rl_raw in alias_map:
+        rl_raw = alias_map[rl_raw]
+    if rl_raw not in ("not_applicable", "landlord_likely", "tenant_likely", "unclear"):
+        rl_raw = "not_applicable"
+    rl_note = _clean_str(raw.get("rental_liability_note") or raw.get("huur_verhuur_toelichting"), "",)[:280]
+    if rl_raw == "not_applicable":
+        rl_note = ""
+    if hz_n in ("danger", "emergency"):
+        rl_raw = "not_applicable"
+        rl_note = ""
+    normalized["rental_liability_hint"] = rl_raw
+    normalized["rental_liability_note"] = rl_note
+
     return normalized
 
 
@@ -692,6 +1073,15 @@ JSON structure:
   "uncertainty_note": "empty or one sentence if ambiguous",
   "quick_checks": ["max 2 short pre-flight checks or empty"],
   "what_i_see": "2–3 short sentences. Sentence 1 = sharp, specific hook (visible brand/type/material/setting). Avoid hedgy filler.",
+  "key_observations": ["2–4 short bullets: visible facts only, no diagnosis drama"],
+  "possible_issues": ["2–4 short bullets: plausible problems or ambiguities"],
+  "severity_ui": "safe_cosmetic | needs_attention | potentially_dangerous",
+  "decision_outcome": "safe_to_proceed | proceed_with_caution | do_not_proceed",
+  "decision_rationale": "one clear sentence: why that decision",
+  "why_safety_matters": "empty or one sentence explaining risk if user ignores guidance",
+  "when_to_stop": ["1–3 short stop conditions, e.g. smell gas / sparks / major leak"],
+  "rental_liability_hint": "not_applicable | landlord_likely | tenant_likely | unclear",
+  "rental_liability_note": "one short sentence: plain-language observation for renters (NL if Dutch user context) — empty if not_applicable",
   "task": "under ~10 words, verb-led, confident action title the user would tap on",
   "difficulty": "easy | medium | hard",
   "estimated_cost": "range or empty",
@@ -707,10 +1097,14 @@ JSON structure:
 }}
 
 Hard rules:
+- severity_ui MUST align with hazard_level and decision_outcome (danger or call-pro ⇒ potentially_dangerous + do_not_proceed unless purely informational).
+- decision_outcome do_not_proceed: user must not DIY; tell them to stop or call a pro.
+- key_observations = facts seen; possible_issues = what could be wrong — keep separate.
 - Steps: ordered, actionable, minimal jargon; every step MUST have visual_tip (camera check).
 - No made-up part numbers or torque specs unless readable in the image.
 - E-bike battery swollen/dented ⇒ call-pro / specialist, never open cells.
 - If the scene is ambiguous, lower confidence, fill uncertainty_note, and avoid overclaiming.
+- rental_liability_hint: ONLY for rental-relevant issues (moisture, mold, stains, minor leaks, wall/ceiling damage, window condensation patterns). Use not_applicable for bikes, appliances with no rental context, outdoor-only, or purely cosmetic owned-home DIY. This is NOT legal advice — phrase as \"based on what is visible\" / \"lijkt op basis van de foto\".
 - Return ONLY the JSON object.
 """
 
@@ -747,6 +1141,142 @@ Hard rules:
             raise
         parsed = json.loads(ai_text[start : end + 1])
     result = _normalize_result(parsed)
+    # Localize guidance and enforce final server-side hard-stop policy.
+    if result.get("needs_retake"):
+        if language == "nl":
+            result["retake_guidance"] = (
+                "Ik kan dit nog niet betrouwbaar beoordelen. Maak een scherpere foto van dichterbij met beter licht."
+            )
+        else:
+            result["retake_guidance"] = (
+                "I cannot assess this reliably yet. Please retake a closer, sharper photo in better lighting."
+            )
+    result, hard_stop_triggers = _apply_server_hard_stop(result, question, language)
+    if hard_stop_triggers:
+        result["hard_stop_triggered"] = True
+        result["hard_stop_reasons"] = hard_stop_triggers[:6]
+        result["severity_ui"] = "potentially_dangerous"
+        result["decision_outcome"] = "do_not_proceed"
+        result["rental_liability_hint"] = "not_applicable"
+        result["rental_liability_note"] = ""
+        hn = _clean_str(result.get("hazard_note"), "")
+        result["decision_rationale"] = hn or (
+            "Server safety filter: this topic requires a licensed professional."
+            if language != "nl"
+            else "Server-veiligheidsfilter: dit onderwerp vereist een erkende professional."
+        )
+    else:
+        result["hard_stop_triggered"] = False
+        result["hard_stop_reasons"] = []
+    return {"success": True, "result": result}, None
+
+
+def _do_stage1_quick_analyze():
+    """Fast first-pass summary to improve perceived speed before full analysis finishes."""
+    try:
+        _get_client()
+    except RuntimeError as e:
+        return None, (str(e), 503)
+
+    image_file = request.files.get("image")
+    question = request.form.get("question", "")
+    language = request.form.get("language", "nl")
+    if not image_file:
+        return None, ("No image provided", 400)
+
+    img = _file_to_image_block(image_file)
+    if not img:
+        return None, ("Invalid image data", 400)
+
+    lang_instruction = "Respond in Dutch." if language == "nl" else "Respond in English."
+    prompt = f"""You are Stage-1 fast scene triage for a camera-first repair assistant.
+{lang_instruction}
+
+Return ONLY valid JSON:
+{{
+  "quick_label": "very short object/task label (2-5 words)",
+  "risk_level": "safe|caution|danger",
+  "confidence": "high|medium|low",
+  "needs_retake": true,
+  "retake_guidance": "one short sentence, empty if not needed",
+  "quick_action": "single short immediate next action for user"
+}}
+
+Rules:
+- Be concise and practical.
+- If blurry/unclear, set confidence low and needs_retake true.
+- For high-risk electrical mains/gas hints, set risk_level danger.
+- No markdown, no extra text; JSON only."""
+
+    user_tail = {
+        "type": "text",
+        "text": f"User note: {_clean_small_str(question, 200) or 'Quick first-pass triage only.'}",
+    }
+    response = _messages_create_with_fallback(
+        system=prompt,
+        max_tokens=220,
+        preferred_model=CHECK_PROGRESS_MODEL,
+        messages=[{"role": "user", "content": [img, user_tail]}],
+    )
+    ai_text = _extract_message_text(response).strip()
+    if ai_text.startswith("```"):
+        ai_text = ai_text.split("```")[1]
+        if ai_text.startswith("json"):
+            ai_text = ai_text[4:]
+    ai_text = ai_text.strip()
+    try:
+        parsed = json.loads(ai_text)
+    except Exception:
+        start = ai_text.find("{")
+        end = ai_text.rfind("}")
+        if start == -1 or end == -1 or end <= start:
+            raise
+        parsed = json.loads(ai_text[start : end + 1])
+
+    result = {
+        "quick_label": _clean_small_str(parsed.get("quick_label"), 60) or ("Object check" if language != "nl" else "Object check"),
+        "risk_level": _clean_small_str(parsed.get("risk_level"), 20).lower() or "caution",
+        "confidence": _clean_small_str(parsed.get("confidence"), 20).lower() or "medium",
+        "needs_retake": bool(parsed.get("needs_retake", False)),
+        "retake_guidance": _clean_small_str(parsed.get("retake_guidance"), 180),
+        "quick_action": _clean_small_str(parsed.get("quick_action"), 180),
+    }
+    if result["risk_level"] not in {"safe", "caution", "danger"}:
+        result["risk_level"] = "caution"
+    if result["confidence"] not in {"high", "medium", "low"}:
+        result["confidence"] = "medium"
+    if not result["quick_action"]:
+        result["quick_action"] = (
+            "Take one sharper close-up."
+            if language != "nl"
+            else "Maak een scherpere close-up."
+        )
+    if result["needs_retake"] and not result["retake_guidance"]:
+        result["retake_guidance"] = (
+            "I need a sharper, closer photo with better light."
+            if language != "nl"
+            else "Ik heb een scherpere foto van dichterbij met beter licht nodig."
+        )
+
+    # Keep safety posture consistent with final hard-stop policy.
+    hard_stop_probe = {
+        "what_i_see": result["quick_label"],
+        "task": result["quick_action"],
+        "hazard_note": result["retake_guidance"],
+    }
+    safe_result, triggers = _apply_server_hard_stop(hard_stop_probe, question, language)
+    if triggers:
+        result["risk_level"] = "danger"
+        result["confidence"] = "low"
+        result["needs_retake"] = False
+        result["quick_action"] = safe_result.get("task") or result["quick_action"]
+        result["retake_guidance"] = safe_result.get("hazard_note") or result["retake_guidance"]
+        result["hard_stop_triggered"] = True
+        result["hard_stop_reasons"] = triggers[:6]
+    else:
+        result["hard_stop_triggered"] = False
+        result["hard_stop_reasons"] = []
+
     return {"success": True, "result": result}, None
 
 
@@ -794,6 +1324,20 @@ def analyze():
                 )
         except Exception:
             pass
+        return jsonify(payload)
+    except json.JSONDecodeError as e:
+        return jsonify({"success": False, "error": f"AI returned invalid JSON: {str(e)}"}), 500
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/analyze-stage1", methods=["POST"])
+def analyze_stage1():
+    """Fast first-pass response for perceived speed; full result comes from /analyze."""
+    try:
+        payload, err = _do_stage1_quick_analyze()
+        if err:
+            return jsonify({"success": False, "error": err[0]}), err[1]
         return jsonify(payload)
     except json.JSONDecodeError as e:
         return jsonify({"success": False, "error": f"AI returned invalid JSON: {str(e)}"}), 500
@@ -1182,52 +1726,55 @@ def metrics():
             days = int(request.args.get("days", 7))
         except Exception:
             days = 7
+        include_test = str(request.args.get("include_test", "0")).strip().lower() in {"1", "true", "yes"}
         days = max(1, min(days, 90))
         since = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
 
+        day_expr = _sql_day_expr("created_at")
+        events_filter_sql, events_filter_params = _metrics_filter_sql(include_test)
         with _db() as conn:
             rows = conn.execute(
-                """
+                f"""
                 SELECT event_name, COUNT(*) AS c
                 FROM events
-                WHERE created_at >= ?
+                WHERE created_at >= ? {events_filter_sql}
                 GROUP BY event_name
                 """,
-                (since,),
+                (since, *events_filter_params),
             ).fetchall()
             counts = {r["event_name"]: int(r["c"]) for r in rows}
 
             unique_scan_users = conn.execute(
-                """
+                f"""
                 SELECT COUNT(DISTINCT COALESCE(NULLIF(user_id,''), NULLIF(session_id,''), NULLIF(ip,''))) AS c
                 FROM events
-                WHERE created_at >= ? AND event_name = 'scan_completed'
+                WHERE created_at >= ? AND event_name = 'scan_completed' {events_filter_sql}
                 """,
-                (since,),
+                (since, *events_filter_params),
             ).fetchone()["c"]
 
             wa_users = conn.execute(
-                """
+                f"""
                 SELECT COUNT(DISTINCT COALESCE(NULLIF(user_id,''), NULLIF(session_id,''), NULLIF(ip,''))) AS c
                 FROM events
-                WHERE created_at >= ?
+                WHERE created_at >= ? {events_filter_sql}
                 """,
-                (since,),
+                (since, *events_filter_params),
             ).fetchone()["c"]
 
             # Repeat proxy: users with scan_completed on >=2 distinct dates in window.
             repeat_users = conn.execute(
-                """
+                f"""
                 SELECT COUNT(*) AS c FROM (
                     SELECT COALESCE(NULLIF(user_id,''), NULLIF(session_id,''), NULLIF(ip,'')) AS u,
-                           COUNT(DISTINCT substr(created_at,1,10)) AS d
+                           COUNT(DISTINCT {day_expr}) AS d
                     FROM events
-                    WHERE created_at >= ? AND event_name = 'scan_completed'
+                    WHERE created_at >= ? AND event_name = 'scan_completed' {events_filter_sql}
                     GROUP BY u
-                    HAVING d >= 2
+                    HAVING COUNT(DISTINCT {day_expr}) >= 2
                 )
                 """,
-                (since,),
+                (since, *events_filter_params),
             ).fetchone()["c"]
 
         scans = counts.get("scan_completed", 0)
@@ -1244,6 +1791,7 @@ def metrics():
             {
                 "success": True,
                 "window_days": days,
+                "include_test": include_test,
                 "counts": counts,
                 "kpis": {
                     "weekly_active_users_proxy": int(wa_users or 0),
@@ -1277,6 +1825,7 @@ def metrics_detail():
             days = int(request.args.get("days", 14))
         except Exception:
             days = 14
+        include_test = str(request.args.get("include_test", "0")).strip().lower() in {"1", "true", "yes"}
         days = max(3, min(days, 90))
         now_utc = datetime.now(timezone.utc)
         since = (now_utc - timedelta(days=days)).isoformat()
@@ -1285,114 +1834,119 @@ def metrics_detail():
         def pct(n, d):
             return round((100.0 * n / d), 2) if d else 0.0
 
+        day_expr = _sql_day_expr("created_at")
+        events_filter_sql, events_filter_params = _metrics_filter_sql(include_test)
+        emails_filter_sql, emails_filter_params = _metrics_filter_sql(include_test)
         with _db() as conn:
             rows = conn.execute(
-                """
+                f"""
                 SELECT event_name, COUNT(*) AS c
                 FROM events
-                WHERE created_at >= ?
+                WHERE created_at >= ? {events_filter_sql}
                 GROUP BY event_name
                 """,
-                (since,),
+                (since, *events_filter_params),
             ).fetchall()
             counts = {r["event_name"]: int(r["c"]) for r in rows}
 
             day_rows = conn.execute(
-                """
-                SELECT substr(created_at,1,10) AS day, event_name, COUNT(*) AS c
+                f"""
+                SELECT {day_expr} AS day, event_name, COUNT(*) AS c
                 FROM events
-                WHERE created_at >= ?
+                WHERE created_at >= ? {events_filter_sql}
                   AND event_name IN ('scan_started','scan_completed','job_completed','email_collected','founding_offer_clicked')
                 GROUP BY day, event_name
                 ORDER BY day ASC
                 """,
-                (since,),
+                (since, *events_filter_params),
             ).fetchall()
 
             top_categories = conn.execute(
-                """
+                f"""
                 SELECT task_category, COUNT(*) AS c
                 FROM events
-                WHERE created_at >= ?
+                WHERE created_at >= ? {events_filter_sql}
                   AND event_name = 'scan_completed'
                   AND COALESCE(task_category, '') <> ''
                 GROUP BY task_category
                 ORDER BY c DESC
                 LIMIT 8
                 """,
-                (since,),
+                (since, *events_filter_params),
             ).fetchall()
 
             top_channels = conn.execute(
-                """
+                f"""
                 SELECT source_channel, COUNT(*) AS c
                 FROM events
-                WHERE created_at >= ?
+                WHERE created_at >= ? {events_filter_sql}
                   AND COALESCE(source_channel, '') <> ''
                 GROUP BY source_channel
                 ORDER BY c DESC
                 LIMIT 8
                 """,
-                (since,),
+                (since, *events_filter_params),
             ).fetchall()
 
             language_mix = conn.execute(
-                """
+                f"""
                 SELECT language, COUNT(*) AS c
                 FROM events
-                WHERE created_at >= ?
+                WHERE created_at >= ? {events_filter_sql}
                   AND COALESCE(language, '') <> ''
                 GROUP BY language
                 ORDER BY c DESC
                 """,
-                (since,),
+                (since, *events_filter_params),
             ).fetchall()
 
             recent_events = conn.execute(
-                """
+                f"""
                 SELECT created_at, event_name, task_category, hazard_level, source_channel, language, session_id
                 FROM events
+                WHERE 1=1 {events_filter_sql}
                 ORDER BY id DESC
                 LIMIT 25
-                """
+                """,
+                (*events_filter_params,),
             ).fetchall()
 
             email_by_day = conn.execute(
-                """
-                SELECT substr(created_at,1,10) AS day, COUNT(*) AS c
+                f"""
+                SELECT {day_expr} AS day, COUNT(*) AS c
                 FROM emails
-                WHERE created_at >= ?
+                WHERE created_at >= ? {emails_filter_sql}
                 GROUP BY day
                 ORDER BY day ASC
                 """,
-                (since,),
+                (since, *emails_filter_params),
             ).fetchall()
 
             unique_scan_users = int(
                 conn.execute(
-                    """
+                    f"""
                     SELECT COUNT(DISTINCT COALESCE(NULLIF(user_id,''), NULLIF(session_id,''), NULLIF(ip,''))) AS c
                     FROM events
-                    WHERE created_at >= ? AND event_name = 'scan_completed'
+                    WHERE created_at >= ? AND event_name = 'scan_completed' {events_filter_sql}
                     """,
-                    (since,),
+                    (since, *events_filter_params),
                 ).fetchone()["c"]
                 or 0
             )
 
             repeat_users = int(
                 conn.execute(
-                    """
+                    f"""
                     SELECT COUNT(*) AS c FROM (
                         SELECT COALESCE(NULLIF(user_id,''), NULLIF(session_id,''), NULLIF(ip,'')) AS u,
-                               COUNT(DISTINCT substr(created_at,1,10)) AS d
+                               COUNT(DISTINCT {day_expr}) AS d
                         FROM events
-                        WHERE created_at >= ? AND event_name = 'scan_completed'
+                        WHERE created_at >= ? AND event_name = 'scan_completed' {events_filter_sql}
                         GROUP BY u
-                        HAVING d >= 2
+                        HAVING COUNT(DISTINCT {day_expr}) >= 2
                     )
                     """,
-                    (since,),
+                    (since, *events_filter_params),
                 ).fetchone()["c"]
                 or 0
             )
@@ -1400,45 +1954,45 @@ def metrics_detail():
             # Current vs previous same-length window for momentum view.
             current_scans = int(
                 conn.execute(
-                    """
+                    f"""
                     SELECT COUNT(*) AS c
                     FROM events
-                    WHERE created_at >= ? AND event_name = 'scan_completed'
+                    WHERE created_at >= ? AND event_name = 'scan_completed' {events_filter_sql}
                     """,
-                    (since,),
+                    (since, *events_filter_params),
                 ).fetchone()["c"]
                 or 0
             )
             prev_scans = int(
                 conn.execute(
-                    """
+                    f"""
                     SELECT COUNT(*) AS c
                     FROM events
-                    WHERE created_at >= ? AND created_at < ? AND event_name = 'scan_completed'
+                    WHERE created_at >= ? AND created_at < ? AND event_name = 'scan_completed' {events_filter_sql}
                     """,
-                    (prev_since, since),
+                    (prev_since, since, *events_filter_params),
                 ).fetchone()["c"]
                 or 0
             )
             current_emails = int(
                 conn.execute(
-                    """
+                    f"""
                     SELECT COUNT(*) AS c
                     FROM events
-                    WHERE created_at >= ? AND event_name = 'email_collected'
+                    WHERE created_at >= ? AND event_name = 'email_collected' {events_filter_sql}
                     """,
-                    (since,),
+                    (since, *events_filter_params),
                 ).fetchone()["c"]
                 or 0
             )
             prev_emails = int(
                 conn.execute(
-                    """
+                    f"""
                     SELECT COUNT(*) AS c
                     FROM events
-                    WHERE created_at >= ? AND created_at < ? AND event_name = 'email_collected'
+                    WHERE created_at >= ? AND created_at < ? AND event_name = 'email_collected' {events_filter_sql}
                     """,
-                    (prev_since, since),
+                    (prev_since, since, *events_filter_params),
                 ).fetchone()["c"]
                 or 0
             )
@@ -1494,6 +2048,7 @@ def metrics_detail():
                 "success": True,
                 "as_of_utc": now_utc.isoformat(),
                 "window_days": days,
+                "include_test": include_test,
                 "required_events": sorted(REQUIRED_EVENTS),
                 "counts": counts,
                 "kpis": {
@@ -1550,6 +2105,12 @@ def metrics_detail():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+@app.route("/privacy")
+def privacy():
+    """Dutch-first privacy statement (AVG-oriented); EN copy on same page."""
+    return render_template("privacy.html")
+
+
 @app.route("/health")
 def health():
     """Quick prod sanity check: no secrets returned."""
@@ -1561,9 +2122,12 @@ def health():
             "vision_model": VISION_MODEL,
             "check_model": CHECK_PROGRESS_MODEL,
             "default_vision_if_env_unset": DEFAULT_VISION_MODEL,
+            "db_backend": DB_BACKEND,
         }
     )
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    _port = int(os.getenv("PORT", "5000"))
+    _debug = os.getenv("FLASK_DEBUG", "1").strip().lower() in ("1", "true", "yes")
+    app.run(debug=_debug, port=_port)

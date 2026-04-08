@@ -12,3 +12,4 @@ frontend/dist
 backend/mvp_emails.log
 .git
 scans.db
+.env*.local

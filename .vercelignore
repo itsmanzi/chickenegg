@@ -1,0 +1,11 @@
+# Faster, leaner deploys — not imported by Flask at runtime
+.agents/
+.claude/
+.cursor/
+skills/
+income_radar/
+frontend/
+node_modules/
+**/__pycache__/
+*.pyc
+.git/
