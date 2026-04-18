@@ -1,0 +1,15 @@
+.git
+.gitignore
+__pycache__
+*.pyc
+.pytest_cache
+.mypy_cache
+.cursor
+.claude
+.agents
+*.md
+.env
+.venv
+venv
+node_modules
+*.log
