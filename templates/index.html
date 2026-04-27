@@ -1593,6 +1593,34 @@
       padding-top:10px;
       border-top:1px solid var(--border-subtle);
     }
+    .ce-wow-line{
+      margin:0 0 10px;
+      padding:8px 10px;
+      border-radius:10px;
+      font-size:12px;
+      font-weight:700;
+      color:#efd9b3;
+      background:linear-gradient(135deg,rgba(232,168,71,.2),rgba(232,168,71,.08));
+      border:1px solid rgba(232,168,71,.34);
+      box-shadow:0 6px 16px rgba(0,0,0,.2);
+      animation:ceWowPulse 1.5s ease-out 1;
+    }
+    .ce-decision-details-toggle{
+      margin:2px 0 0;
+      min-height:40px;
+      border-radius:11px;
+      border:1px solid var(--border-default);
+      background:rgba(255,255,255,.03);
+      color:var(--t1);
+      font-size:12px;
+      font-weight:700;
+      cursor:pointer;
+    }
+    @keyframes ceWowPulse{
+      0%{transform:translateY(4px);opacity:.4}
+      55%{transform:translateY(0);opacity:1}
+      100%{transform:translateY(0);opacity:1}
+    }
     .ce-walk-progress-hdr{font-size:12px;font-weight:900;color:var(--t1);margin:6px 0 8px;letter-spacing:.02em}
     .r-hdr{margin-bottom:14px;padding-bottom:12px;border-bottom:.5px solid rgba(0,0,0,.07)}
     .r-title{font-size:21px;font-weight:900;letter-spacing:-.5px;line-height:1.2;margin-bottom:4px;color:var(--t1)}
@@ -3895,7 +3923,9 @@
         <div id="decision-risk"></div>
         <div id="decision-rental"></div>
       </div>
+      <div id="decision-wow" class="ce-wow-line"></div>
       <div id="decision-why" class="ce-why"></div>
+      <button type="button" id="decision-details-toggle" class="ce-decision-details-toggle"></button>
       <button type="button" id="decision-cta" class="ce-cta-primary primary-cta"></button>
       <div id="decision-meta" class="ce-meta"></div>
       <div id="decision-trust" class="ce-decision-trust"></div>
@@ -5178,6 +5208,7 @@ function retakePhoto(){
   if(camReady&&typeof schedulePerception==='function') schedulePerception();
   clearLockOn();
   UX.resultRendered=false;
+  UX.resultRendering=false;
 }
 
 function cePrimeResultsStaggerItems(){
@@ -6089,7 +6120,9 @@ var UX={
   screen:'camera',
   checklistDone:false,
   resultJobId:'',
-  resultRendered:false
+  resultRendered:false,
+  resultRendering:false,
+  resultsDetailsOpen:false
 };
 UX.repair=UX.repair||{
   stepIdx:0,
@@ -6368,7 +6401,7 @@ function ceSentenceCase(s){
 }
 function ceCurrentPaywallState(){
   if(ceDangerLocked)return 'danger';
-  if(lastScanResult&&ceNormalizeRentalHint(lastScanResult.rental_liability_hint)==='landlord_likely')return 'landlord_likely';
+  if(lastScanResult&&ceInferRentalHint(lastScanResult)==='landlord_likely')return 'landlord_likely';
   return '';
 }
 function updatePaywallStrip(screenId, state){
@@ -6397,7 +6430,6 @@ function ceDedupById(id){
 function cePruneDuplicateResultsNodes(){
   [
     'results-screen-bar','decision-card','decision-cta',
-    'ce-verdict-card','ce-verdict-cta','ce-rental-card','ce-rental-cta-wa','ce-rental-cta-contract',
     'hazard-hero','ce-visual-engine','results-summary','tip-safety','r-confidence','warn-ctr','confidence-gate',
     'task-locked','all-done','tools-card','steps-card','pre-repair-checklist','walk-pane','repair-transition-line',
     'ce-screen-diagnosis','ce-screen-repair','ce-screen-completion',
@@ -6940,9 +6972,9 @@ function ceBuildUxScreens(){
   else results.appendChild(diagnosis);
   results.appendChild(repair);
   results.appendChild(completion);
-  ['ce-verdict-card','ce-rental-card','hazard-hero','ce-visual-engine','results-summary','tip-safety','r-confidence','warn-ctr','confidence-gate','task-locked','all-done'].forEach(function(id){
+  ['hazard-hero','ce-visual-engine','results-summary','tip-safety','r-confidence','warn-ctr','confidence-gate','task-locked','all-done'].forEach(function(id){
     var elLegacy=document.getElementById(id);
-    if(elLegacy&&id!=='ce-verdict-card'&&id!=='ce-rental-card')diagnosis.appendChild(elLegacy);
+    if(elLegacy)diagnosis.appendChild(elLegacy);
   });
   ['decision-card'].forEach(function(id){
     var el=document.getElementById(id);if(el)diagnosis.appendChild(el);
@@ -7642,7 +7674,7 @@ function renderVisualDecisionEngine(r){
 
 /* Panels that may carry ce-tab-panel-hide from older builds; strip on reset. */
 var CE_RESULT_PANEL_IDS=[
-  'decision-card','ce-verdict-card','ce-rental-card','all-done','task-locked','hazard-hero','ce-visual-engine','results-summary','tip-safety','r-confidence','confidence-gate','no-repair-box',
+  'decision-card','all-done','task-locked','hazard-hero','ce-visual-engine','results-summary','tip-safety','r-confidence','confidence-gate','no-repair-box',
   'warn-ctr','tts-bar','steps-card',
   'tools-card','ad-banner','ec','fold-more','rst-btn'
 ];
@@ -7723,13 +7755,38 @@ function ceGetExampleScanResult(){
 }
 function ceTryExampleResults(){
   UX.resultRendered=false;
+  UX.resultRendering=false;
   renderResults(ceGetExampleScanResult());
 }
 
 function ceNormalizeRentalHint(h){
   var x=String(h||'').toLowerCase().replace(/-/g,'_').replace(/\s+/g,'_').trim();
   if(['landlord_likely','tenant_likely','unclear','not_applicable'].indexOf(x)!==-1)return x;
+  var note=String((lastScanResult&&lastScanResult.rental_liability_note)||'').toLowerCase();
+  if(/verhuurder|landlord|woningcorporatie|owner/.test(note))return 'landlord_likely';
+  if(/huurder|tenant|jouw verantwoordelijkheid|your responsibility/.test(note))return 'tenant_likely';
+  if(/huurcontract|lease|unclear|onzeker|niet zeker/.test(note))return 'unclear';
   return 'not_applicable';
+}
+function ceInferRentalHint(r){
+  var raw=ceNormalizeRentalHint(r&&r.rental_liability_hint);
+  if(raw!=='not_applicable')return raw;
+  var note=String((r&&r.rental_liability_note)||'').toLowerCase();
+  if(/verhuurder|landlord|woningcorporatie|owner/.test(note))return 'landlord_likely';
+  if(/huurder|tenant|jouw verantwoordelijkheid|your responsibility/.test(note))return 'tenant_likely';
+  if(/huurcontract|lease|unclear|onzeker|niet zeker/.test(note))return 'unclear';
+  return 'not_applicable';
+}
+function ceSetResultsDetailsOpen(open){
+  UX.resultsDetailsOpen=!!open;
+  var ve=document.getElementById('ce-visual-engine');
+  if(ve)ve.classList.toggle('off',!UX.resultsDetailsOpen);
+  var btn=document.getElementById('decision-details-toggle');
+  if(btn){
+    btn.textContent=UX.resultsDetailsOpen
+      ?((LANG==='nl')?'Minder details':'Less details')
+      :((LANG==='nl')?'Bekijk analyse-details':'View analysis details');
+  }
 }
 function ceUpdateRentalDebugBadge(hint){
   var el=document.getElementById('ce-rental-debug-badge');
@@ -7751,11 +7808,11 @@ function ceRepairNeededFromCur(){
 }
 function ceLandlordBlocksDiy(){
   if(!lastScanResult)return false;
-  return ceNormalizeRentalHint(lastScanResult.rental_liability_hint)==='landlord_likely' && ceRepairNeededFromCur();
+  return ceInferRentalHint(lastScanResult)==='landlord_likely' && ceRepairNeededFromCur();
 }
 function ceLandlordHidesVerdictCta(){
   if(!lastScanResult)return false;
-  var hint=ceNormalizeRentalHint(lastScanResult.rental_liability_hint);
+  var hint=ceInferRentalHint(lastScanResult);
   var rentalOwnsPrimary=(hint==='landlord_likely'||hint==='unclear');
   return rentalOwnsPrimary && !ceDangerLocked && !ceWarningUnlockRequired && !ceMediumConfirmRequired;
 }
@@ -8131,6 +8188,8 @@ function renderDecisionCard(r,opts){
   var lights=document.getElementById('decision-safety-lights');
   var lightsLbl=document.getElementById('decision-safety-lights-label');
   var trustEl=document.getElementById('decision-trust');
+  var wow=document.getElementById('decision-wow');
+  var detailsBtn=document.getElementById('decision-details-toggle');
   var repairNeeded=(opts.repairNeeded!==undefined)?!!opts.repairNeeded:ceRepairNeededFromCur();
   var decision='safe_to_proceed';
   if(opts.ceDangerLocked||r.decision_outcome==='do_not_proceed')decision='do_not_proceed';
@@ -8139,7 +8198,7 @@ function renderDecisionCard(r,opts){
   var riskLevel='low';
   if(decision==='do_not_proceed'||hazard==='danger'||hazard==='emergency')riskLevel='high';
   else if(decision==='caution'||hazard==='warning'||hazard==='caution')riskLevel='medium';
-  var rentalHint=ceNormalizeRentalHint(r.rental_liability_hint);
+  var rentalHint=ceInferRentalHint(r);
   if(title)title.textContent=r.title||r.what_i_see||r.task||'';
   if(outcome){
     outcome.textContent=(decision==='do_not_proceed')
@@ -8154,9 +8213,21 @@ function renderDecisionCard(r,opts){
   if(rental){
     rental.textContent=(rentalHint==='landlord_likely')
       ?((LANG==='nl')?'🏠 Waarschijnlijk voor verhuurder':'🏠 Likely landlord responsibility')
-      :((rentalHint==='tenant_likely')?((LANG==='nl')?'🏠 Waarschijnlijk jouw verantwoordelijkheid':'🏠 Likely your responsibility'):((rentalHint==='unclear')?((LANG==='nl')?'🏠 Onzeker: check huurcontract':'🏠 Unclear: check rental contract'):''));
+      :((rentalHint==='tenant_likely')
+        ?((LANG==='nl')?'🏠 Waarschijnlijk jouw verantwoordelijkheid':'🏠 Likely your responsibility')
+        :((rentalHint==='unclear')
+          ?((LANG==='nl')?'🏠 Onzeker: check huurcontract':'🏠 Unclear: check rental contract')
+          :((LANG==='nl')?'🏠 Huurcheck: niet zeker, controleer je contract':'🏠 Rental check: unknown, verify your contract')));
   }
   var tloc=T[LANG]||T.en;
+  if(wow){
+    var eta=String(r.time_needed||'').trim();
+    wow.textContent=(riskLevel==='high')
+      ?((LANG==='nl')?'⚡ Veiligheid voorop: pak dit niet alleen aan.':'⚡ Safety first: do not handle this alone.')
+      :((riskLevel==='medium')
+        ?((LANG==='nl')?'⚡ Slimme check klaar: ga langzaam en gecontroleerd.':'⚡ Smart check ready: proceed slowly and carefully.')
+        :((LANG==='nl')?('⚡ Klaar om te fixen'+(eta?(' in ± '+eta):'')+' — stap voor stap.'):('⚡ Ready to fix'+(eta?(' in about '+eta):'')+' — step by step.')));
+  }
   if(lights){
     lights.classList.remove('ce-safety-lights--high','ce-safety-lights--medium','ce-safety-lights--low');
     if(riskLevel==='high')lights.classList.add('ce-safety-lights--high');
@@ -8173,12 +8244,28 @@ function renderDecisionCard(r,opts){
     lightsLbl.textContent=(riskLevel==='high')?(tloc.decisionSafetyHigh||''):((riskLevel==='medium')?(tloc.decisionSafetyMedium||''):(tloc.decisionSafetyLow||''));
   }
   if(trustEl)trustEl.textContent=tloc.decisionTrustShort||'';
+  if(detailsBtn){
+    var newDetailsBtn=detailsBtn.cloneNode(true);
+    detailsBtn.parentNode.replaceChild(newDetailsBtn,detailsBtn);
+    newDetailsBtn.addEventListener('click',function(){
+      ceSetResultsDetailsOpen(!UX.resultsDetailsOpen);
+    });
+  }
+  ceSetResultsDetailsOpen(UX.resultsDetailsOpen);
   if(why)why.textContent=r.decision_rationale||r.rationale||r.task||'';
   var label='';
   var action=function(){enterRepairScreen();};
   if(rentalHint==='landlord_likely'){
     label=(LANG==='nl')?'Stuur naar verhuurder':'Send to landlord';
     action=function(){ceShareToLandlord(r);};
+  }else if(rentalHint==='unclear'){
+    label=(LANG==='nl')?'Check huurcontract':'Check rental contract';
+    action=function(){
+      var href=(LANG==='nl')
+        ?'https://www.rijksoverheid.nl/onderwerpen/huurwoning'
+        :'https://www.government.nl/topics/housing/rented-housing';
+      window.open(href,'_blank','noopener');
+    };
   }else if(decision==='do_not_proceed'){
     label=(LANG==='nl')?'Vind een vakman':'Find a professional';
     action=function(){ceFindPro(r);};
@@ -8214,10 +8301,12 @@ function renderDecisionCard(r,opts){
 }
 
 function renderResults(r){
-  if(UX.resultRendered){
+  if(UX.resultRendered||UX.resultRendering){
     try{console.warn('[CE] renderResults skipped (already rendered)');}catch(_){}
     return;
   }
+  UX.resultRendering=true;
+  try{
   cePruneDuplicateResultsNodes();
   r=ceEnsureRenderableResult(r);
   ceClearPlainResultFallback();
@@ -8274,7 +8363,7 @@ function renderResults(r){
   doneSteps.clear();warnCt=0;updateWarn();
 
   var repairNeeded = curSteps.length>0 && curSteps.some(function(s){return (s||'').trim().length>0});
-  var rentalHintNorm = ceNormalizeRentalHint(r.rental_liability_hint);
+  var rentalHintNorm = ceInferRentalHint(r);
   ceUpdateRentalDebugBadge(rentalHintNorm);
   var landlordBlocksDiy = (rentalHintNorm === 'landlord_likely' && repairNeeded);
   if(rentalHintNorm!=='not_applicable')ceSetFrameState('Diagnosis','With-rental');
@@ -8316,6 +8405,7 @@ function renderResults(r){
   document.getElementById('r-title').textContent=ceSentenceCase(r.what_i_see||'');
   document.getElementById('r-task2').textContent=r.task||'';
   renderVisualDecisionEngine(r);
+  ceSetResultsDetailsOpen(false);
   var tloc=T[LANG]||T.en;
   var e1=document.getElementById('edge-a'),e2=document.getElementById('edge-b'),e3=document.getElementById('edge-c');
   if(e1)e1.textContent=tloc.edgeA||'';
@@ -8559,6 +8649,9 @@ function renderResults(r){
   setTimeout(function(){ceHardRecoverBlankResults(r);},900);
   UX.resultRendered=true;
   return hz;
+  }finally{
+    UX.resultRendering=false;
+  }
 }
 
 var hazardUnlockBtn=document.getElementById('hazard-step-unlock');
@@ -8807,6 +8900,8 @@ document.getElementById('rst-btn').addEventListener('click',function(){
   var camStep=document.getElementById('cam-step');if(camStep){camStep.classList.remove('show');camStep.classList.add('off')}
   document.getElementById('hazard-banner').classList.remove('show');document.getElementById('q-inp').value='';
   curSteps=[];curVisualTips=[];doneSteps.clear();warnCt=0;updateWarn();
+  UX.resultRendered=false;
+  UX.resultRendering=false;
   document.getElementById('all-done').style.display='none';document.getElementById('task-locked').style.display='none';
   document.getElementById('tts-bar').classList.remove('show');pmModal.classList.add('off');pmModal.setAttribute('aria-hidden','true');
   var rggR=document.getElementById('readout-glass');if(rggR)rggR.classList.add('off');
