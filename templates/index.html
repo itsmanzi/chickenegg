@@ -1510,29 +1510,32 @@
     body.result-open.cam-tiktok .ce-rental-card.ce-rental--unclear{background:#242424}
     .ce-decision-card{
       margin:0 0 14px;
-      padding:14px;
-      border-radius:var(--rlg);
-      background:linear-gradient(165deg,#242424,#1E1E1E);
-      border:1px solid var(--border);
-      box-shadow:0 10px 28px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.04);
+      padding:16px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 15% 0%,rgba(232,168,71,.18),transparent 34%),
+        linear-gradient(165deg,#262626,#171717 68%);
+      border:1px solid rgba(232,168,71,.22);
+      box-shadow:0 16px 38px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.06);
     }
     .ce-title{
-      font-size:20px;
-      font-weight:600;
+      font-size:22px;
+      font-weight:800;
       line-height:1.25;
       color:var(--t1);
       margin:0 0 10px;
-      letter-spacing:-.2px;
+      letter-spacing:-.45px;
     }
     .ce-decision-main{
       display:flex;
       flex-direction:column;
       gap:6px;
       margin-bottom:10px;
-      font-size:14px;
-      font-weight:600;
+      font-size:15px;
+      font-weight:800;
       color:var(--t1);
     }
+    .ce-result-details-hidden{display:none!important}
     .ce-why{
       font-size:13px;
       color:var(--t2);
@@ -1606,8 +1609,9 @@
       animation:ceWowPulse 1.5s ease-out 1;
     }
     .ce-decision-details-toggle{
-      margin:2px 0 0;
+      margin:10px 0 0;
       min-height:40px;
+      width:100%;
       border-radius:11px;
       border:1px solid var(--border-default);
       background:rgba(255,255,255,.03);
@@ -3925,8 +3929,8 @@
       </div>
       <div id="decision-wow" class="ce-wow-line"></div>
       <div id="decision-why" class="ce-why"></div>
-      <button type="button" id="decision-details-toggle" class="ce-decision-details-toggle"></button>
       <button type="button" id="decision-cta" class="ce-cta-primary primary-cta"></button>
+      <button type="button" id="decision-details-toggle" class="ce-decision-details-toggle"></button>
       <div id="decision-meta" class="ce-meta"></div>
       <div id="decision-trust" class="ce-decision-trust"></div>
     </section>
@@ -4320,6 +4324,8 @@ function setLang(l){
   if(rb)rb.textContent=(l==='nl'?'← Camera':'← Camera');
   var rt=document.getElementById('results-title');
   if(rt)rt.textContent=(l==='nl'?'Scan Resultaten':'Scan Results');
+  var hh=document.querySelector('.hero-h1');
+  if(hh)hh.innerHTML=(l==='nl')?'Richt. Scan. <span>Klaar.</span>':'Point. Snap. <span>Fixed.</span>';
   var ea=document.getElementById('edge-a'),eb=document.getElementById('edge-b'),ecEdge=document.getElementById('edge-c');
   if(ea)ea.textContent=t.edgeA||'';
   if(eb)eb.textContent=t.edgeB||'';
@@ -4727,7 +4733,7 @@ function ceRefreshWelcomeI18n(){
   if(l1)l1.textContent=t.welcomeL1||'';
   if(l2)l2.textContent=t.welcomeL2||'';
   if(l3)l3.textContent=t.welcomeL3||'';
-  if(cta)cta.textContent=t.heroCtaScan||'Start';
+  if(cta)cta.textContent=(LANG==='nl')?'Start scan':'Start Live Scan';
   if(sk)sk.textContent=t.welcomeSkip||'Skip';
   document.querySelectorAll('[data-welcome-lang]').forEach(function(b){
     b.classList.toggle('on',(b.getAttribute('data-welcome-lang')||'')===LANG);
@@ -7779,10 +7785,20 @@ function ceInferRentalHint(r){
 }
 function ceSetResultsDetailsOpen(open){
   UX.resultsDetailsOpen=!!open;
-  var ve=document.getElementById('ce-visual-engine');
-  if(ve)ve.classList.toggle('off',!UX.resultsDetailsOpen);
+  [
+    'ce-visual-engine',
+    'results-summary',
+    'tip-safety',
+    'r-confidence',
+    'warn-ctr',
+    'ce-conf-signal'
+  ].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el)el.classList.toggle('ce-result-details-hidden',!UX.resultsDetailsOpen);
+  });
   var btn=document.getElementById('decision-details-toggle');
   if(btn){
+    btn.setAttribute('aria-expanded',UX.resultsDetailsOpen?'true':'false');
     btn.textContent=UX.resultsDetailsOpen
       ?((LANG==='nl')?'Minder details':'Less details')
       :((LANG==='nl')?'Bekijk analyse-details':'View analysis details');
@@ -7791,17 +7807,8 @@ function ceSetResultsDetailsOpen(open){
 function ceUpdateRentalDebugBadge(hint){
   var el=document.getElementById('ce-rental-debug-badge');
   if(!el)return;
-  var norm=ceNormalizeRentalHint(hint);
   el.classList.remove('show','is-landlord','is-tenant','is-unclear');
-  if(norm==='not_applicable'){
-    el.textContent='';
-    return;
-  }
-  el.textContent='Rental hint: '+norm;
-  el.classList.add('show');
-  if(norm==='landlord_likely')el.classList.add('is-landlord');
-  else if(norm==='tenant_likely')el.classList.add('is-tenant');
-  else el.classList.add('is-unclear');
+  el.textContent='';
 }
 function ceRepairNeededFromCur(){
   return curSteps.length>0 && curSteps.some(function(s){return (s||'').trim().length>0;});
@@ -8271,7 +8278,7 @@ function renderDecisionCard(r,opts){
     action=function(){ceFindPro(r);};
   }else if(!repairNeeded){
     label=(LANG==='nl')?'Bekijk details':'See details';
-    action=function(){ceScrollToResultEl('tools-card');};
+    action=function(){ceSetResultsDetailsOpen(true);ceScrollToResultEl('ce-visual-engine');};
   }else{
     label=(LANG==='nl')?'Start reparatie':'Start repair';
     action=function(){enterRepairScreen();};
