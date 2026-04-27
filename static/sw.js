@@ -1,9 +1,8 @@
 /* chickenegg PWA service worker (simple + safe) */
-const CACHE_NAME = "chickenegg-static-v15";
+const CACHE_NAME = "chickenegg-static-v18";
 
 const ASSETS = [
   "/",
-  "/pin",
   "/static/manifest.json",
   "/static/icon-192.png",
   "/static/icon-512.png",
@@ -14,7 +13,15 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(CACHE_NAME)
-      .then((cache) => cache.addAll(ASSETS))
+      .then((cache) =>
+        Promise.all(
+          ASSETS.map((asset) =>
+            fetch(asset, { cache: "no-store" })
+              .then((res) => (res && res.ok ? cache.put(asset, res.clone()) : null))
+              .catch(() => null)
+          )
+        )
+      )
       .then(() => self.skipWaiting())
   );
 });
