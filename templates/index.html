@@ -3771,7 +3771,7 @@
       <div class="scan-beam"></div>
       <div class="scan-corner tl"></div><div class="scan-corner tr"></div>
       <div class="scan-corner bl"></div><div class="scan-corner br"></div>
-      <div class="scan-lbl" id="scan-lbl">Analysing...</div>
+      <div class="scan-lbl" id="scan-lbl">Analyseren...</div>
       <div class="obj-highlight-flash" id="obj-highlight-flash" aria-hidden="true"></div>
     </div>
     <div class="cam-step off" id="cam-step" aria-live="polite">
@@ -3795,7 +3795,7 @@
         <div id="live-prompt-ttl">View 1 / 3</div>
         <div id="live-prompt-txt">Move closer and look at the damaged area.</div>
         <div id="glass-hint"></div>
-        <button id="live-next-btn" type="button">Next view</button>
+        <button id="live-next-btn" type="button">Volgende foto</button>
       </div>
     </div>
     <div class="s-flash" id="s-flash"></div>
@@ -3806,9 +3806,9 @@
       <div class="capture-job-ttl" id="capture-job-ttl">Point at the issue</div>
       <div class="capture-job-sub" id="capture-job-sub">Frame the object clearly</div>
     </div>
-    <button class="retake-btn" id="retake-btn" onclick="retakePhoto()">↩ New photo</button>
+    <button class="retake-btn" id="retake-btn" onclick="retakePhoto()">↩ Nieuwe foto</button>
     <button type="button" class="cam-upload-btn" id="cam-upload-btn"><span id="cam-upload-lbl">Choose photo</span></button>
-    <button class="cam-retry-btn" id="cam-retry-btn" onclick="startCamera()">Enable camera</button>
+    <button class="cam-retry-btn" id="cam-retry-btn" onclick="startCamera()">Camera aanzetten</button>
     <div class="scan-heatwave-el" id="scan-heatwave-el" aria-hidden="true"></div>
     <div class="scan-ritual-wave" id="scan-ritual-wave" aria-hidden="true"></div>
   </div>
@@ -3825,18 +3825,18 @@
 
   <!-- PROMPT -->
   <div class="prompt-wrap">
-    <textarea class="prompt-box" id="q-inp" rows="1" placeholder="What do you want to fix? (optional)"></textarea>
+    <textarea class="prompt-box" id="q-inp" rows="1" placeholder="Wat wil je oplossen? (optioneel)"></textarea>
     <button class="mic-btn" id="mic-btn" title="Voice input">🎙️</button>
   </div>
 
   <!-- Bottom dock: Back + scan egg + Next (TikTok-style) -->
   <div class="cam-dock" id="cam-dock">
     <div class="dock-side dock-side--l">
-      <button type="button" class="dock-pill" id="dock-back" disabled>Back</button>
+      <button type="button" class="dock-pill" id="dock-back" disabled>Terug</button>
     </div>
     <div class="dock-mid">
       <div class="snap-shutter-ring" id="snap-shutter-ring" aria-hidden="true">
-      <div class="scan-egg" id="scan-egg" role="button" tabindex="0" aria-label="Scan with camera">
+      <div class="scan-egg" id="scan-egg" role="button" tabindex="0" aria-label="Scan met camera">
       <span class="egg-ripple" aria-hidden="true"></span>
       <span class="egg-swirl" aria-hidden="true"></span>
       <span class="egg-grain" aria-hidden="true"></span>
@@ -3881,7 +3881,7 @@
       <div class="slbl" id="scan-lbl-text">Scan</div>
     </div>
     <div class="dock-side dock-side--r">
-      <button type="button" class="dock-pill" id="dock-next" disabled>Next</button>
+      <button type="button" class="dock-pill" id="dock-next" disabled>Volgende</button>
     </div>
   </div>
   </div>
@@ -4367,6 +4367,20 @@ function setLang(l){
   if(walkCheckLbl)walkCheckLbl.textContent=(LANG==='nl'?'Foto check ↗':'Photo check ↗');
   var retakeEl=document.getElementById('retake-btn');
   if(retakeEl)retakeEl.textContent=t.retakePhotoBtn||'↩ New photo';
+  var scanEgg=document.getElementById('scan-egg');
+  if(scanEgg)scanEgg.setAttribute('aria-label',(l==='nl')?'Scan met camera':'Scan with camera');
+  var qInp=document.getElementById('q-inp');
+  if(qInp)qInp.placeholder=(l==='nl')?'Wat wil je oplossen? (optioneel)':'What do you want to fix? (optional)';
+  var retryBtn=document.getElementById('cam-retry-btn');
+  if(retryBtn)retryBtn.textContent=(l==='nl')?'Camera aanzetten':'Enable camera';
+  var scanLbl=document.getElementById('scan-lbl');
+  if(scanLbl)scanLbl.textContent=(l==='nl')?'Analyseren...':'Analysing...';
+  var liveNext=document.getElementById('live-next-btn');
+  if(liveNext)liveNext.textContent=(l==='nl')?'Volgende foto':'Next view';
+  var dockBack=document.getElementById('dock-back');
+  if(dockBack)dockBack.textContent=(l==='nl')?'Terug':'Back';
+  var dockNext=document.getElementById('dock-next');
+  if(dockNext)dockNext.textContent=(l==='nl')?'Volgende':'Next';
   syncCamPerceptionFromHardware();
   if(lastScanResult&&document.getElementById('results').style.display!=='none')updateHazardHero(lastScanResult);
   if(typeof updateWalkCardUI==='function')try{updateWalkCardUI()}catch(e){}
@@ -5839,7 +5853,7 @@ async function startLiveScanSession(viewsTarget, initialBlob){
     document.getElementById('ld').style.display='block';
     setAiThinking(true);
     camOverlay.classList.add('scanning');
-    document.getElementById('scan-lbl').textContent='Analysing...';
+    document.getElementById('scan-lbl').textContent=(LANG==='nl')?'Analyseren...':'Analysing...';
     startHum();
     var ldMsgs=T[LANG].ldMsgs,ldI=0,ldTxtEl=document.getElementById('ld-txt');
     ldTxtEl.textContent=ldMsgs[0];
