@@ -1725,6 +1725,36 @@
 
     /* WALKTHROUGH CARD (button-first) */
     .walk-pane{margin-top:6px}
+    .repair-focus{
+      display:grid;
+      grid-template-columns:auto 1fr;
+      gap:10px;
+      align-items:center;
+      margin:0 0 10px;
+      padding:10px 11px;
+      border-radius:14px;
+      background:linear-gradient(135deg,rgba(76,175,125,.14),rgba(232,168,71,.08));
+      border:1px solid rgba(76,175,125,.25);
+      box-shadow:0 8px 22px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.05);
+    }
+    .repair-focus-mark{
+      width:38px;height:38px;border-radius:50%;
+      display:grid;place-items:center;
+      background:linear-gradient(145deg,var(--green),#276640);
+      color:#07130C;font-size:18px;font-weight:900;
+      box-shadow:0 8px 20px rgba(76,175,125,.22),inset 0 1px 0 rgba(255,255,255,.28);
+    }
+    .repair-focus-kicker{
+      font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;
+      color:var(--green);margin-bottom:2px;
+    }
+    .repair-focus-title{
+      font-size:14px;font-weight:900;line-height:1.25;color:var(--t1);
+      letter-spacing:-.15px;
+    }
+    .repair-focus-sub{
+      margin-top:2px;font-size:11px;font-weight:700;line-height:1.35;color:var(--t2);
+    }
     .repair-transition-line{
       display:none;
       margin:8px 0 6px;
@@ -1794,6 +1824,12 @@
     }
     .walk-nav-btn:active{transform:scale(.98)}
     .walk-nav-btn:disabled{opacity:.45;cursor:not-allowed}
+    #walk-next:not(:disabled){
+      background:linear-gradient(135deg,var(--green),#6BCB98);
+      color:#07130C;
+      border-color:rgba(255,255,255,.4);
+      box-shadow:0 8px 20px rgba(76,175,125,.18),inset 0 1px 0 rgba(255,255,255,.28);
+    }
     .walk-check-btn{
       width:100%;margin-top:10px;border:none;border-radius:14px;padding:12px 12px;
       background:linear-gradient(135deg,rgba(58,96,56,.12),rgba(38,76,36,.06));
@@ -4036,6 +4072,14 @@
       <div class="ce-walk-progress-hdr" id="ce-walk-step-progress" aria-live="polite"></div>
       <div class="prog-track"><div class="prog-fill" id="p-fill"></div></div>
       <div class="walk-pane" id="walk-pane" data-live-ui>
+        <div class="repair-focus" id="repair-focus" aria-live="polite">
+          <div class="repair-focus-mark" id="repair-focus-mark">1</div>
+          <div>
+            <div class="repair-focus-kicker" id="repair-focus-kicker">Nu doen</div>
+            <div class="repair-focus-title" id="repair-focus-title"></div>
+            <div class="repair-focus-sub" id="repair-focus-sub"></div>
+          </div>
+        </div>
         <div class="walk-meta">
           <span id="walk-step-num">1</span> / <span id="walk-step-tot">0</span>
         </div>
@@ -4381,6 +4425,14 @@ function setLang(l){
   if(dockBack)dockBack.textContent=(l==='nl')?'Terug':'Back';
   var dockNext=document.getElementById('dock-next');
   if(dockNext)dockNext.textContent=(l==='nl')?'Volgende':'Next';
+  var walkBack=document.getElementById('walk-back');
+  if(walkBack)walkBack.textContent=(l==='nl')?'← Vorige':'← Back';
+  var walkNext=document.getElementById('walk-next');
+  if(walkNext)walkNext.textContent=(l==='nl')?'Klaar, volgende':'Done, next';
+  var walkFinish=document.getElementById('walk-finish');
+  if(walkFinish)walkFinish.textContent=(l==='nl')?'✅ Klus afronden':'✅ Finish repair';
+  var toolsStep=document.getElementById('walk-tools-ttl');
+  if(toolsStep)toolsStep.textContent=(l==='nl')?'Nodig voor deze stap':'Tools for this step';
   syncCamPerceptionFromHardware();
   if(lastScanResult&&document.getElementById('results').style.display!=='none')updateHazardHero(lastScanResult);
   if(typeof updateWalkCardUI==='function')try{updateWalkCardUI()}catch(e){}
@@ -6886,8 +6938,21 @@ function renderRepairUI(){
   ceLastWalkText=txt;
   try{console.log('[CE] step render:',idx);}catch(e){}
 
+  var focusMark=document.getElementById('repair-focus-mark');
+  var focusKicker=document.getElementById('repair-focus-kicker');
+  var focusTitle=document.getElementById('repair-focus-title');
+  var focusSub=document.getElementById('repair-focus-sub');
+  if(focusMark)focusMark.textContent=String(idx+1);
+  if(focusKicker)focusKicker.textContent=(LANG==='nl')?'Nu doen':'Do now';
+  if(focusTitle)focusTitle.textContent=(LANG==='nl')?'Volg deze stap rustig':'Follow this step calmly';
+  if(focusSub){
+    focusSub.textContent=(LANG==='nl')
+      ?('Stap '+(idx+1)+' van '+total+' · doe alleen deze stap, daarna controleren.')
+      :('Step '+(idx+1)+' of '+total+' · do only this step, then check.');
+  }
+
   var prog=document.getElementById('walk-progress');
-  if(prog)prog.textContent=(idx+1)+' / '+total;
+  if(prog)prog.textContent=(LANG==='nl')?('Voortgang: '+(idx+1)+' van '+total):('Progress: '+(idx+1)+' of '+total);
   var num=document.getElementById('walk-step-num');
   var tt=document.getElementById('walk-step-tot');
   if(num)num.textContent=(idx+1);
@@ -6918,11 +6983,18 @@ function renderRepairUI(){
   var backBtn=document.getElementById('walk-back');
   var nextBtn=document.getElementById('walk-next');
   var finishBtn=document.getElementById('walk-finish');
-  if(backBtn)backBtn.disabled=(idx===0);
-  if(nextBtn)nextBtn.disabled=(total<=0);
+  if(backBtn){
+    backBtn.disabled=(idx===0);
+    backBtn.textContent=(LANG==='nl')?'← Vorige':'← Back';
+  }
+  if(nextBtn){
+    nextBtn.disabled=(total<=0);
+    nextBtn.textContent=(idx>=total-1)?((LANG==='nl')?'Klaar, afronden':'Finish repair'):((LANG==='nl')?'Klaar, volgende':'Done, next');
+  }
   if(finishBtn){
     finishBtn.style.display=(idx>=total-1)?'block':'none';
     finishBtn.classList.toggle('walk-finish--on',idx>=total-1);
+    finishBtn.textContent=(LANG==='nl')?'✅ Klus afronden':'✅ Finish repair';
   }
   var dockBack=document.getElementById('dock-back');
   var dockNext=document.getElementById('dock-next');
