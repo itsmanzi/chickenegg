@@ -1,0 +1,47 @@
+{
+  "description": "Curated RSS feeds slanted toward remote/async work. Verify each site’s terms before polling. You approve what gets merged into data/feeds.json.",
+  "presets": [
+    {
+      "id": "wwr-programming",
+      "title": "We Work Remotely — Programming",
+      "url": "https://weworkremotely.com/categories/remote-programming-jobs.rss",
+      "regions": ["global"],
+      "note": "Remote dev roles; favor listings with async/email-first contact in the ad."
+    },
+    {
+      "id": "wwr-design",
+      "title": "We Work Remotely — Design",
+      "url": "https://weworkremotely.com/categories/remote-design-jobs.rss",
+      "regions": ["global"],
+      "note": "UI/UX; often portfolio + brief async — still confirm interview format."
+    },
+    {
+      "id": "wwr-customer-support",
+      "title": "We Work Remotely — Customer Support",
+      "url": "https://weworkremotely.com/categories/remote-customer-support-jobs.rss",
+      "regions": ["global"],
+      "note": "Support can include chat-only; watch for phone-heavy roles and skip."
+    },
+    {
+      "id": "wwr-marketing",
+      "title": "We Work Remotely — Marketing",
+      "url": "https://weworkremotely.com/categories/remote-marketing-jobs.rss",
+      "regions": ["global"],
+      "note": "Content/SEO/growth — generally easier to keep async than sales-heavy gigs."
+    },
+    {
+      "id": "remoteok",
+      "title": "Remote OK — tech feed",
+      "url": "https://remoteok.com/remote-dev-jobs.rss",
+      "regions": ["global"],
+      "note": "High volume tech remote; filter mentally for meeting-light roles."
+    },
+    {
+      "id": "authenticjobs-telecommuting",
+      "title": "Authentic Jobs — telecommuting",
+      "url": "https://authenticjobs.com/rss/index.php?type=telecommuting",
+      "regions": ["global"],
+      "note": "Design/dev/product mix; check each post for onsite or call requirements."
+    }
+  ]
+}

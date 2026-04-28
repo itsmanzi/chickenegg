@@ -1,0 +1,5 @@
+[
+  "tests/test_safety.py::test_analyze_endpoint_exists",
+  "tests/test_safety.py::test_hard_stop_removes_steps",
+  "tests/test_safety.py::test_hard_stop_triggers"
+]

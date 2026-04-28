@@ -1,0 +1,60 @@
+{
+  "items": [
+    {
+      "source": "curated",
+      "title": "Fiverr — async freelance storefront (global)",
+      "url": "https://www.fiverr.com/",
+      "summary": "Sell fixed-scope gigs (writing, design, audio) with chat delivery; minimize live calls by stating async-first in your gig description.",
+      "tags": ["remote", "async", "writing", "design", "audio", "marketing"],
+      "base_score": 2.0
+    },
+    {
+      "source": "curated",
+      "title": "Upwork — EU + international clients (proposal-based)",
+      "url": "https://www.upwork.com/",
+      "summary": "Remote project marketplace; filter for async-friendly roles and skip interviews that require phone if that is a hard constraint.",
+      "tags": ["remote", "writing", "code", "design", "data"],
+      "base_score": 1.5
+    },
+    {
+      "source": "curated",
+      "title": "Prolific / survey panels — low social friction (patchy income)",
+      "url": "https://www.prolific.com/",
+      "summary": "Academic studies; income is inconsistent but can validate payout workflows and build routine. Read each study's requirements.",
+      "tags": ["async", "remote", "data"],
+      "base_score": 0.5
+    },
+    {
+      "source": "curated",
+      "title": "Gumroad / Lemon Squeezy — digital products (EU-friendly)",
+      "url": "https://gumroad.com/",
+      "summary": "Sell templates, presets, guides. Works with async marketing (SEO, short-form video) instead of sales calls.",
+      "tags": ["async", "marketing", "writing", "design"],
+      "base_score": 2.0
+    },
+    {
+      "source": "curated",
+      "title": "Apple App Store / Google Play — utility micro-SaaS path (longer cycle)",
+      "url": "https://developer.apple.com/",
+      "summary": "Mobile utilities can monetize without meetings; requires build + store compliance. Pair with async support via email.",
+      "tags": ["code", "async", "remote"],
+      "base_score": 1.0
+    },
+    {
+      "source": "curated",
+      "title": "TeacherPayTeachers / Etsy digital — if you teach or template well",
+      "url": "https://www.teacherspayteachers.com/",
+      "summary": "Sell printable / lesson resources; customer contact mostly async.",
+      "tags": ["writing", "design", "async"],
+      "base_score": 1.0
+    },
+    {
+      "source": "curated",
+      "title": "NL: FreelanceFactuur / KVK guidance — keep taxes clean",
+      "url": "https://www.kvk.nl/",
+      "summary": "Register business structure when revenue justifies it; reduces personal risk as income scales.",
+      "tags": ["remote"],
+      "base_score": 0.3
+    }
+  ]
+}
