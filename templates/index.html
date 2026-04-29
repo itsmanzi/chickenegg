@@ -805,6 +805,223 @@
     .hcall.hcall-gas{background:linear-gradient(135deg,#6A4A18,#4A3410)}
     .hcall.hcall-water{background:linear-gradient(135deg,#1A5080,#143a5c)}
 
+    /* Visual Decision Engine — perception → severity → decision */
+    #ce-visual-engine{margin-bottom:14px}
+    #ce-visual-engine .ce-ve-paywall{
+      font-size:12px;font-weight:700;line-height:1.45;color:var(--t2);max-width:38ch;margin:0 auto 12px;
+      padding:10px 14px;border-radius:14px;
+      background:linear-gradient(135deg,rgba(144,112,24,.12),rgba(120,90,18,.08));
+      border:1px solid rgba(144,112,24,.28);
+      box-shadow:0 6px 20px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.35);
+    }
+    #ce-visual-engine .ce-ve-paywall.off{display:none}
+    .ce-ve-kicker{font-size:10px;font-weight:900;letter-spacing:.72px;text-transform:uppercase;color:var(--t3);margin:0 0 6px 4px}
+    .ce-ve-card{
+      border-radius:20px;padding:16px 16px 14px;margin-bottom:10px;position:relative;
+      background:linear-gradient(165deg,rgba(255,255,255,.72),rgba(248,248,252,.55));
+      border:1px solid rgba(255,255,255,.55);
+      box-shadow:0 10px 28px rgba(18,22,32,.1),inset 0 1px 0 rgba(255,255,255,.75);
+      backdrop-filter:blur(12px) saturate(1.1);
+      -webkit-backdrop-filter:blur(12px) saturate(1.1);
+      max-width:100%;
+    }
+    body.cam-tiktok .ce-ve-card{
+      background:linear-gradient(165deg,rgba(28,32,44,.55),rgba(22,24,34,.42));
+      border-color:rgba(255,255,255,.12);
+      box-shadow:0 12px 32px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.08);
+    }
+    #ce-visual-engine:not(.ce-ve-ready) .ce-ve-card{
+      opacity:0;transform:translateY(12px);
+    }
+    #ce-visual-engine.ce-ve-ready .ce-ve-card{
+      opacity:1;transform:translateY(0);
+      transition:opacity .55s cubic-bezier(.25,1,.45,1),transform .55s cubic-bezier(.25,1,.45,1);
+    }
+    #ce-visual-engine.ce-ve-ready .ce-ve-card-perc{transition-delay:40ms}
+    #ce-visual-engine.ce-ve-ready .ce-ve-card-sev{transition-delay:160ms}
+    #ce-visual-engine.ce-ve-ready .ce-ve-card-dec{transition-delay:280ms}
+    .ce-ve-what{font-size:16px;font-weight:800;letter-spacing:-.35px;line-height:1.35;color:var(--t1);max-width:38ch;margin:0 0 10px}
+    .ce-ve-list-lbl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--t3);margin:10px 0 6px}
+    .ce-ve-list{margin:0;padding-left:1.1em;max-width:38ch;color:var(--t2);font-size:14px;line-height:1.45}
+    .ce-ve-list li{margin-bottom:4px}
+    .ce-ve-sev-row{display:flex;align-items:flex-start;gap:12px}
+    .ce-ve-sev-ico{font-size:28px;line-height:1;flex-shrink:0}
+    .ce-ve-sev-body{min-width:0}
+    .ce-ve-sev-title{font-size:17px;font-weight:900;letter-spacing:-.3px;margin:0 0 4px;color:var(--t1)}
+    .ce-ve-sev-txt{font-size:14px;font-weight:650;line-height:1.45;color:var(--t2);max-width:36ch;margin:0}
+    .ce-sev-safe.ce-ve-card{border-color:rgba(58,120,72,.35)}
+    .ce-sev-attn.ce-ve-card{border-color:rgba(180,130,40,.4)}
+    .ce-sev-danger.ce-ve-card{border-color:rgba(180,60,48,.45);background:linear-gradient(165deg,rgba(160,50,40,.1),rgba(255,255,255,.65))}
+    body.cam-tiktok .ce-sev-danger.ce-ve-card{background:linear-gradient(165deg,rgba(120,40,32,.35),rgba(22,24,34,.5))}
+    .ce-dec-pill{
+      display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;
+      font-size:15px;font-weight:900;letter-spacing:-.2px;margin-bottom:10px;
+      box-shadow:0 6px 18px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.4);
+    }
+    .ce-dec-safe{background:linear-gradient(135deg,rgba(58,120,72,.22),rgba(48,100,60,.14));color:#1a4d28;border:1px solid rgba(72,160,96,.4)}
+    .ce-dec-caution{background:linear-gradient(135deg,rgba(180,130,40,.22),rgba(150,100,28,.12));color:#5a3c0e;border:1px solid rgba(200,150,50,.45)}
+    .ce-dec-stop{background:linear-gradient(135deg,rgba(160,50,40,.24),rgba(120,36,28,.14));color:#5c1810;border:1px solid rgba(200,80,64,.5)}
+    body.cam-tiktok .ce-dec-safe{color:#B7F3CC}
+    body.cam-tiktok .ce-dec-caution{color:#FFD89A}
+    body.cam-tiktok .ce-dec-stop{color:#FFC8C4}
+    .ce-ve-dec-rationale{font-size:14px;line-height:1.5;color:var(--t2);max-width:38ch;margin:0 0 10px}
+    .ce-ve-subblock{margin-top:8px;padding-top:10px;border-top:1px solid rgba(0,0,0,.06)}
+    body.cam-tiktok .ce-ve-subblock{border-top-color:rgba(255,255,255,.08)}
+    .ce-ve-sub-lbl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.55px;color:var(--t3);margin-bottom:4px}
+    .ce-ve-sub-txt{font-size:13px;line-height:1.45;color:var(--t2);max-width:38ch}
+    .ce-ve-stop-list{margin:0;padding-left:1.1em;max-width:38ch;font-size:13px;line-height:1.45;color:var(--t2)}
+    .off{display:none!important}
+    .walk-check-btn:disabled{opacity:.48;cursor:not-allowed;filter:grayscale(.25)}
+    .ce-ve-rental-verdict{font-size:15px;font-weight:850;line-height:1.4;color:var(--t1);max-width:38ch;margin:0 0 6px}
+    .ce-ve-legal-note{font-size:12px;font-weight:650;color:var(--t3);max-width:38ch;line-height:1.45}
+    #ce-ve-severity{display:none!important}
+    #ce-results-shell{position:relative;margin-bottom:4px}
+    #ce-results-sticky{
+      position:sticky;top:0;z-index:5;
+      display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+      padding:10px 0 12px;margin:0 0 2px;
+      background:linear-gradient(180deg,rgba(246,247,251,.97) 60%,rgba(246,247,251,0));
+      border-bottom:1px solid rgba(0,0,0,.06);
+    }
+    body.cam-tiktok #ce-results-sticky{
+      background:linear-gradient(180deg,rgba(18,20,30,.94) 55%,rgba(18,20,30,0));
+      border-bottom-color:rgba(255,255,255,.08);
+    }
+    .ce-sticky-sev{
+      font-size:11px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;
+      padding:6px 12px;border-radius:999px;flex-shrink:0;
+      border:1px solid rgba(58,120,72,.45);
+      background:linear-gradient(135deg,rgba(58,120,72,.2),rgba(48,100,60,.12));
+      color:#1a4d28;
+    }
+    .ce-sticky-sev.ce-sticky-caution{
+      border-color:rgba(180,130,40,.5);
+      background:linear-gradient(135deg,rgba(180,130,40,.22),rgba(150,100,28,.1));
+      color:#5a3c0e;
+    }
+    .ce-sticky-sev.ce-sticky-stop{
+      border-color:rgba(180,60,48,.5);
+      background:linear-gradient(135deg,rgba(160,50,40,.26),rgba(120,36,28,.12));
+      color:#5c1810;
+    }
+    body.cam-tiktok .ce-sticky-sev{color:#B7F3CC;border-color:rgba(120,200,150,.35)}
+    body.cam-tiktok .ce-sticky-sev.ce-sticky-caution{color:#FFD89A;border-color:rgba(220,170,80,.4)}
+    body.cam-tiktok .ce-sticky-sev.ce-sticky-stop{color:#FFC8C4;border-color:rgba(220,100,90,.45)}
+    .ce-sticky-task{font-size:14px;font-weight:800;color:var(--t1);line-height:1.25;flex:1;min-width:0}
+    .ce-tab-bar{
+      display:flex;gap:0;border-bottom:1px solid rgba(0,0,0,.1);margin:0 0 12px;
+      position:sticky;top:52px;z-index:4;background:transparent;
+      padding-top:2px;
+    }
+    body.cam-tiktok .ce-tab-bar{border-bottom-color:rgba(255,255,255,.1)}
+    .ce-tab{
+      flex:1;min-height:44px;border:none;background:transparent;font-family:inherit;
+      font-size:14px;font-weight:750;color:var(--t3);cursor:pointer;padding:10px 6px 12px;
+      border-bottom:3px solid transparent;margin-bottom:-1px;transition:color .15s,border-color .15s;
+    }
+    .ce-tab.on{color:var(--t1);font-weight:900;border-bottom-color:var(--t1)}
+    body.cam-tiktok .ce-tab.on{color:#f8fafc;border-bottom-color:#e2e8f0}
+    .ce-tab-panel{padding-bottom:8px}
+    .ce-tab-panel.off{display:none!important}
+    .ce-results-shell--locked .ce-tab-bar{display:none!important}
+    .ce-outcome-hero{text-align:center;padding:4px 4px 14px}
+    .ce-oh-ico-wrap{
+      width:72px;height:72px;margin:0 auto 12px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(145deg,rgba(58,160,96,.28),rgba(48,120,72,.14));
+      border:2px solid rgba(58,140,88,.45);
+      box-shadow:0 10px 28px rgba(34,90,52,.15);
+    }
+    .ce-oh-ico-wrap.ce-oh-caution{background:linear-gradient(145deg,rgba(220,160,50,.22),rgba(180,120,30,.1));border-color:rgba(200,150,50,.5)}
+    .ce-oh-ico-wrap.ce-oh-stop{background:linear-gradient(145deg,rgba(200,70,55,.24),rgba(140,40,32,.12));border-color:rgba(200,80,64,.5)}
+    .ce-oh-ico{font-size:34px;line-height:1}
+    .ce-oh-title{font-size:20px;font-weight:900;letter-spacing:-.4px;line-height:1.2;color:var(--t1);margin:0 0 6px}
+    .ce-oh-sub{font-size:13px;font-weight:650;color:var(--t2);line-height:1.4;max-width:36ch;margin:0 auto}
+    .ce-outcome-verdict{margin-bottom:10px}
+    .ce-outcome-verdict .ce-ve-card-dec{margin-bottom:0}
+    .ce-sev-band-safe .ce-ve-card-dec{border-color:rgba(58,120,72,.32)}
+    .ce-sev-band-attn .ce-ve-card-dec{border-color:rgba(180,130,40,.38)}
+    .ce-sev-band-stop .ce-ve-card-dec{border-color:rgba(180,60,48,.42)}
+    .ce-outcome-actions{display:flex;flex-direction:column;gap:10px;margin:14px 0 16px}
+    .ce-outcome-cta{
+      width:100%;min-height:48px;border-radius:14px;font-size:15px;font-weight:850;font-family:inherit;cursor:pointer;
+      transition:transform .1s,opacity .15s;
+    }
+    .ce-outcome-cta:active{transform:scale(.99)}
+    .ce-outcome-cta-primary{
+      border:1.5px solid rgba(49,46,129,.35);
+      background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(34,211,238,.06));
+      color:var(--t1);
+    }
+    .ce-outcome-cta-secondary{
+      border:1.5px solid rgba(0,0,0,.12);
+      background:transparent;color:var(--t2);
+    }
+    body.cam-tiktok .ce-outcome-cta-primary{border-color:rgba(129,140,248,.45);color:#f1f5f9}
+    body.cam-tiktok .ce-outcome-cta-secondary{border-color:rgba(255,255,255,.16);color:#cbd5e1}
+    .ce-outcome-chips{display:flex;gap:8px;margin:0 0 12px}
+    .ce-oc{
+      flex:1;min-width:0;text-align:center;padding:10px 6px;border-radius:14px;
+      background:linear-gradient(165deg,rgba(255,255,255,.65),rgba(248,248,252,.5));
+      border:1px solid rgba(0,0,0,.06);
+    }
+    body.cam-tiktok .ce-oc{background:linear-gradient(165deg,rgba(32,36,48,.55),rgba(24,26,36,.4));border-color:rgba(255,255,255,.08)}
+    .ce-oc-l{display:block;font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:4px}
+    .ce-oc-v{display:block;font-size:14px;font-weight:850;color:var(--t1);line-height:1.2}
+    .ce-ve-acc{margin:10px 0 0;border-radius:16px;border:1px solid rgba(0,0,0,.08);overflow:hidden;background:rgba(255,255,255,.4)}
+    body.cam-tiktok .ce-ve-acc{border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.04)}
+    .ce-ve-acc-sum{
+      list-style:none;cursor:pointer;padding:12px 14px;font-size:13px;font-weight:850;color:var(--t1);
+    }
+    .ce-ve-acc-sum::-webkit-details-marker{display:none}
+    .ce-ve-acc[open] .ce-ve-acc-sum{border-bottom:1px solid rgba(0,0,0,.06)}
+    body.cam-tiktok .ce-ve-acc[open] .ce-ve-acc-sum{border-bottom-color:rgba(255,255,255,.08)}
+    .ce-ve-acc .ce-ve-kicker{margin:12px 14px 6px}
+    .ce-ve-acc .ce-ve-card-perc{margin:0 12px 12px}
+    .results-redo{
+      min-height:38px;padding:8px 12px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.34);
+      background:rgba(14,18,30,.5);
+      color:#EFF4FF;font-size:12px;font-weight:800;font-family:inherit;cursor:pointer;
+    }
+    .results-redo:active{transform:scale(.97)}
+    body.result-open.cam-tiktok .results-redo{
+      background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);color:#111827;
+    }
+    #ce-panel-details .ce-conf-signal{margin:0 0 10px;text-align:center}
+    #fm-cta{
+      display:none;position:fixed;left:50%;bottom:max(12px,env(safe-area-inset-bottom));transform:translateX(-50%);
+      width:min(96vw,420px);z-index:960;padding:10px 14px;border-radius:16px;
+      background:linear-gradient(165deg,rgba(28,34,52,.94),rgba(18,22,36,.97));
+      border:1px solid rgba(255,255,255,.14);box-shadow:0 14px 40px rgba(0,0,0,.45);
+      color:#e8ecff;font-size:13px;font-weight:700;text-align:center;
+    }
+    #fm-cta.show{display:block}
+    #fm-free-note{display:block;margin-top:4px;font-size:11px;font-weight:650;opacity:.88}
+    #pw-modal{
+      display:none;position:fixed;inset:0;z-index:970;background:rgba(6,8,14,.62);
+      backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px;
+    }
+    #pw-modal.show{display:flex}
+    .pw-sheet{
+      width:min(100%,400px);max-height:88vh;overflow-y:auto;border-radius:20px;padding:20px 18px 18px;
+      background:linear-gradient(180deg,#fff,#f4f6fb);border:1px solid rgba(0,0,0,.08);
+      box-shadow:0 24px 60px rgba(0,0,0,.35);
+    }
+    .pw-sheet h3{margin:0 0 8px;font-size:18px;letter-spacing:-.3px}
+    .pw-sheet p{margin:0 0 10px;font-size:14px;line-height:1.45;color:#374151}
+    .pw-price{font-size:15px;font-weight:800;color:#111}
+    .pw-actions{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+    .pw-btn{
+      display:block;width:100%;min-height:48px;border-radius:14px;border:none;font-size:15px;font-weight:800;
+      font-family:inherit;cursor:pointer;text-align:center;text-decoration:none;line-height:48px;
+    }
+    .pw-btn-primary{background:linear-gradient(135deg,#2d4a8f,#1e3566);color:#fff}
+    .pw-btn-secondary{background:#fff;border:1.5px solid #c5cad6;color:#1a1a1a}
+    .pw-btn-ghost{background:transparent;color:#4b5563;font-size:13px;min-height:40px;line-height:40px}
+    .hero-privacy{margin-top:8px;font-size:12px;font-weight:600}
+    .hero-privacy a{color:rgba(222,233,255,.72);text-decoration:underline;text-underline-offset:2px}
+
     /* PROMPT */
     .prompt-wrap{position:relative;margin-bottom:6px;flex-shrink:0}
     .prompt-box{width:100%;max-width:100%;background:linear-gradient(148deg,rgba(195,195,199,.75),rgba(178,178,182,.75));border:.5px solid rgba(255,255,255,.55);border-radius:var(--rlg);padding:10px 38px 10px 14px;font-size:13px;color:var(--t1);font-family:inherit;outline:none;resize:none;box-shadow:0 1px 6px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.55);transition:border-color .2s;line-height:1.4}
@@ -1178,6 +1395,9 @@
     #results{display:none}
     #results-screen-bar{
       display:none;
+      grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+      align-items:center;
+      gap:8px;
       position:sticky;
       top:0;
       z-index:6;
@@ -1222,6 +1442,7 @@
       border-color:rgba(76,175,125,.36);
       background:linear-gradient(135deg,rgba(76,175,125,.2),rgba(76,175,125,.09));
     }
+    body.result-open #results-screen-bar{display:grid}
     .results-back{
       min-height:42px;
       padding:10px 14px;
@@ -1235,9 +1456,14 @@
       cursor:pointer;
       box-shadow:0 6px 18px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.2);
     }
+    .results-back{justify-self:start}
     .results-back:active{transform:scale(.97)}
+    .results-redo{justify-self:end}
     #results-title{
-      margin-top:7px;
+      margin-top:0;
+      justify-self:center;
+      text-align:center;
+      max-width:46vw;
       font-size:12px;
       font-weight:900;
       letter-spacing:.65px;
@@ -2830,6 +3056,16 @@
       box-shadow:0 8px 22px rgba(0,0,0,.2)!important;
       color:var(--t1)!important;
     }
+    body.result-open.cam-tiktok #tip-safety.result-safety-card{
+      border-left:3px solid #FFB020!important;
+      padding-left:13px!important;
+    }
+    body.result-open.cam-tiktok #r-confidence.conf-tier{
+      font-size:12px!important;
+      font-weight:600!important;
+      opacity:.65!important;
+      letter-spacing:.02em!important;
+    }
     body.result-open.cam-tiktok .readout-glass{
       background:linear-gradient(135deg,rgba(232,168,71,.14),rgba(76,175,125,.1))!important;
       box-shadow:0 10px 26px rgba(0,0,0,.18)!important;
@@ -3802,6 +4038,20 @@
   </div>
 </div>
 
+<div id="fm-cta" aria-live="polite"><span id="fm-free-note"></span></div>
+<div id="pw-modal" role="dialog" aria-modal="true" aria-labelledby="pw-ttl">
+  <div class="pw-sheet" role="document">
+    <h3 id="pw-ttl">ChickenEgg Pro</h3>
+    <p id="pw-lead"></p>
+    <p class="pw-price" id="pw-anchor"></p>
+    <div class="pw-actions">
+      <a class="pw-btn pw-btn-primary" id="pw-btn-year" href="https://gumroad.com" target="_blank" rel="noopener" onclick="trackGumroad('pro-year')"></a>
+      <a class="pw-btn pw-btn-secondary" id="pw-btn-month" href="https://gumroad.com" target="_blank" rel="noopener" onclick="trackGumroad('pro-month')"></a>
+      <button type="button" class="pw-btn pw-btn-ghost" id="pw-close"></button>
+    </div>
+  </div>
+</div>
+
 <div id="xp-flash"></div>
 <div id="ach-toast"><div class="ach-ico" id="ach-ico">🏆</div><div><div class="ach-txt" id="ach-txt">Achievement!</div><div class="ach-sub" id="ach-sub">+XP</div></div></div>
 
@@ -4149,16 +4399,119 @@
         </section>
       </div>
     </div>
-    <div class="r-hdr" id="results-summary">
-      <div class="edge-strip" id="edge-strip" aria-label="Product strengths"><span class="edge-pill" id="edge-a"></span><span class="edge-dot">·</span><span class="edge-pill" id="edge-b"></span><span class="edge-dot">·</span><span class="edge-pill" id="edge-c"></span></div>
-      <div class="r-title" id="r-title"></div>
-      <div class="r-task" id="r-task2"></div>
-      <div class="uncertainty-banner off" id="uncertainty-banner"><span class="ub-ico">👁</span><div><div class="ub-lbl" id="ub-lbl">Verify</div><div class="ub-txt" id="ub-txt"></div></div></div>
-      <div class="quick-checks off" id="quick-checks"><div class="qc-ttl" id="qc-ttl">Before you start</div><ul class="qc-list" id="qc-list"></ul></div>
-      <div class="readout-glass off" id="readout-glass">
-        <div class="readout-glass-inner">
-          <div class="rg-row"><span class="rg-ico" aria-hidden="true">🔧</span><div class="rg-body"><div class="rg-lbl" id="rg-mat-lbl">Materials & type</div><div class="rg-txt" id="readout-mat"></div></div></div>
-          <div class="rg-row rg-xray-row"><span class="rg-ico" aria-hidden="true">⚡</span><div class="rg-body"><div class="rg-lbl" id="rg-xray-lbl">X-ray read</div><div class="rg-txt" id="readout-xray"></div></div></div>
+    <div id="ce-results-shell" class="ce-results-shell">
+      <div id="ce-results-sticky"><span class="ce-sticky-sev" id="ce-sticky-sev"></span><span class="ce-sticky-task" id="ce-sticky-task"></span></div>
+      <div class="ce-tab-bar" role="tablist" aria-label="Analysis sections">
+        <button type="button" class="ce-tab on" role="tab" id="ce-tab-outcome" data-ce-tab="outcome" aria-selected="true" aria-controls="ce-panel-outcome">Outcome</button>
+        <button type="button" class="ce-tab" role="tab" id="ce-tab-steps" data-ce-tab="steps" aria-selected="false" aria-controls="ce-panel-steps">Steps</button>
+        <button type="button" class="ce-tab" role="tab" id="ce-tab-details" data-ce-tab="details" aria-selected="false" aria-controls="ce-panel-details">Details</button>
+      </div>
+      <div id="ce-panel-outcome" class="ce-tab-panel" role="tabpanel" data-ce-panel="outcome" aria-labelledby="ce-tab-outcome">
+        <div id="ce-visual-engine" class="ce-visual-engine" aria-live="polite">
+          <div class="ce-ve-paywall off" id="ce-ve-paywall-hint"></div>
+          <div class="ce-outcome-hero">
+            <div class="ce-oh-ico-wrap" id="ce-oh-ico-wrap"><span class="ce-oh-ico" id="ce-oh-ico">✓</span></div>
+            <div class="ce-oh-title" id="ce-oh-title"></div>
+            <div class="ce-oh-sub" id="ce-oh-sub"></div>
+          </div>
+          <div class="ce-outcome-verdict ce-sev-band-safe" id="ce-outcome-verdict">
+            <div class="ce-ve-card ce-ve-card-dec">
+              <div class="ce-dec-pill ce-dec-safe" id="ce-ve-dec-pill">
+                <span id="ce-ve-dec-icon">✅</span><span id="ce-ve-dec-label"></span>
+              </div>
+              <p class="ce-ve-dec-rationale" id="ce-ve-dec-rationale"></p>
+              <div class="ce-ve-subblock off" id="ce-ve-rental-wrap">
+                <div class="ce-ve-sub-lbl" id="ce-ve-rental-lbl">Verhuurder of huurder?</div>
+                <div class="ce-ve-rental-verdict" id="ce-ve-rental-verdict"></div>
+                <div class="ce-ve-sub-txt ce-ve-legal-note" id="ce-ve-rental-ai-note"></div>
+                <div class="ce-ve-legal-note" id="ce-ve-rental-legal"></div>
+              </div>
+              <div class="ce-ve-subblock off" id="ce-ve-why-wrap">
+                <div class="ce-ve-sub-lbl" id="ce-ve-why-lbl">Why this matters</div>
+                <div class="ce-ve-sub-txt" id="ce-ve-why"></div>
+              </div>
+              <div class="ce-ve-subblock off" id="ce-ve-stop-wrap">
+                <div class="ce-ve-sub-lbl" id="ce-ve-stop-lbl">When to stop</div>
+                <ul class="ce-ve-stop-list" id="ce-ve-stop-list"></ul>
+              </div>
+            </div>
+          </div>
+          <div class="ce-ve-card ce-ve-card-sev ce-sev-safe" id="ce-ve-severity">
+            <div class="ce-ve-sev-row">
+              <div class="ce-ve-sev-ico" id="ce-ve-sev-icon">🟢</div>
+              <div class="ce-ve-sev-body">
+                <div class="ce-ve-sev-title" id="ce-ve-sev-title"></div>
+                <p class="ce-ve-sev-txt" id="ce-ve-sev-txt"></p>
+              </div>
+            </div>
+          </div>
+          <details class="ce-ve-acc" id="ce-ve-acc">
+            <summary class="ce-ve-acc-sum" id="ce-ve-acc-sum">Why the AI thinks this</summary>
+            <div class="ce-ve-kicker" id="ce-ve-kicker-perc">Perception</div>
+            <div class="ce-ve-card ce-ve-card-perc">
+              <div class="ce-ve-what" id="ce-ve-what"></div>
+              <div class="ce-ve-list-lbl" id="ce-ve-obs-lbl">Key observations</div>
+              <ul class="ce-ve-list" id="ce-ve-obs"></ul>
+              <div class="ce-ve-list-lbl" id="ce-ve-issues-lbl">Possible issues</div>
+              <ul class="ce-ve-list" id="ce-ve-issues"></ul>
+            </div>
+          </details>
+        </div>
+        <div class="ce-outcome-actions">
+          <button type="button" class="ce-outcome-cta ce-outcome-cta-primary" id="ce-cta-steps">View steps →</button>
+          <button type="button" class="ce-outcome-cta ce-outcome-cta-secondary" id="ce-cta-share">Share analysis</button>
+        </div>
+        <div class="ce-outcome-chips" id="ce-outcome-chips">
+          <div class="ce-oc"><span class="ce-oc-l" id="ce-oc-time-l">Time</span><span class="ce-oc-v" id="ce-oc-time"></span></div>
+          <div class="ce-oc"><span class="ce-oc-l" id="ce-oc-cost-l">Cost</span><span class="ce-oc-v" id="ce-oc-cost"></span></div>
+          <div class="ce-oc"><span class="ce-oc-l" id="ce-oc-level-l">Level</span><span class="ce-oc-v" id="ce-oc-level"></span></div>
+        </div>
+        <div class="tip safety result-safety-card" id="tip-safety"><div class="tip-ico">⚠️</div><div><div class="tip-lbl" id="safety-lbl">Safety</div><div class="tip-txt" id="r-safety"></div></div></div>
+      </div>
+      <div id="ce-panel-steps" class="ce-tab-panel off" role="tabpanel" data-ce-panel="steps" aria-labelledby="ce-tab-steps" hidden>
+        <div class="tts-bar" id="tts-bar">
+          <button class="tts-btn speak" id="tts-read-all" onclick="readAllSteps()">🔊 <span id="tts-read-lbl">Read all steps</span></button>
+          <button class="tts-btn" id="tts-stop" onclick="stopSpeech()" style="display:none">⏹ Stop</button>
+          <div class="tts-speed" id="tts-speed-lbl">Speed: normal</div>
+        </div>
+        <div class="warn-ctr off" id="warn-ctr">⚠️ <span id="warn-txt"></span></div>
+        <div class="confidence-gate" id="confidence-gate">
+          <div class="confidence-gate-ttl" id="confidence-gate-ttl">Confirm the object first</div>
+          <div class="confidence-gate-msg" id="confidence-gate-msg">Medium confidence detected. Confirm this is correct before loading full steps.</div>
+          <div class="confidence-gate-actions">
+            <button type="button" class="confidence-gate-btn confirm" id="confidence-gate-confirm">Yes, continue</button>
+            <button type="button" class="confidence-gate-btn" id="confidence-gate-retake">Retake photo</button>
+          </div>
+          <div class="confidence-gate-note" id="confidence-gate-note">Safety check: if this object looks wrong, retake before continuing.</div>
+        </div>
+        <div class="card" id="no-repair-box" style="display:none">
+          <div class="card-lbl" id="no-repair-title">No repair needed</div>
+          <p class="no-repair-p" id="no-repair-p">Enjoy your drink! No plumber needed here.</p>
+          <button class="rst-btn" id="no-repair-cta" style="margin-top:4px">↩ Try another image</button>
+        </div>
+        <div class="card" id="tools-card"><div class="card-lbl" id="tools-lbl">Tools & Materials</div><div class="tools-list" id="r-tools"></div></div>
+        <a class="ad-banner" id="ad-banner" href="https://www.gamma.nl" target="_blank" rel="noopener"><div class="ad-l"><span style="font-size:18px" id="ad-ico">🏪</span><div><div class="ad-sp">Sponsored</div><div class="ad-nm" id="ad-nm">Gamma</div><div class="ad-sub" id="ad-sub-txt">Tools — same-day pickup NL</div></div></div><div class="ad-cta" id="ad-cta">Shop →</div></a>
+        <div class="card" id="steps-card">
+          <div class="steps-top"><div class="card-lbl" style="margin-bottom:0" id="steps-lbl">Step by Step</div><div class="steps-ct"><span id="s-done">0</span> / <span id="s-tot">0</span> <span id="done-lbl">done</span></div></div>
+          <div class="prog-track"><div class="prog-fill" id="p-fill"></div></div>
+          <div class="walk-pane" id="walk-pane">
+            <div class="walk-meta">
+              <span id="walk-step-num">1</span> / <span id="walk-step-tot">0</span>
+            </div>
+            <div class="walk-text" id="walk-text"></div>
+            <div class="walk-look off" id="walk-look"><div class="walk-look-lbl" id="walk-look-lbl">What you should see</div><div class="walk-look-txt" id="walk-look-txt"></div></div>
+            <div class="walk-tools" id="walk-tools">
+              <div class="walk-tools-ttl" id="walk-tools-ttl">Tools for this step</div>
+              <div class="walk-tools-row" id="walk-tools-row"></div>
+            </div>
+            <div class="walk-nav">
+              <button class="walk-nav-btn" id="walk-back" type="button" disabled>← Back</button>
+              <button class="walk-nav-btn" id="walk-next" type="button" disabled>Next →</button>
+            </div>
+            <button class="walk-check-btn" id="walk-check" type="button">📸 Check my progress</button>
+            <button class="walk-finish-btn" id="walk-finish" type="button" style="display:none">✅ Finished</button>
+          </div>
+          <ol class="steps-list" id="r-steps"></ol>
         </div>
       </div>
       <div class="meta-row"><div class="chip" id="r-diff"></div><div class="chip">⏱ <span id="r-time"></span></div><div class="chip off" id="r-cat-chip">📁 <span id="r-cat"></span></div></div>
@@ -4220,7 +4573,6 @@
         <button class="walk-check-btn" id="walk-check" type="button">📸 Photo-check this step</button>
         <button class="walk-finish-btn" id="walk-finish" type="button" style="display:none">✅ All steps done</button>
       </div>
-      <ol class="steps-list" id="r-steps"></ol>
     </div>
     <div class="ec ec-top" id="ec">
       <div class="ec-handle" id="ec-handle" aria-hidden="true"></div>
@@ -4236,16 +4588,6 @@
       <div class="ec-row" style="margin-top:8px"><button type="button" class="ec-sub" id="ec-feedback-send" style="width:100%">Send feedback</button></div>
       <div class="ec-skip" id="ec-skip" role="button" tabindex="0">Not now</div>
     </div>
-    <details class="fold-more" id="fold-more">
-      <summary class="fold-sum" id="fold-sum">Savings, sharing &amp; extra tips</summary>
-      <div class="fold-inner">
-        <div class="sav" id="sav-box"><div class="sav-l">💰 <span id="sav-lbl">Saving vs plumber</span><div class="sav-lbl" id="sav-sub">why call when you can fix?</div></div><div class="sav-amt" id="sav-amt">€85</div></div>
-        <div class="share-bar"><button type="button" class="sh-btn wa" id="sh-wa">📲 <span id="wa-lbl">Share on WhatsApp</span></button><button type="button" class="sh-btn" id="sh-copy">🔗 <span id="copy-lbl">Copy link</span></button></div>
-        <div class="tip pro"><div class="tip-ico">💡</div><div><div class="tip-lbl" id="pro-lbl">Pro Tip</div><div class="tip-txt" id="r-pro"></div></div></div>
-        <div class="when-pro" id="when-pro-box"><strong id="when-pro-lbl">When to call a professional:</strong> <span id="r-when-pro"></span></div>
-        <div class="badges-sec"><div class="card-lbl" id="badges-lbl">Achievements</div><div class="badges-row" id="badges-row"></div></div>
-      </div>
-    </details>
     <button type="button" class="rst-btn" id="rst-btn">↩ <span id="rst-lbl">Scan something else</span></button>
   </div>
 </div>
@@ -4435,7 +4777,8 @@ function setLang(l){
     }
   });
   var rb=document.getElementById('results-back-btn');
-  if(rb)rb.textContent=(l==='nl'?'← Camera':'← Camera');
+  if(rb)rb.textContent=(l==='nl'?'← Terug':'← Camera');
+  var ru=CE_RESULT_UI[l]||CE_RESULT_UI.en;
   var rt=document.getElementById('results-title');
   if(rt)rt.textContent=(l==='nl'?'Scan Resultaten':'Scan Results');
   var hh=document.querySelector('.hero-h1');
@@ -4618,7 +4961,8 @@ function thinkPulseTick(){
      Keeping the timer slot to allow future use without breaking setAiThinking callers. */
   thinkPulseTimer=null;
 }
-function setAiThinking(on){
+function setAiThinking(on,opts){
+  opts=opts||{};
   var se=document.getElementById('scan-egg');
   var eta=document.getElementById('ld-eta');
   if(on){
@@ -5576,6 +5920,24 @@ scanEgg.addEventListener('click',function(){
 });
 }
 
+(function(){
+  var back=document.getElementById('cam-back-btn'),help=document.getElementById('cam-help-btn');
+  if(back) back.addEventListener('click',function(){
+    if(typeof clickSnd==='function') clickSnd();
+    hap(12);
+    if(typeof exitCaptureFocus==='function') exitCaptureFocus();
+    document.body.classList.remove('cam-tiktok','ce-cam-idle','ce-cam-detecting','ce-cam-locked','ce-cam-scanning','ce-cam-error');
+  });
+  if(help) help.addEventListener('click',function(){
+    if(typeof clickSnd==='function') clickSnd();
+    hap(10);
+    var msg=(LANG==='nl')
+      ?'Eén object, goed licht. Tik op het ei als de ring oplicht — of upload een foto.'
+      :'Frame one object in good light. Tap the egg when the ring glows — or upload a photo.';
+    alert(msg);
+  });
+})();
+
 async function runEggPrimaryAction(){
   if(!scanEgg)return;
   if(document.body.classList.contains('ce-capture-focus') && camReady && camStream && !document.body.classList.contains('ce-can-scan')){
@@ -5911,6 +6273,7 @@ function setGlassPhase(phase, total){
 // ── CAMERA & CAPTURE ────────────────────────────────────
 async function startLiveScanSession(viewsTarget, initialBlob){
   if(liveActive)return;
+  var liveScanSucceeded=false;
   liveActive=true;
   ceSetUiOwner('scan');
   document.body.classList.remove('ce-can-scan');
@@ -6103,6 +6466,7 @@ async function startLiveScanSession(viewsTarget, initialBlob){
     xrayOn(false);
     xrayDeep(false);
 
+    liveScanSucceeded=true;
     scanDone();hap([35,16,50,16,80]);trackEvent('scan_completed',{views:viewsTarget});
     var s=loadS();s.ts++;saveS(s);addXP(10);checkBadges();rotateAd();
 
@@ -6167,7 +6531,14 @@ async function startLiveScanSession(viewsTarget, initialBlob){
     if(lpMiniTimer){clearTimeout(lpMiniTimer);lpMiniTimer=null}
     xrayDeep(false);
     xrayOn(false);
-    if(document.getElementById('ld').style.display!=='block')setAiThinking(false);
+    if(document.getElementById('ld').style.display!=='block'&&document.body.classList.contains('ce-ai-thinking'))
+      setAiThinking(false);
+    if(!liveScanSucceeded&&!document.body.classList.contains('ce-cam-error')&&!document.body.classList.contains('result-open')){
+      if(camReady&&camStream&&!document.body.classList.contains('ce-can-scan'))
+        setCameraUiState('detecting',{copy:false});
+      else if(document.body.classList.contains('ce-can-scan'))
+        setCameraUiState('locked',{copy:true});
+    }
     if(camReady) schedulePerception();
     syncCamPerceptionFromHardware();
   }
@@ -6831,6 +7202,28 @@ function ceSetStepsCardVisible(visible){
   if(!card)return;
   card.style.display=visible?'':'none';
   try{console.log('[CE] steps-card visibility set to:',!!visible);}catch(e){}
+}
+
+function setResultVisibility(cfg){
+  cfg=cfg||{};
+  var showSteps=cfg.showSteps!==false;
+  var showTools=cfg.showTools!==false;
+  var showTts=cfg.showTts!==false;
+  var showFold=cfg.showFold!==false;
+  var showAd=cfg.showAd!==false;
+  var stepsCard=document.getElementById('steps-card');
+  var toolsCard=document.getElementById('tools-card');
+  var ttsBar=document.getElementById('tts-bar');
+  var foldMore=document.getElementById('fold-more');
+  var adBanner=document.getElementById('ad-banner');
+  if(stepsCard)stepsCard.style.display=showSteps?'':'none';
+  if(toolsCard)toolsCard.style.display=showTools?'':'none';
+  if(ttsBar){
+    if(!showTts)ttsBar.classList.remove('show');
+    ttsBar.style.display=showTts?'':'none';
+  }
+  if(foldMore)foldMore.style.display=showFold?'':'none';
+  if(adBanner)adBanner.style.display=showAd?'':'none';
 }
 
 function ensureJobId(){
@@ -7664,6 +8057,7 @@ if(dockNextBtn){
 // Sticky next is bound once inside ceBuildUxScreens().
 if(walkCheckBtn){
   walkCheckBtn.addEventListener('click',function(){
+    if(walkCheckBtn.disabled)return;
     if(curSteps.length<=0) return;
     openPM(walkIdx,curSteps[walkIdx]);
   });
@@ -8667,6 +9061,9 @@ function renderResults(r){
   document.body.classList.remove('fixing','ce-step-active');
   document.body.classList.remove('mailbox-open');
   openResultScreen();
+  var shellEl=document.getElementById('ce-results-shell');
+  if(shellEl)shellEl.classList.remove('ce-results-shell--locked');
+  if(typeof ceSwitchTab==='function')ceSwitchTab('outcome');
   var ecSheet=document.getElementById('ec');if(ecSheet) ecSheet.classList.remove('ec-sheet');
   var costStr = (r.estimated_cost||'').toString().trim().toLowerCase();
   var hasCost = !!costStr && costStr !== 'n/a' && costStr !== 'na';
@@ -8777,6 +9174,28 @@ function renderResults(r){
       sig.classList.add('ce-conf-high');
     }
   }
+  var ruO=CE_RESULT_UI[LANG]||CE_RESULT_UI.en;
+  var oct=document.getElementById('ce-oc-time');
+  if(oct)oct.textContent=(String(r.time_needed||'').trim())||'—';
+  var occ=document.getElementById('ce-oc-cost');
+  if(occ){
+    if(repairNeeded && hasCost && r.estimated_cost)occ.textContent=String(r.estimated_cost).trim();
+    else occ.textContent='—';
+  }
+  var ocl=document.getElementById('ce-oc-level');
+  if(ocl){
+    var callPro=conf.indexOf('call')!==-1||ceDangerLocked;
+    ocl.textContent=callPro?ruO.ocPro:ruO.ocDIY;
+  }
+  if(ceDangerLocked){
+    if(shellEl)shellEl.classList.add('ce-results-shell--locked');
+    var ss=document.getElementById('ce-sticky-sev');
+    if(ss){
+      ss.textContent=ruO.stStop;
+      ss.classList.add('ce-sticky-stop');
+      ss.classList.remove('ce-sticky-caution');
+    }
+  }
   document.getElementById('r-time').textContent=r.time_needed||'';
   document.getElementById('r-safety').textContent=r.safety_tip||'';
   document.getElementById('r-pro').textContent=r.pro_tip||'';
@@ -8824,6 +9243,10 @@ function renderResults(r){
 
   var shareText=(LANG==='nl'?'Ik heb net mijn ':'I just fixed my ')+(r.what_i_see||'home')+(LANG==='nl'?' gerepareerd met chickenegg — stap voor stap! Probeer het gratis 🥚':' with chickenegg — step by step! Try it free 🥚');
   document.getElementById('sh-wa').onclick=function(){var s=loadS();s.sh=(s.sh||0)+1;saveS(s);checkBadges();window.open('https://wa.me/?text='+encodeURIComponent(shareText),'_blank')};
+  var ceShareBtn=document.getElementById('ce-cta-share');
+  if(ceShareBtn){
+    ceShareBtn.onclick=function(){var s=loadS();s.sh=(s.sh||0)+1;saveS(s);checkBadges();window.open('https://wa.me/?text='+encodeURIComponent(shareText),'_blank')};
+  }
   document.getElementById('sh-copy').onclick=function(){
     navigator.clipboard&&navigator.clipboard.writeText(shareText).catch(function(){});
     var b=document.getElementById('sh-copy');b.querySelector('span').textContent=LANG==='nl'?'✓ Gekopieerd!':'✓ Copied!';
@@ -9050,6 +9473,12 @@ function confetti(){ceLaunchConfetti();}
 var pmModal=document.getElementById('pm'),pmFile=document.getElementById('pm-file'),pmPrev=document.getElementById('pm-prev'),pmGo=document.getElementById('pm-go'),pmCancel=document.getElementById('pm-cancel'),pmRes=document.getElementById('pm-res'),pmIdx=0,pmTxtVal='',pmFile2=null;
 
 function openPM(idx,txt){
+  try{
+    if(typeof CE_FREE_LIMIT!=='undefined'&&typeof getCeScans==='function'&&getCeScans()>=CE_FREE_LIMIT){
+      showAch('🔒',LANG==='nl'?'ChickenEgg Pro':'ChickenEgg Pro',LANG==='nl'?'Stap-fotoverificatie zit in Pro.':'Step photo verification is part of Pro.');
+      return;
+    }
+  }catch(_){}
   pmIdx=idx;
   var vt=(curVisualTips[idx]||'').trim();
   pmTxtVal=vt?(txt+'\n'+(LANG==='nl'?'Zo hoort het te lijken: ':'You should see: ')+vt):txt;
@@ -9210,6 +9639,27 @@ if(resultsBackBtn){
     }
   });
 }
+document.querySelectorAll('[data-ce-tab]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var t=btn.getAttribute('data-ce-tab');
+    if(t&&typeof ceSwitchTab==='function'){clickSnd();ceSwitchTab(t);}
+  });
+});
+var ceCtaSteps=document.getElementById('ce-cta-steps');
+if(ceCtaSteps){
+  ceCtaSteps.addEventListener('click',function(){
+    clickSnd();hap([6,4,10]);
+    if(typeof ceSwitchTab==='function')ceSwitchTab('steps');
+  });
+}
+var resultsRedoBtn=document.getElementById('results-redo-btn');
+if(resultsRedoBtn){
+  resultsRedoBtn.addEventListener('click',function(){
+    clickSnd();
+    var r=document.getElementById('rst-btn');
+    if(r)r.click();
+  });
+}
 
 /* EMAIL + TESTER FEEDBACK */
 var ec=document.getElementById('ec'),ecInp=document.getElementById('ec-inp'),ecSub=document.getElementById('ec-sub'),ecSkip=document.getElementById('ec-skip'),ecNote=document.getElementById('ec-note'),ecFeedbackSend=document.getElementById('ec-feedback-send');
@@ -9352,6 +9802,15 @@ var CE_FREE_LIMIT = 5;
 var CE_CHECKOUT_URLS = {
   month: 'https://pepesoup1000.gumroad.com/l/tarwyk',
   year: 'https://pepesoup1000.gumroad.com/l/pnpfz'
+};
+
+/**
+ * Paste your Gumroad product links (year + month). Share → copy full https://… link.
+ * Leave '' until set; buttons fall back to gumroad.com homepage.
+ */
+var CE_CHECKOUT_URLS = {
+  year: 'https://pepesoup1000.gumroad.com/l/pnpfz',
+  month: 'https://pepesoup1000.gumroad.com/l/tarwyk'
 };
 
 function getCeScans(){

@@ -122,6 +122,29 @@ HARD_STOP_KEYWORDS = {
 
 TEST_SOURCE_CHANNELS = ("smoke_test", "test", "dev")
 
+# Never return DIY steps for these high-risk domains.
+HARD_STOP_KEYWORDS = {
+    "groepenkast",
+    "meterkast",
+    "zekeringkast",
+    "hoofdschakelaar",
+    "gasleiding",
+    "gasmeter",
+    "cv ketel",
+    "cv-ketel",
+    "ketel intern",
+    "boiler internals",
+    "fuse box",
+    "breaker panel",
+    "electrical panel",
+    "main breaker",
+    "live wire",
+    "mains voltage",
+    "gas line",
+}
+
+TEST_SOURCE_CHANNELS = ("smoke_test", "test", "dev")
+
 # Lazy client so missing env fails on first request with a clear message, not at import.
 _client = None
 
@@ -1455,6 +1478,7 @@ Hard rules:
 - No made-up part numbers or torque specs unless readable in the image.
 - E-bike battery swollen/dented ⇒ call-pro / specialist, never open cells.
 - If the scene is ambiguous, lower confidence, fill uncertainty_note, and avoid overclaiming.
+- rental_liability_hint: ONLY for rental-relevant issues (moisture, mold, stains, minor leaks, wall/ceiling damage, window condensation patterns). Use not_applicable for bikes, appliances with no rental context, outdoor-only, or purely cosmetic owned-home DIY. This is NOT legal advice — phrase as \"based on what is visible\" / \"lijkt op basis van de foto\".
 - Return ONLY the JSON object.
 """
 
@@ -1680,6 +1704,20 @@ def analyze():
         return jsonify({"success": False, "error": "AI service temporarily unavailable"}), 503
     except (APIStatusError, BadRequestError, NotFoundError):
         return jsonify({"success": False, "error": "AI upstream request failed"}), 502
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/analyze-stage1", methods=["POST"])
+def analyze_stage1():
+    """Fast first-pass response for perceived speed; full result comes from /analyze."""
+    try:
+        payload, err = _do_stage1_quick_analyze()
+        if err:
+            return jsonify({"success": False, "error": err[0]}), err[1]
+        return jsonify(payload)
+    except json.JSONDecodeError as e:
+        return jsonify({"success": False, "error": f"AI returned invalid JSON: {str(e)}"}), 500
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
@@ -2584,6 +2622,12 @@ def metrics_detail():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+@app.route("/privacy")
+def privacy():
+    """Dutch-first privacy statement (AVG-oriented); EN copy on same page."""
+    return render_template("privacy.html")
+
+
 @app.route("/health")
 def health():
     """Quick prod sanity check: no secrets returned."""
@@ -2601,4 +2645,6 @@ def health():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    _port = int(os.getenv("PORT", "5000"))
+    _debug = os.getenv("FLASK_DEBUG", "1").strip().lower() in ("1", "true", "yes")
+    app.run(debug=_debug, port=_port)
