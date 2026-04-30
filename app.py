@@ -21,6 +21,27 @@ from anthropic import (
 
 app = Flask(__name__)
 
+
+def _ce_debug_ndjson(hypothesis_id, location, message, data):
+    """Session debug log (NDJSON append). Do not log secrets or PII."""
+    try:
+        payload = {
+            "sessionId": "e91706",
+            "hypothesisId": hypothesis_id,
+            "location": location,
+            "message": message,
+            "data": data,
+            "timestamp": int(time.time() * 1000),
+            "runId": "pre",
+        }
+        base = "/tmp" if os.getenv("VERCEL") else app.root_path
+        path = os.path.join(base, "debug-e91706.jsonl")
+        with open(path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(payload, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+
+
 # Bol.com affiliate partner site ID — replace default with your ID from affiliate.bol.com (or set env BOL_PARTNER_ID).
 BOL_PARTNER_ID = (os.getenv("BOL_PARTNER_ID") or "1516197").strip() or "1516197"
 
@@ -63,6 +84,16 @@ ALLOWED_EVENTS = REQUIRED_EVENTS | {
     "language_changed",
     "feedback_submitted",
     "mailbox_opened",
+    "coach_mark_completed",
+    "coach_mark_shown",
+    "coach_sequence_skipped",
+    "scan_guide_opened",
+    "scan_guide_soft_prompt_shown",
+    "primary_cta_tapped",
+    "hard_stop_bypassed",
+    "repair_survey_submitted",
+    "paywall_options_tapped",
+    "paywall_dismissed_home",
 }
 FREE_SCAN_LIMIT = 5
 LICENSE_VERIFY_WINDOW_SEC = 60
@@ -104,29 +135,6 @@ HARD_STOP_KEYWORDS = {
     "meterkast",
     "zekeringkast",
     "zekering",
-    "hoofdschakelaar",
-    "gasleiding",
-    "gasmeter",
-    "cv ketel",
-    "cv-ketel",
-    "ketel intern",
-    "boiler internals",
-    "fuse box",
-    "breaker panel",
-    "electrical panel",
-    "main breaker",
-    "live wire",
-    "mains voltage",
-    "gas line",
-}
-
-TEST_SOURCE_CHANNELS = ("smoke_test", "test", "dev")
-
-# Never return DIY steps for these high-risk domains.
-HARD_STOP_KEYWORDS = {
-    "groepenkast",
-    "meterkast",
-    "zekeringkast",
     "hoofdschakelaar",
     "gasleiding",
     "gasmeter",
@@ -554,7 +562,9 @@ def _verify_gumroad_webhook_auth():
     token = (os.getenv("GUMROAD_WEBHOOK_TOKEN") or "").strip()
     secret = (os.getenv("GUMROAD_WEBHOOK_SECRET") or "").strip()
     if not token and not secret:
-        return True
+        # Without shared secrets, accepting webhooks would let anyone POST Pro activations.
+        # Local/dev only: set ALLOW_UNAUTHENTICATED_GUMROAD_WEBHOOK=1 if you intentionally omit Gumroad signing.
+        return _truthy_env("ALLOW_UNAUTHENTICATED_GUMROAD_WEBHOOK")
 
     if token:
         hdr_token = (
@@ -1532,6 +1542,19 @@ Hard rules:
     else:
         result["hard_stop_triggered"] = False
         result["hard_stop_reasons"] = []
+    steps = result.get("steps") or []
+    step_details = result.get("step_details") or []
+    _ce_debug_ndjson(
+        "H5",
+        "app.py:_do_analyze:final",
+        "normalized result",
+        {
+            "steps_len": len(steps) if isinstance(steps, list) else -1,
+            "step_details_len": len(step_details) if isinstance(step_details, list) else -1,
+            "decision_outcome": str(result.get("decision_outcome") or ""),
+            "hazard_level": str(result.get("hazard_level") or ""),
+        },
+    )
     return {"success": True, "result": result}, None
 
 
@@ -1704,20 +1727,6 @@ def analyze():
         return jsonify({"success": False, "error": "AI service temporarily unavailable"}), 503
     except (APIStatusError, BadRequestError, NotFoundError):
         return jsonify({"success": False, "error": "AI upstream request failed"}), 502
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
-
-
-@app.route("/analyze-stage1", methods=["POST"])
-def analyze_stage1():
-    """Fast first-pass response for perceived speed; full result comes from /analyze."""
-    try:
-        payload, err = _do_stage1_quick_analyze()
-        if err:
-            return jsonify({"success": False, "error": err[0]}), err[1]
-        return jsonify(payload)
-    except json.JSONDecodeError as e:
-        return jsonify({"success": False, "error": f"AI returned invalid JSON: {str(e)}"}), 500
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
@@ -2164,6 +2173,20 @@ def collect_feedback():
         return jsonify({"success": True})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/debug-session", methods=["POST"])
+def api_debug_session():
+    """Append client debug payloads (session e91706). No secrets/PII."""
+    try:
+        data = request.get_json(silent=True) or {}
+        base = "/tmp" if os.getenv("VERCEL") else app.root_path
+        path = os.path.join(base, "debug-e91706.jsonl")
+        with open(path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(data, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+    return jsonify({"ok": True})
 
 
 @app.route("/track-event", methods=["POST"])

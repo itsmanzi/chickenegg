@@ -1,6 +1,6 @@
 import io
 
-from app import app, _apply_server_hard_stop
+from app import app, _apply_server_hard_stop, _verify_gumroad_webhook_auth
 
 
 HARD_STOP_CASES = [
@@ -44,3 +44,26 @@ def test_analyze_endpoint_exists():
     }
     response = client.post("/analyze", data=payload, content_type="multipart/form-data")
     assert response.status_code != 500
+
+
+def test_gumroad_webhook_requires_secret_or_explicit_dev_flag(monkeypatch):
+    """Misconfigured deployments must not accept unsigned Gumroad posts (Pro license forgery)."""
+    monkeypatch.delenv("GUMROAD_WEBHOOK_TOKEN", raising=False)
+    monkeypatch.delenv("GUMROAD_WEBHOOK_SECRET", raising=False)
+    monkeypatch.delenv("ALLOW_UNAUTHENTICATED_GUMROAD_WEBHOOK", raising=False)
+    with app.test_request_context("/webhooks/gumroad", method="POST"):
+        assert _verify_gumroad_webhook_auth() is False
+    client = app.test_client()
+    r = client.post(
+        "/webhooks/gumroad",
+        json={"email": "attacker@example.com", "sale_id": "fake-sale-id"},
+    )
+    assert r.status_code == 401
+
+
+def test_gumroad_webhook_unauthenticated_allowed_only_with_opt_in(monkeypatch):
+    monkeypatch.delenv("GUMROAD_WEBHOOK_TOKEN", raising=False)
+    monkeypatch.delenv("GUMROAD_WEBHOOK_SECRET", raising=False)
+    monkeypatch.setenv("ALLOW_UNAUTHENTICATED_GUMROAD_WEBHOOK", "1")
+    with app.test_request_context("/webhooks/gumroad", method="POST"):
+        assert _verify_gumroad_webhook_auth() is True

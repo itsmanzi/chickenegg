@@ -815,6 +815,15 @@
       box-shadow:0 6px 20px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.35);
     }
     #ce-visual-engine .ce-ve-paywall.off{display:none}
+    #ce-panel-outcome .ce-outcome-panel-visual{margin-bottom:14px}
+    #ce-panel-outcome .ce-outcome-panel-visual .ce-ve-paywall{
+      font-size:12px;font-weight:700;line-height:1.45;color:var(--t2);max-width:38ch;margin:0 auto 12px;
+      padding:10px 14px;border-radius:14px;
+      background:linear-gradient(135deg,rgba(144,112,24,.12),rgba(120,90,18,.08));
+      border:1px solid rgba(144,112,24,.28);
+      box-shadow:0 6px 20px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.35);
+    }
+    #ce-panel-outcome .ce-outcome-panel-visual .ce-ve-paywall.off{display:none}
     .ce-ve-kicker{font-size:10px;font-weight:900;letter-spacing:.72px;text-transform:uppercase;color:var(--t3);margin:0 0 6px 4px}
     .ce-ve-card{
       border-radius:20px;padding:16px 16px 14px;margin-bottom:10px;position:relative;
@@ -840,6 +849,23 @@
     #ce-visual-engine.ce-ve-ready .ce-ve-card-perc{transition-delay:40ms}
     #ce-visual-engine.ce-ve-ready .ce-ve-card-sev{transition-delay:160ms}
     #ce-visual-engine.ce-ve-ready .ce-ve-card-dec{transition-delay:280ms}
+    #ce-panel-outcome .ce-outcome-panel-visual:not(.ce-ve-ready) .ce-outcome-hero,
+    #ce-panel-outcome .ce-outcome-panel-visual:not(.ce-ve-ready) #ce-ve-acc-out,
+    #ce-panel-outcome .ce-outcome-panel-visual:not(.ce-ve-ready) #ce-ve-severity-out,
+    #ce-panel-outcome .ce-outcome-panel-visual:not(.ce-ve-ready) .ce-outcome-verdict{
+      opacity:0;transform:translateY(12px);
+    }
+    #ce-panel-outcome .ce-outcome-panel-visual.ce-ve-ready .ce-outcome-hero,
+    #ce-panel-outcome .ce-outcome-panel-visual.ce-ve-ready #ce-ve-acc-out,
+    #ce-panel-outcome .ce-outcome-panel-visual.ce-ve-ready #ce-ve-severity-out,
+    #ce-panel-outcome .ce-outcome-panel-visual.ce-ve-ready .ce-outcome-verdict{
+      opacity:1;transform:translateY(0);
+      transition:opacity .55s cubic-bezier(.25,1,.45,1),transform .55s cubic-bezier(.25,1,.45,1);
+    }
+    #ce-panel-outcome .ce-outcome-panel-visual.ce-ve-ready .ce-outcome-hero{transition-delay:0ms}
+    #ce-panel-outcome .ce-outcome-panel-visual.ce-ve-ready #ce-ve-acc-out{transition-delay:40ms}
+    #ce-panel-outcome .ce-outcome-panel-visual.ce-ve-ready #ce-ve-severity-out{transition-delay:160ms}
+    #ce-panel-outcome .ce-outcome-panel-visual.ce-ve-ready .ce-outcome-verdict{transition-delay:280ms}
     .ce-ve-what{font-size:16px;font-weight:800;letter-spacing:-.35px;line-height:1.35;color:var(--t1);max-width:38ch;margin:0 0 10px}
     .ce-ve-list-lbl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--t3);margin:10px 0 6px}
     .ce-ve-list{margin:0;padding-left:1.1em;max-width:38ch;color:var(--t2);font-size:14px;line-height:1.45}
@@ -3425,6 +3451,33 @@
     .err-box .err-title{font-size:14px;font-weight:900;margin-bottom:4px}
     .err-box .err-msg{font-size:13px;line-height:1.45}
     .err-box .err-cta{margin-top:9px;min-height:38px;border:none;border-radius:10px;padding:0 12px;background:linear-gradient(135deg,#987018,#786010);color:#F8EDD8;font-size:12px;font-weight:800;font-family:inherit;cursor:pointer}
+    .err-box .err-actions{display:flex;flex-direction:column;gap:8px;margin-top:10px;align-items:stretch}
+    .err-box .err-cta-primary{width:100%;min-height:48px;border-radius:12px}
+    .err-box .err-cta-secondary{width:100%;min-height:44px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:transparent;color:var(--t2);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer}
+    body.ce-coach-step2 .ce-coach-scrim{pointer-events:none}
+    .ce-coach-root.ce-coach--hide-primary .ce-coach-next{display:none!important}
+    .ce-coach-skip.off{display:none!important}
+    .ce-scan-soft-hint{display:none;margin:8px 14px 0;padding:10px 12px;border-radius:12px;background:rgba(232,168,71,.12);border:1px solid rgba(232,168,71,.28);font-size:12px;line-height:1.45;color:var(--t2)}
+    .ce-scan-soft-hint.show{display:block}
+    .ce-scan-soft-hint button{margin-top:8px;width:100%;min-height:44px;border:none;border-radius:12px;background:linear-gradient(135deg,#E8A847,#C99430);color:#1A1208;font-size:13px;font-weight:900;font-family:inherit;cursor:pointer}
+    .ce-confidence-pill{display:none;font-size:10px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:999px;margin-bottom:8px;width:fit-content}
+    .ce-confidence-pill.show{display:block}
+    .ce-confidence-pill--high{background:rgba(34,197,94,.2);color:#86efac;border:1px solid rgba(34,197,94,.35)}
+    .ce-confidence-pill--med{background:rgba(245,158,11,.18);color:#fcd34d;border:1px solid rgba(245,158,11,.35)}
+    .ce-confidence-pill--low{background:rgba(148,163,184,.15);color:var(--t3);border:1px solid rgba(148,163,184,.25)}
+    .ce-decision-card.ce--low-confidence{outline:1px solid rgba(148,163,184,.35)}
+    #ce-low-conf-banner{display:none;margin-bottom:8px;padding:10px 12px;border-radius:12px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.35);font-size:12px;line-height:1.45;color:var(--t2)}
+    #ce-low-conf-banner.show{display:block}
+    .ce-faq-sheet-body dl,.ce-faq-list{margin:0;padding:0}
+    .ce-faq-sheet-body dt{font-weight:800;color:var(--t1);margin:14px 0 6px;font-size:13px}
+    .ce-faq-sheet-body dd{margin:0 0 10px;font-size:13px;line-height:1.5;color:var(--t2);padding:0}
+    .ce-survey-opt{display:flex;flex-direction:column;gap:8px;margin:12px 0;text-align:left}
+    .ce-survey-opt label{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--t2);cursor:pointer}
+    .ce-survey-opt input{flex-shrink:0;margin-top:3px}
+    #ce-repair-survey textarea{width:100%;min-height:64px;border-radius:10px;border:1px solid var(--border);background:rgba(0,0,0,.2);color:var(--t1);font-family:inherit;font-size:13px;padding:8px;box-sizing:border-box}
+    .ag-faq-link{display:block;width:100%;margin:8px 0 0;padding:10px;border-radius:10px;border:1px solid rgba(232,168,71,.35);background:rgba(232,168,71,.08);color:var(--gold);font-size:13px;font-weight:800;font-family:inherit;cursor:pointer}
+    .ce-privacy-note a{color:var(--gold);text-decoration:underline;text-underline-offset:2px}
+    .ce-rental-tip--on a{color:var(--gold);text-decoration:underline;text-underline-offset:2px}
     .ec-contacts{background:rgba(0,0,0,.06);border-radius:var(--rmd);padding:11px;text-align:left}
     .ec-contacts p{font-size:10px;color:var(--t3);margin-bottom:5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px}
     .ec-item{display:flex;justify-content:space-between;font-size:13px;color:var(--t1);padding:4px 0;border-bottom:.5px solid rgba(0,0,0,.07)}
@@ -3539,6 +3592,35 @@
     .ag-cta{width:100%;padding:16px;border-radius:var(--rxl);border:none;background:linear-gradient(135deg,rgba(195,195,199,.8),rgba(175,175,179,.8));color:var(--t3);font-size:16px;font-weight:700;cursor:not-allowed;opacity:.5;transition:all .2s;font-family:inherit}
     .ag-cta.on{background:linear-gradient(135deg,#E8A847,#C99430);color:#1A1208;cursor:pointer;opacity:1;box-shadow:0 4px 22px rgba(232,168,71,.28)}
     .ag-cta.on:active{transform:scale(.98)}
+    .ag-how-body{font-size:13px;color:var(--t2);line-height:1.62}
+    .ag-how-body p{margin:0 0 10px}
+    .ag-how-body ul{margin:0 0 10px 16px;padding:0}
+    .ag-how-body li{margin-bottom:6px}
+    .ce-compact-safety{
+      margin:0 14px 12px;padding:10px 12px;border-radius:12px;font-size:12px;font-weight:650;line-height:1.45;
+      color:rgba(240,236,228,.92);background:rgba(152,112,24,.12);border:1px solid rgba(232,168,71,.32);
+    }
+    .ce-compact-safety.off{display:none!important}
+    #ce-scan-guide,.ce-coach-root,#ce-faq-sheet,#ce-repair-survey{position:fixed;inset:0;z-index:10020;display:none;align-items:flex-end;justify-content:center;padding:0;box-sizing:border-box}
+    #ce-scan-guide.show,.ce-coach-root.show,#ce-faq-sheet.show,#ce-repair-survey.show{display:flex}
+    #ce-scan-guide .ce-modal-scrim,.ce-coach-root .ce-coach-scrim{position:absolute;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px)}
+    .ce-scan-guide-sheet,.ce-coach-panel{
+      position:relative;width:100%;max-width:520px;max-height:min(88vh,720px);overflow-y:auto;
+      background:linear-gradient(180deg,#2A2A2A 0%,#1A1A1A 100%);border-radius:20px 20px 0 0;
+      border:1px solid var(--border);padding:14px 18px max(18px,env(safe-area-inset-bottom));
+      box-shadow:0 -20px 50px rgba(0,0,0,.45);
+    }
+    .ce-scan-guide-sheet h2,.ce-coach-panel h2{font-size:17px;font-weight:900;margin:0 0 10px;color:var(--t1)}
+    .ce-scan-guide-body{font-size:13px;color:var(--t2);line-height:1.55}
+    .ce-scan-guide-body h3{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--gold);margin:14px 0 6px}
+    .ce-scan-guide-body p{margin:0 0 8px}
+    .ce-scan-guide-body ul{margin:0 0 8px 18px;padding:0}
+    .ce-scan-guide-close,.ce-coach-next{width:100%;min-height:48px;margin-top:12px;border:none;border-radius:14px;background:linear-gradient(135deg,#E8A847,#C99430);color:#1A1208;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit}
+    .ce-coach-skip{position:absolute;top:10px;right:14px;z-index:2;background:transparent;border:none;color:var(--t3);font-size:12px;font-weight:700;cursor:pointer;text-decoration:underline;font-family:inherit}
+    .ce-coach-panel p{margin:0 0 10px;font-size:14px;color:var(--t2);line-height:1.5}
+    @media (prefers-reduced-motion:reduce){
+      .ce-coach-root{display:none!important}
+    }
 
     /* PROGRESS MODAL — dark bottom sheet (M3) */
     #pm{position:fixed;inset:0;z-index:997;display:flex;align-items:flex-end;justify-content:center;padding:0;overflow:hidden;box-sizing:border-box;background:transparent}
@@ -3950,6 +4032,43 @@
   </style>
 </head>
 <body class="cam-tiktok">
+<div id="ce-scan-guide" aria-hidden="true">
+  <div class="ce-modal-scrim" id="ce-scan-guide-scrim" aria-hidden="true"></div>
+  <div class="ce-scan-guide-sheet" role="dialog" aria-modal="true" aria-labelledby="ce-scan-guide-ttl">
+    <h2 id="ce-scan-guide-ttl">Zo maak je een goede scan</h2>
+    <div class="ce-scan-guide-body" id="ce-scan-guide-body"></div>
+    <button type="button" class="ce-scan-guide-close" id="ce-scan-guide-close">OK</button>
+  </div>
+</div>
+<div id="ce-faq-sheet" aria-hidden="true">
+  <div class="ce-modal-scrim" id="ce-faq-scrim" aria-hidden="true"></div>
+  <div class="ce-scan-guide-sheet" role="dialog" aria-modal="true" aria-labelledby="ce-faq-ttl">
+    <h2 id="ce-faq-ttl">Veelgestelde vragen</h2>
+    <div class="ce-faq-sheet-body" id="ce-faq-body"></div>
+    <button type="button" class="ce-scan-guide-close" id="ce-faq-close">OK</button>
+  </div>
+</div>
+<div id="ce-repair-survey" aria-hidden="true">
+  <div class="ce-modal-scrim" id="ce-survey-scrim" aria-hidden="true"></div>
+  <div class="ce-scan-guide-sheet" role="dialog" aria-modal="true" aria-labelledby="ce-survey-ttl">
+    <h2 id="ce-survey-ttl">Feedback</h2>
+    <p id="ce-survey-q" style="margin:0 0 8px;font-size:14px;color:var(--t2);line-height:1.45"></p>
+    <div class="ce-survey-opt" id="ce-survey-opts"></div>
+    <label for="ce-survey-note" id="ce-survey-note-lbl" style="display:block;font-size:12px;color:var(--t3);margin-top:8px"></label>
+    <textarea id="ce-survey-note" maxlength="120" rows="2"></textarea>
+    <button type="button" class="ce-scan-guide-close" id="ce-survey-submit"></button>
+    <button type="button" id="ce-survey-skip" style="margin-top:8px;width:100%;background:transparent;border:none;color:var(--t3);font-size:12px;font-weight:700;text-decoration:underline;cursor:pointer;font-family:inherit"></button>
+  </div>
+</div>
+<div id="ce-coach-root" aria-hidden="true">
+  <div class="ce-coach-scrim" id="ce-coach-scrim" aria-hidden="true"></div>
+  <div class="ce-coach-panel" role="dialog" aria-modal="true" aria-labelledby="ce-coach-ttl">
+    <button type="button" class="ce-coach-skip" id="ce-coach-skip">Skip</button>
+    <h2 id="ce-coach-ttl">Tip</h2>
+    <p id="ce-coach-txt"></p>
+    <button type="button" class="ce-coach-next" id="ce-coach-next">OK</button>
+  </div>
+</div>
 <script>window.__CE_BOL_PARTNER_ID={{ BOL_PARTNER_ID|default('1516197')|tojson }};</script>
 {% if ce_show_device_fingerprint|default(false) %}
 <script>window.__CE_SHOW_DEVICE_FINGERPRINT=1;</script>
@@ -3972,6 +4091,7 @@
   </div>
   <div class="ag-ttl" id="ag-ttl">Before you start fixing</div>
   <div class="ag-sub" id="ag-sub">Quick read — keeps you safe.</div>
+  <div class="ag-card" id="ag-how-card"><div class="ag-ct b" id="ag-how-ttl">How ChickenEgg works</div><div class="ag-how-body" id="ag-how-body"></div><button type="button" class="ag-faq-link" id="ag-faq-btn">FAQ</button></div>
   <div class="ag-lang-row" role="group" aria-label="Language">
     <button type="button" class="lang-btn" data-ag-lang="en">EN</button>
     <button type="button" class="lang-btn on" data-ag-lang="nl">NL</button>
@@ -4022,6 +4142,7 @@
   <div class="pw-sheet" role="document">
     <h3 id="pw-ttl">ChickenEgg Pro</h3>
     <p class="pw-lead" id="pw-lead"></p>
+    <div id="pw-value-anchor" style="font-size:12px;color:var(--t2);margin:0 0 12px;padding:8px 10px;border-radius:8px;background:rgba(76,175,125,.1);border:1px solid rgba(76,175,125,.22);"></div>
     <div class="pw-actions">
       <a class="pw-btn pw-btn-secondary" id="pw-btn-month" href="#" target="_blank" rel="noopener" onclick="trackGumroad('pro-month')"></a>
       <a class="pw-btn pw-btn-primary" id="pw-btn-year" href="#" target="_blank" rel="noopener" onclick="trackGumroad('pro-year')"></a>
@@ -4039,18 +4160,6 @@
 </div>
 
 <div id="fm-cta" aria-live="polite"><span id="fm-free-note"></span></div>
-<div id="pw-modal" role="dialog" aria-modal="true" aria-labelledby="pw-ttl">
-  <div class="pw-sheet" role="document">
-    <h3 id="pw-ttl">ChickenEgg Pro</h3>
-    <p id="pw-lead"></p>
-    <p class="pw-price" id="pw-anchor"></p>
-    <div class="pw-actions">
-      <a class="pw-btn pw-btn-primary" id="pw-btn-year" href="https://gumroad.com" target="_blank" rel="noopener" onclick="trackGumroad('pro-year')"></a>
-      <a class="pw-btn pw-btn-secondary" id="pw-btn-month" href="https://gumroad.com" target="_blank" rel="noopener" onclick="trackGumroad('pro-month')"></a>
-      <button type="button" class="pw-btn pw-btn-ghost" id="pw-close"></button>
-    </div>
-  </div>
-</div>
 
 <div id="xp-flash"></div>
 <div id="ach-toast"><div class="ach-ico" id="ach-ico">🏆</div><div><div class="ach-txt" id="ach-txt">Achievement!</div><div class="ach-sub" id="ach-sub">+XP</div></div></div>
@@ -4103,6 +4212,7 @@
       </div>
     </div>
     <div class="pill pstr">🔥 <span id="streak-num">0</span></div>
+    <div class="pill" id="repair-count-pill" style="display:none">🔧 <span id="repair-count-num">0</span></div>
     <div class="pill pxp">⚡ <span id="xp-num">0</span></div>
     <div class="pill plvl" id="lvl-badge">Beginner</div>
     <div class="pill" id="app-version-pill">SAFETY MODE V2</div>
@@ -4196,6 +4306,7 @@
     <span class="cam-top-spacer"></span>
     <button type="button" class="cam-top-btn" id="cam-help-btn" aria-label="Help">?</button>
   </nav>
+  <div class="ce-scan-soft-hint" id="ce-scan-soft-hint" aria-live="polite"><div id="ce-scan-soft-hint-txt"></div><button type="button" id="ce-scan-soft-hint-btn"></button></div>
 
   <!-- HAZARD BANNER -->
   <div class="hazard-banner" id="hazard-banner"></div>
@@ -4280,7 +4391,7 @@
       <p id="done-screen-sub" style="margin-bottom:10px">Je hebt het zelf opgelost. Die overwinning vergeet je niet.</p>
       <p id="done-screen-recap" style="font-size:13px;color:rgba(229,238,255,.62);margin-bottom:16px;line-height:1.5"></p>
       <div id="done-share-strip" style="display:flex;gap:8px;margin-bottom:14px">
-        <button type="button" id="done-share-wa" style="flex:1;min-height:46px;border:none;border-radius:12px;background:linear-gradient(135deg,rgba(38,196,96,.24),rgba(20,130,70,.18));border:1px solid rgba(82,210,132,.35);color:#C7F5DB;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit">📲 WhatsApp</button>
+        <button type="button" id="done-share-wa" style="flex:1;min-height:52px;border:none;border-radius:14px;background:linear-gradient(135deg,rgba(38,196,96,.9),rgba(20,130,70,.88));color:#fff;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit">📲 WhatsApp</button>
         <button type="button" id="done-share-copy" style="flex:1;min-height:46px;border:none;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:var(--t1);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">🔗 Kopieer link</button>
       </div>
       <button type="button" class="done-go" id="done-go-btn">Ga naar early access</button>
@@ -4301,9 +4412,12 @@
         <div class="ce-flow-pill" id="results-flow-completion">Done</div>
       </div>
     </div>
+    <div id="ce-compact-safety" class="ce-compact-safety off" role="note" aria-live="polite"></div>
+    <div id="ce-low-conf-banner" role="note" aria-live="polite"></div>
     <div id="all-done"><div class="de">🏆</div><h3 id="done-h3">Job Done!</h3><p id="done-p">You fixed it yourself. That win lasts for days.</p><div class="done-xp">⚡ +50 XP</div></div>
     <div id="task-locked"><h3>⛔ <span id="locked-ttl">Task Locked</span></h3><p id="locked-p">3 danger warnings triggered. Stop and contact a professional.</p><div class="ec-contacts"><p>Emergency (NL)</p><div class="ec-item"><span>Emergency</span><a href="tel:112">112</a></div><div class="ec-item"><span>Gas</span><a href="tel:0800-9009">0800-9009</a></div><div class="ec-item"><span>Water</span><a href="tel:0900-9994">0900-9994</a></div></div></div>
     <section id="decision-card" class="ce-card ce-decision-card" aria-live="polite" style="display:none">
+      <div id="decision-confidence-pill" class="ce-confidence-pill ce-stagger-item" aria-live="polite"></div>
       <div id="decision-title" class="ce-title ce-stagger-item"></div>
       <div id="decision-safety-lights" class="ce-safety-lights ce-safety-lights--low ce-stagger-item" role="group" aria-label="">
         <div id="decision-safety-lights-label" class="ce-safety-lights-label"></div>
@@ -4340,10 +4454,10 @@
       <button type="button" id="decision-details-toggle" class="ce-decision-details-toggle"></button>
       <div id="decision-meta" class="ce-meta"></div>
       <div id="decision-trust" class="ce-decision-trust"></div>
-      <div class="ce-privacy-note">🔒 Geen advertenties. Geen datadeling. Je foto wordt alleen gebruikt voor de diagnose.</div>
+      <div class="ce-privacy-note" id="ce-privacy-short">🔒 Geen advertentieprofilering. Je foto wordt gebruikt voor deze analyse — zie privacyverklaring.</div>
     </section>
     <div class="ce-rental-debug-badge" id="ce-rental-debug-badge" aria-live="polite"></div>
-    <div class="ce-paywall-teaser" id="ce-paywall-teaser" role="button" tabindex="0" aria-label="Upgrade to Pro">
+    <div class="ce-paywall-teaser" id="ce-paywall-teaser" role="button" tabindex="0" aria-label="ChickenEgg Pro">
       <div>
         <div class="ce-paywall-pro">Pro</div>
         <div class="ce-paywall-copy" id="ce-paywall-teaser-copy">Pro users get video guides for this repair</div>
@@ -4407,8 +4521,8 @@
         <button type="button" class="ce-tab" role="tab" id="ce-tab-details" data-ce-tab="details" aria-selected="false" aria-controls="ce-panel-details">Details</button>
       </div>
       <div id="ce-panel-outcome" class="ce-tab-panel" role="tabpanel" data-ce-panel="outcome" aria-labelledby="ce-tab-outcome">
-        <div id="ce-visual-engine" class="ce-visual-engine" aria-live="polite">
-          <div class="ce-ve-paywall off" id="ce-ve-paywall-hint"></div>
+        <div class="ce-visual-engine ce-outcome-panel-visual" aria-live="polite">
+          <div class="ce-ve-paywall ce-ve-paywall-hint off" id="ce-ve-paywall-hint-outcome"></div>
           <div class="ce-outcome-hero">
             <div class="ce-oh-ico-wrap" id="ce-oh-ico-wrap"><span class="ce-oh-ico" id="ce-oh-ico">✓</span></div>
             <div class="ce-oh-title" id="ce-oh-title"></div>
@@ -4416,44 +4530,44 @@
           </div>
           <div class="ce-outcome-verdict ce-sev-band-safe" id="ce-outcome-verdict">
             <div class="ce-ve-card ce-ve-card-dec">
-              <div class="ce-dec-pill ce-dec-safe" id="ce-ve-dec-pill">
-                <span id="ce-ve-dec-icon">✅</span><span id="ce-ve-dec-label"></span>
+              <div class="ce-dec-pill ce-dec-safe" id="ce-ve-dec-pill-out">
+                <span id="ce-ve-dec-icon-out">✅</span><span id="ce-ve-dec-label-out"></span>
               </div>
-              <p class="ce-ve-dec-rationale" id="ce-ve-dec-rationale"></p>
+              <p class="ce-ve-dec-rationale" id="ce-ve-dec-rationale-out"></p>
               <div class="ce-ve-subblock off" id="ce-ve-rental-wrap">
                 <div class="ce-ve-sub-lbl" id="ce-ve-rental-lbl">Verhuurder of huurder?</div>
                 <div class="ce-ve-rental-verdict" id="ce-ve-rental-verdict"></div>
                 <div class="ce-ve-sub-txt ce-ve-legal-note" id="ce-ve-rental-ai-note"></div>
                 <div class="ce-ve-legal-note" id="ce-ve-rental-legal"></div>
               </div>
-              <div class="ce-ve-subblock off" id="ce-ve-why-wrap">
-                <div class="ce-ve-sub-lbl" id="ce-ve-why-lbl">Why this matters</div>
-                <div class="ce-ve-sub-txt" id="ce-ve-why"></div>
+              <div class="ce-ve-subblock off" id="ce-ve-why-wrap-out">
+                <div class="ce-ve-sub-lbl" id="ce-ve-why-lbl-out">Why this matters</div>
+                <div class="ce-ve-sub-txt" id="ce-ve-why-out"></div>
               </div>
-              <div class="ce-ve-subblock off" id="ce-ve-stop-wrap">
-                <div class="ce-ve-sub-lbl" id="ce-ve-stop-lbl">When to stop</div>
-                <ul class="ce-ve-stop-list" id="ce-ve-stop-list"></ul>
+              <div class="ce-ve-subblock off" id="ce-ve-stop-wrap-out">
+                <div class="ce-ve-sub-lbl" id="ce-ve-stop-lbl-out">When to stop</div>
+                <ul class="ce-ve-stop-list" id="ce-ve-stop-list-out"></ul>
               </div>
             </div>
           </div>
-          <div class="ce-ve-card ce-ve-card-sev ce-sev-safe" id="ce-ve-severity">
+          <div class="ce-ve-card ce-ve-card-sev ce-sev-safe" id="ce-ve-severity-out">
             <div class="ce-ve-sev-row">
-              <div class="ce-ve-sev-ico" id="ce-ve-sev-icon">🟢</div>
+              <div class="ce-ve-sev-ico" id="ce-ve-sev-icon-out">🟢</div>
               <div class="ce-ve-sev-body">
-                <div class="ce-ve-sev-title" id="ce-ve-sev-title"></div>
-                <p class="ce-ve-sev-txt" id="ce-ve-sev-txt"></p>
+                <div class="ce-ve-sev-title" id="ce-ve-sev-title-out"></div>
+                <p class="ce-ve-sev-txt" id="ce-ve-sev-txt-out"></p>
               </div>
             </div>
           </div>
-          <details class="ce-ve-acc" id="ce-ve-acc">
-            <summary class="ce-ve-acc-sum" id="ce-ve-acc-sum">Why the AI thinks this</summary>
-            <div class="ce-ve-kicker" id="ce-ve-kicker-perc">Perception</div>
+          <details class="ce-ve-acc" id="ce-ve-acc-out">
+            <summary class="ce-ve-acc-sum" id="ce-ve-acc-sum-out">Why the AI thinks this</summary>
+            <div class="ce-ve-kicker" id="ce-ve-kicker-perc-out">Perception</div>
             <div class="ce-ve-card ce-ve-card-perc">
-              <div class="ce-ve-what" id="ce-ve-what"></div>
-              <div class="ce-ve-list-lbl" id="ce-ve-obs-lbl">Key observations</div>
-              <ul class="ce-ve-list" id="ce-ve-obs"></ul>
-              <div class="ce-ve-list-lbl" id="ce-ve-issues-lbl">Possible issues</div>
-              <ul class="ce-ve-list" id="ce-ve-issues"></ul>
+              <div class="ce-ve-what" id="ce-ve-what-out"></div>
+              <div class="ce-ve-list-lbl" id="ce-ve-obs-lbl-out">Key observations</div>
+              <ul class="ce-ve-list" id="ce-ve-obs-out"></ul>
+              <div class="ce-ve-list-lbl" id="ce-ve-issues-lbl-out">Possible issues</div>
+              <ul class="ce-ve-list" id="ce-ve-issues-out"></ul>
             </div>
           </details>
         </div>
@@ -4484,6 +4598,15 @@
           </div>
           <div class="confidence-gate-note" id="confidence-gate-note">Safety check: if this object looks wrong, retake before continuing.</div>
         </div>
+        <div class="confidence-gate">
+          <div class="confidence-gate-ttl">Does this look right?</div>
+          <div class="confidence-gate-msg">We are not fully sure we recognized the right part. Confirm, or take a clearer photo before we show every step.</div>
+          <div class="confidence-gate-actions">
+            <button type="button" class="confidence-gate-btn confirm">Yes — show steps</button>
+            <button type="button" class="confidence-gate-btn">Take a clearer photo</button>
+          </div>
+          <div class="confidence-gate-note">If this is not the broken part, a quick new photo keeps your guide accurate.</div>
+        </div>
         <div class="card" id="no-repair-box" style="display:none">
           <div class="card-lbl" id="no-repair-title">No repair needed</div>
           <p class="no-repair-p" id="no-repair-p">Enjoy your drink! No plumber needed here.</p>
@@ -4491,14 +4614,26 @@
         </div>
         <div class="card" id="tools-card"><div class="card-lbl" id="tools-lbl">Tools & Materials</div><div class="tools-list" id="r-tools"></div></div>
         <a class="ad-banner" id="ad-banner" href="https://www.gamma.nl" target="_blank" rel="noopener"><div class="ad-l"><span style="font-size:18px" id="ad-ico">🏪</span><div><div class="ad-sp">Sponsored</div><div class="ad-nm" id="ad-nm">Gamma</div><div class="ad-sub" id="ad-sub-txt">Tools — same-day pickup NL</div></div></div><div class="ad-cta" id="ad-cta">Shop →</div></a>
-        <div class="card" id="steps-card">
-          <div class="steps-top"><div class="card-lbl" style="margin-bottom:0" id="steps-lbl">Step by Step</div><div class="steps-ct"><span id="s-done">0</span> / <span id="s-tot">0</span> <span id="done-lbl">done</span></div></div>
+        <div class="card" id="steps-card" data-step-card>
+          <div class="repair-transition-line" id="repair-transition-line"></div>
+          <div class="steps-top"><div class="card-lbl" style="margin-bottom:0" id="steps-lbl">Do this now</div><div class="steps-ct"><span id="s-done">0</span> / <span id="s-tot">0</span> <span id="done-lbl">done</span></div></div>
+          <div class="ce-walk-progress-hdr" id="ce-walk-step-progress" aria-live="polite"></div>
           <div class="prog-track"><div class="prog-fill" id="p-fill"></div></div>
-          <div class="walk-pane" id="walk-pane">
+          <div class="walk-pane" id="walk-pane" data-live-ui>
+            <div class="repair-focus" id="repair-focus" aria-live="polite">
+              <div class="repair-focus-mark" id="repair-focus-mark">1</div>
+              <div>
+                <div class="repair-focus-kicker" id="repair-focus-kicker">Nu doen</div>
+                <div class="repair-focus-title" id="repair-focus-title"></div>
+                <div class="repair-focus-sub" id="repair-focus-sub"></div>
+              </div>
+            </div>
             <div class="walk-meta">
               <span id="walk-step-num">1</span> / <span id="walk-step-tot">0</span>
             </div>
+            <div id="walk-progress" class="walk-progress"></div>
             <div class="walk-text" id="walk-text"></div>
+            <div id="walk-tip" class="walk-tip muted"></div>
             <div class="walk-look off" id="walk-look"><div class="walk-look-lbl" id="walk-look-lbl">What you should see</div><div class="walk-look-txt" id="walk-look-txt"></div></div>
             <div class="walk-tools" id="walk-tools">
               <div class="walk-tools-ttl" id="walk-tools-ttl">Tools for this step</div>
@@ -4508,72 +4643,22 @@
               <button class="walk-nav-btn" id="walk-back" type="button" disabled>← Back</button>
               <button class="walk-nav-btn" id="walk-next" type="button" disabled>Next →</button>
             </div>
-            <button class="walk-check-btn" id="walk-check" type="button">📸 Check my progress</button>
-            <button class="walk-finish-btn" id="walk-finish" type="button" style="display:none">✅ Finished</button>
+            <button class="walk-check-btn" id="walk-check" type="button">📸 Photo-check this step</button>
+            <button class="walk-finish-btn" id="walk-finish" type="button" style="display:none">✅ All steps done</button>
           </div>
           <ol class="steps-list" id="r-steps"></ol>
+        </div>
+      </div>
+      <div id="ce-panel-details" class="ce-tab-panel off" role="tabpanel" data-ce-panel="details" aria-labelledby="ce-tab-details" hidden>
+        <div id="results-summary">
+          <div class="r-title" id="r-title"></div>
+          <p class="task-lead" id="r-task2" style="margin:0 0 10px;font-size:15px;font-weight:650;line-height:1.45;color:var(--t2)"></p>
         </div>
       </div>
       <div class="meta-row"><div class="chip" id="r-diff"></div><div class="chip">⏱ <span id="r-time"></span></div><div class="chip off" id="r-cat-chip">📁 <span id="r-cat"></span></div></div>
       <div class="cost-row" id="cost-row" style="display:none">💶 <span id="cost-lbl">Estimated cost:</span> <span class="cost-amt" id="r-cost"></span></div>
     </div>
-    <div class="tip safety result-safety-card" id="tip-safety"><div class="tip-ico">⚠️</div><div><div class="tip-lbl" id="safety-lbl">Safety</div><div class="tip-txt" id="r-safety"></div></div></div>
     <div class="conf-tier safe ce-conf-band" id="r-confidence">✅ High confidence</div>
-    <div class="tts-bar" id="tts-bar">
-      <button class="tts-btn speak" id="tts-read-all" onclick="readAllSteps()">🔊 <span id="tts-read-lbl">Read all steps</span></button>
-      <button class="tts-btn" id="tts-stop" onclick="stopSpeech()" style="display:none">⏹ Stop</button>
-      <div class="tts-speed" id="tts-speed-lbl" role="button" tabindex="0" aria-label="Speech speed">Speed: normal</div>
-    </div>
-    <div class="warn-ctr off" id="warn-ctr">⚠️ <span id="warn-txt"></span></div>
-    <div class="confidence-gate" id="confidence-gate">
-      <div class="confidence-gate-ttl" id="confidence-gate-ttl">Does this look right?</div>
-      <div class="confidence-gate-msg" id="confidence-gate-msg">We are not fully sure we recognized the right part. Confirm, or take a clearer photo before we show every step.</div>
-      <div class="confidence-gate-actions">
-        <button type="button" class="confidence-gate-btn confirm" id="confidence-gate-confirm">Yes — show steps</button>
-        <button type="button" class="confidence-gate-btn" id="confidence-gate-retake">Take a clearer photo</button>
-      </div>
-      <div class="confidence-gate-note" id="confidence-gate-note">If this is not the broken part, a quick new photo keeps your guide accurate.</div>
-    </div>
-    <div class="card" id="no-repair-box" style="display:none">
-      <div class="card-lbl" id="no-repair-title">No repair needed</div>
-      <p class="no-repair-p" id="no-repair-p">Enjoy your drink! No plumber needed here.</p>
-      <button class="rst-btn" id="no-repair-cta" style="margin-top:4px">↩ Try another image</button>
-    </div>
-    <div class="card" id="tools-card"><div class="card-lbl" id="tools-lbl">Tools & Materials</div><div class="tools-list" id="r-tools"></div></div>
-    <a class="ad-banner" id="ad-banner" href="https://www.gamma.nl" target="_blank" rel="noopener"><div class="ad-l"><span style="font-size:18px" id="ad-ico">🏪</span><div><div class="ad-sp">Sponsored</div><div class="ad-nm" id="ad-nm">Gamma</div><div class="ad-sub" id="ad-sub-txt">Tools — same-day pickup NL</div></div></div><div class="ad-cta" id="ad-cta">Shop →</div></a>
-    <div class="card" id="steps-card" data-step-card>
-      <div class="repair-transition-line" id="repair-transition-line"></div>
-      <div class="steps-top"><div class="card-lbl" style="margin-bottom:0" id="steps-lbl">Do this now</div><div class="steps-ct"><span id="s-done">0</span> / <span id="s-tot">0</span> <span id="done-lbl">done</span></div></div>
-      <div class="ce-walk-progress-hdr" id="ce-walk-step-progress" aria-live="polite"></div>
-      <div class="prog-track"><div class="prog-fill" id="p-fill"></div></div>
-      <div class="walk-pane" id="walk-pane" data-live-ui>
-        <div class="repair-focus" id="repair-focus" aria-live="polite">
-          <div class="repair-focus-mark" id="repair-focus-mark">1</div>
-          <div>
-            <div class="repair-focus-kicker" id="repair-focus-kicker">Nu doen</div>
-            <div class="repair-focus-title" id="repair-focus-title"></div>
-            <div class="repair-focus-sub" id="repair-focus-sub"></div>
-          </div>
-        </div>
-        <div class="walk-meta">
-          <span id="walk-step-num">1</span> / <span id="walk-step-tot">0</span>
-        </div>
-        <div id="walk-progress" class="walk-progress"></div>
-        <div class="walk-text" id="walk-text"></div>
-        <div id="walk-tip" class="walk-tip muted"></div>
-        <div class="walk-look off" id="walk-look"><div class="walk-look-lbl" id="walk-look-lbl">What you should see</div><div class="walk-look-txt" id="walk-look-txt"></div></div>
-        <div class="walk-tools" id="walk-tools">
-          <div class="walk-tools-ttl" id="walk-tools-ttl">Tools for this step</div>
-          <div class="walk-tools-row" id="walk-tools-row"></div>
-        </div>
-        <div class="walk-nav">
-          <button class="walk-nav-btn" id="walk-back" type="button" disabled>← Back</button>
-          <button class="walk-nav-btn" id="walk-next" type="button" disabled>Next →</button>
-        </div>
-        <button class="walk-check-btn" id="walk-check" type="button">📸 Photo-check this step</button>
-        <button class="walk-finish-btn" id="walk-finish" type="button" style="display:none">✅ All steps done</button>
-      </div>
-    </div>
     <div class="ec ec-top" id="ec">
       <div class="ec-handle" id="ec-handle" aria-hidden="true"></div>
       <h3 id="ec-h3">Join the Repair Pioneers</h3>
@@ -4619,6 +4704,22 @@ var CE_EVENTS={
   TOOL_PRO_LOCKED_TAPPED:'tool_pro_locked_tapped',
   COMPLETION_FEEDBACK_SUBMITTED:'completion_feedback_submitted'
 };
+function ceDbgSend(payload){
+  try{
+    if(!window.__CE_DEBUG_LOG)window.__CE_DEBUG_LOG=[];
+    var copy=JSON.parse(JSON.stringify(payload));
+    var shell=document.getElementById('ce-results-shell');
+    if(shell){
+      var cs=window.getComputedStyle(shell);
+      copy._shell={display:cs.display,visibility:cs.visibility,locked:shell.classList.contains('ce-results-shell--locked')};
+    }
+    window.__CE_DEBUG_LOG.push(copy);
+    if(window.__CE_DEBUG_LOG.length>120)window.__CE_DEBUG_LOG.shift();
+  }catch(_){}
+  try{
+    fetch('/api/debug-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(function(){});
+  }catch(_){}
+}
 var CE_STATE_COPY={
   en:{
     idle:['Point at object','Frame it in clear light'],
@@ -4677,7 +4778,7 @@ function setCaptureStateCopy(state){applyPerceptionPhase(state,{source:'camera',
 // ── I18N / LANGUAGE ─────────────────────────────────────
 var T={
   en:{heroP:'Photo anything at home — get exact step-by-step instructions',scanLbl:'Scan',ldSub:'Reading every detail',toolsLbl:'Tools & Materials',stepsLbl:'Step by Step',doneLbl:'done',safetyLbl:'Safety',proLbl:'Pro Tip',savLbl:'Saving vs plumber',savSub:'why call when you can fix?',shaWa:'Share on WhatsApp',shCopy:'Copy link',costLbl:'Estimated cost:',readAll:'Read all steps',ttsStop:'Stop',ttsSpeed:'Speed: normal',doneH:'Job Done!',doneP:'You fixed it yourself. That win lasts for days.',lockedTtl:'Task Locked',lockedP:'3 danger warnings triggered. Stop and contact a professional.',whenProLbl:'When to call a professional:',rstLbl:'Scan something else',adCta:'Supplies →',shopLinkAria:'Find "{product}" on {store} (new tab)',shopLblBol:'Bol.com →',shopLblGamma:'Gamma →',shopLblPraxis:'Praxis →',ldEta:'Usually finishes in under 10 seconds.',walkStepProgress:'Step {n} of {t}',tryExampleBtn:'Try an example',scanModeSingle:'1 photo (fast)',scanModeMulti:'3 photos (sharper)',trustStripTpl:'Safety-first: ChickenEgg skipped {n}+ DIY guides when a job looked too risky to self-fix.',decisionSafetyLow:'Safety signal: lower risk — still use your own judgment.',decisionSafetyMedium:'Safety signal: elevated caution — stop if anything feels wrong.',decisionSafetyHigh:'Safety signal: high risk — consider a pro or emergency help.',decisionTrustShort:'ChickenEgg uses AI on your photo — not a professional inspection. If you smell gas, see sparks, or feel unsafe, stop and call for help.',rentalHint:'Renting? Only do repairs your lease allows — ask the landlord before structural, electrical, or gas work.',ttsSpSlow:'Speed: slower',ttsSpNorm:'Speed: normal',ttsSpFast:'Speed: faster',pmTtl:'Check Your Progress',pmUpLbl:'Take a photo of your progress',pmGo:'Analyse My Progress',pmCancel:'Cancel',checkProgress:'Check progress',readStep:'Read',dockBack:'Back',dockNext:'Next',dockDone:'Done',stepPhotoHint:'Double-tap this card for photo check',eggNavHint:'Tap egg — next · Hold egg — back',edgeA:'Camera-first',edgeB:'Photo-checked steps',edgeC:'Whole home — not just gadgets',ubLbl:'Verify first',qcTtl:'Before you start',walkLookLbl:'What you should see',pmStepMismatch:'Not a match for this step yet',glassBadge1:'CONTEXT',glassBadge2:'MATERIALS',glassBadge3:'X-RAY',scanPhase1Ttl:'Scan 1 — Room context',scanPhase1Txt:'Frame the whole object plus a slice of the room: floor/wall, power cable, water path, and what it connects to.',scanPhase2Ttl:'Scan 2 — Materials & typeplate',scanPhase2Txt:'Closer: brand or model sticker, joints (compression/copper/PVC), hose colours, screw heads, serial plates — anything that IDs the hardware.',scanPhase3Ttl:'Scan 3 — X-ray on the defect',scanPhase3Txt:'Macro on the fault: leak origin vs splash stain, crack vs scratch, belt wear, corrosion, loose junction — dirt/limescale vs real failure.',glassHint1:'Hold steady — capturing context…',glassHint2:'Re-frame, then tap the egg to capture',glassHint3:'Tap the egg — X-ray pass',readoutMatLbl:'Materials & type',readoutXrayLbl:'X-ray read',agTtl:'Before you start fixing',agSub:'Quick read — keeps you safe.',agLimLbl:'AI Limitations',agLim:'chickenegg uses AI vision to identify objects and generate repair instructions. AI can make mistakes. Always use your own judgment.',agNotLbl:'Do NOT use for',agNot:'<li>Electrical panel or live wire work</li><li>Gas line installation or repair</li><li>Load-bearing structural work</li><li>Any work requiring a licensed professional</li>',agProLbl:'How we protect you',agPro:'AI checks your progress photos at each step. 3 danger warnings locks the task for your safety.',agResLbl:'Your responsibility',agRes:'By using chickenegg you confirm you are 18+ and accept full responsibility for any repairs.',agAgreeLbl:"I've read this and accept I am responsible for my own safety and any repairs I carry out.",agBtn:"I Agree — Let's Fix Things 🔧",epTitle:'This is your moment',epBody:'Start free: <strong>3 repairs/month</strong>. Upgrade to <strong>Pro €4.99/month</strong> for unlimited repair sessions.',epPerksTtl:'What Pro unlocks',epPerks:'✓ Unlimited repairs &nbsp;✓ Priority AI checks &nbsp;✓ Advanced safety triage',epSkip:"No thanks, I will stay on free for now",warnTxt:'danger warning',camReady:'Ready — tap egg',camStarting:'Starting camera...',camFail:'Camera error — use button below',camHttpBlocked:'This address is not secure (http). Phones only allow live camera on https. Tap “Choose photo” below, or use ngrok HTTPS.',camUploadLbl:'📷 Choose photo',camNotReady:'Choose a photo first (button above), then tap the egg.',heroCtaScan:'Start Live Scan',heroCtaDemo:'Use Photo Instead',hazardCaution:'⚠️ Caution: ',hazardWarning:'⚠️ Warning: ',hazardDanger:'🚨 DANGER: ',ldMsgs:['Photo received...','Identifying the damage...','Checking repair options...','Building your guide...','Almost ready...'],pmSafe:'Looks good!',pmCaution:'Minor issue noted',pmDanger:'Stop — fix this first',pmEmergency:'STOP IMMEDIATELY',noRepairTitle:'No repair needed',noRepairP:'Enjoy your drink! No plumber needed here.',noRepairCta:'↩ Try another image',toolEmpty:'No tools needed for this one.',ecH3:'Join the Repair Pioneers',ecP:'How was this? Add your email for updates — or tap Not now. Tools and steps are right below.',ecSubBtn:'Join',ecSkip:'Not now',ecEmailPh:'your@email.com',ecNotePh:'One thing to improve (optional)',foldMoreLbl:'Savings, sharing & extra tips — tap to open',badgesLbl:'Achievements',langTip:'Tip: switch EN/NL here any time.',langTipBtn:'Got it',hazardHeroDangerBadge:'Serious hazard',hazardHeroEmergBadge:'Emergency',hazardHeroDangerTtl:'High risk — pause and get help if unsure',hazardHeroEmergTtl:'Possible emergency — call for help',hazardHeroNoDetail:'Our AI thinks this may be unsafe to handle alone. If you smell gas, see sparks or fire, or have major flooding, use the numbers below.',hazardHeroCallSub:'Netherlands — tap to call:',hazardHeroWarnBadge:'Warning',hazardHeroWarnTtl:'Read this before you start',hazardHeroCautBadge:'Caution',hazardHeroCautTtl:'Be careful with this job',hCall112:'112 — Emergency',hCallGas:'0800-9009 — Gas smell / leak',hCallWater:'0900-9994 — Water damage line',pwProTtl:'ChickenEgg Pro',pwLeadEx:'You have used your free scans. Subscribe monthly or yearly for unlimited guides.',pwMonthCta:'Pro monthly',pwYearCta:'Pro yearly (best value)',pwCloseLbl:'Close',fmMonthShort:'Monthly',fmYearShort:'Yearly',fmBestVal:'Best value',fmNoteLeft:'{n} free scan(s) left — then subscribe for unlimited.',fmNoteGone:'Free scans used up — subscribe monthly or yearly below.',ceVerdictCtaShowHow:'Show me how',ceVerdictCtaDetails:'See details',ceVerdictCtaConfirm:'Confirm object',ceVerdictCtaUnlock:'Review warning',ceVerdictCtaEmergency:'Emergency contacts',ceVerdictCtaNoRepair:'See details',ceVerdictStopHead:'Stop — safety first',ceVerdictNoRepairHead:'No repair needed',gateConfirmTtl:'Does this look right?',gateConfirmMsg:'We are not fully sure we recognized the right part. Confirm, or take a clearer photo before we show every step.',gateConfirmOk:'Yes — show steps',gateRetakeLbl:'Take a clearer photo',gateRetakeNote:'If this is not the broken part, a quick new photo keeps your guide accurate.',retakePhotoBtn:'↩ New photo',rentalHeadLandlord:'This is likely your landlord\'s responsibility',rentalHeadTenant:'This one\'s on you',rentalHeadUnclear:'Responsibility isn\'t clear',rentalCtaWa:'Send to landlord',rentalCtaContract:'Check your rental contract',rentalFirstRunTip:'New: we also check who\'s responsible',stepTransitionStart:'Start repair guide — step 1 of {t}',stepTransitionChecklist:'Quick readiness check, then step 1 of {t}',rentalWaTplEn:'Hi, I\'ve identified an issue in my home: {issue}. Based on my assessment, this appears to be the landlord\'s responsibility. Could you please arrange for this to be fixed? Analysed via ChickenEgg.',rentalContractUrlEn:'https://www.gov.uk/private-renting-your-rights'},
-  nl:{heroP:'Foto alles thuis — krijg exacte stap-voor-stap instructies',scanLbl:'Scan',ldSub:'Elk detail lezen',toolsLbl:'Dit heb je nodig',stepsLbl:'Stap voor Stap',doneLbl:'gedaan',safetyLbl:'Veiligheid',proLbl:'Pro Tip',savLbl:'Besparing vs loodgieter',savSub:'waarom bellen als je het zelf kunt?',shaWa:'Deel via WhatsApp',shCopy:'Link kopiëren',costLbl:'Geschatte kosten:',readAll:'Alle stappen voorlezen',ttsStop:'Stoppen',ttsSpeed:'Snelheid: normaal',doneH:'Klaar! Goed gedaan.',doneP:'Je hebt het zelf gerepareerd. Die overwinning vergeet je niet.',lockedTtl:'Taak Vergrendeld',lockedP:'3 gevaarswaarschuwingen. Stop. Raak dit niet verder aan — bel een professional.',whenProLbl:'Wanneer een professional bellen:',rstLbl:'Nog iets kapot? Scan opnieuw →',adCta:'Benodigdheden →',shopLinkAria:'Zoek "{product}" op {store} (nieuw tabblad)',shopLblBol:'Bol.com →',shopLblGamma:'Gamma →',shopLblPraxis:'Praxis →',ldEta:'Meestal klaar in minder dan 10 seconden.',walkStepProgress:'Stap {n} van {t}',tryExampleBtn:'Bekijk een voorbeeld',scanModeSingle:'1 foto (snel)',scanModeMulti:'3 foto\'s (scherper)',trustStripTpl:'Veiligheid eerst: ChickenEgg weigerde {n}+ DIY-gidsen die te riskant leken om zelf te doen.',decisionSafetyLow:'Veiligheidssignaal: lager risico — blijf zelf nadenken.',decisionSafetyMedium:'Veiligheidssignaal: extra voorzichtig — stop bij twijfel of gevaar.',decisionSafetyHigh:'Veiligheidssignaal: hoog risico — overweeg een vakman of 112/hulplijn.',decisionTrustShort:'ChickenEgg gebruikt AI op je foto — geen vakdiagnose. Ruik je gas, zie je vonken of voelt het onveilig? Stop en bel hulp.',rentalHint:'Huurwoning? Doe alleen wat je huurcontract toestaat — vraag de verhuurder bij constructief, elektrisch of gaswerk.',ttsSpSlow:'Snelheid: langzamer',ttsSpNorm:'Snelheid: normaal',ttsSpFast:'Snelheid: sneller',pmTtl:'Controleer je voortgang',pmUpLbl:'Maak een foto van je voortgang',pmGo:'Analyseer mijn voortgang',pmCancel:'Annuleren',checkProgress:'Voortgang controleren',readStep:'Voorlezen',dockBack:'Terug',dockNext:'Volgende',dockDone:'Klaar',stepPhotoHint:'Dubbeltik op deze kaart voor fotocontrole',eggNavHint:'Tik ei — volgende · Vasthouden — terug',edgeA:'Camera eerst',edgeB:'Stap-foto controle',edgeC:'Heel het huis — niet alleen gadgets',ubLbl:'Eerst checken',qcTtl:'Voordat je start',walkLookLbl:'Wat je zou moeten zien',pmStepMismatch:'Nog geen match met deze stap',glassBadge1:'CONTEXT',glassBadge2:'MATERIAAL',glassBadge3:'X-RAY',scanPhase1Ttl:'Scan 1 — Omgeving',scanPhase1Txt:'Het hele object + stukje ruimte: vloer/muur, snoer, leiding, en waar het op aansluit.',scanPhase2Ttl:'Scan 2 — Materiaal & typenummer',scanPhase2Txt:'Dichterbij: merk/modelsticker, koppelstukken (knel/koper/PVC), slangkleur, schroefkoppen, plaatjes — alles wat onderdelen identificeert.',scanPhase3Ttl:'Scan 3 — X-ray op de fout',scanPhase3Txt:'Zeer dichtbij het probleem: lekbron vs spat, scheur vs kras, slijtage, corrosie, losse verbinding — kalk/vuil versus echte breuk.',glassHint1:'Houd vast — context vastleggen…',glassHint2:'Herkader, tik dan op het ei',glassHint3:'Tik op het ei — X-ray scan',readoutMatLbl:'Materiaal & type',readoutXrayLbl:'X-ray uitlees',agTtl:'Voordat je begint',agSub:'Snel lezen — houdt je veilig.',agLimLbl:'AI Beperkingen',agLim:'chickenegg gebruikt AI-visie om objecten te identificeren. AI kan fouten maken. Gebruik altijd je eigen oordeel.',agNotLbl:'NIET gebruiken voor',agNot:'<li>Groepenkast of spanningsvoerende draden</li><li>Gasleiding installatie of reparatie</li><li>Constructief draagwerk</li><li>Werk waarvoor een vergunning vereist is</li>',agProLbl:'Hoe we je beschermen',agPro:"AI controleert je voortgangsfoto's bij elke stap. 3 gevaarswaarschuwingen vergrendelt de taak.",agResLbl:'Jouw verantwoordelijkheid',agRes:'Door chickenegg te gebruiken bevestig je dat je 18+ bent en volledige verantwoordelijkheid accepteert voor reparaties.',agAgreeLbl:'Ik heb dit gelezen en accepteer dat ik verantwoordelijk ben voor mijn eigen veiligheid en reparaties.',agBtn:'Ik ga akkoord — Laten we iets repareren 🔧',epTitle:'Dit is jouw moment',epBody:'Start gratis: <strong>3 reparaties/maand</strong>. Upgrade naar <strong>Pro €4,99/maand</strong> voor onbeperkte reparaties.',epPerksTtl:'Wat Pro ontgrendelt',epPerks:'✓ Onbeperkte reparaties &nbsp;✓ Prioriteit AI-checks &nbsp;✓ Geavanceerde veiligheids-triage',epSkip:'Nee bedankt, ik blijf voorlopig gratis',warnTxt:'gevaarswaarschuwing',camReady:'Klaar — tik op ei',camStarting:'Camera starten...',camFail:'Camera-fout — gebruik knop hieronder',camHttpBlocked:'Dit adres is niet beveiligd (http). Op je telefoon werkt live camera alleen via https. Tik “Kies foto” hieronder, of gebruik ngrok (https).',camUploadLbl:'📷 Kies foto',camNotReady:'Kies eerst een foto (knop hierboven), tik dan op het ei.',heroCtaScan:'Start Live Scan',heroCtaDemo:'Foto Uploaden',hazardCaution:'⚠️ Let op: ',hazardWarning:'⚠️ Waarschuwing: ',hazardDanger:'🚨 GEVAAR: ',ldMsgs:['Even kijken wat hier aan de hand is...','Schade herkennen...','Advies voorbereiden...','Jouw gids is bijna klaar...'],pmSafe:'Ziet er goed uit!',pmCaution:'Klein probleem opgemerkt',pmDanger:'Stop — herstel dit eerst',pmEmergency:'STOP ONMIDDELLIJK',noRepairTitle:'Geen reparatie nodig',noRepairP:'Er is hier niets kapots dat gerepareerd hoeft te worden. Goed nieuws! Klopt het niet? Probeer een scherpere foto.',noRepairCta:'↩ Opnieuw scannen',toolEmpty:'Geen gereedschap nodig voor dit.',ecH3:'Word Repair Pioneer',ecP:'Hoe was dit? E-mail voor updates — of tik Niet nu. Gereedschap en stappen staan hieronder.',ecSubBtn:'Aanmelden',ecSkip:'Niet nu',ecEmailPh:'jij@voorbeeld.nl',ecNotePh:'Iets om te verbeteren (optioneel)',foldMoreLbl:'Besparing, delen & extra tips — tik om te openen',badgesLbl:'Prestaties',langTip:'Tip: wissel hier tussen EN/NL.',langTipBtn:'Begrepen',hazardHeroDangerBadge:'Ernstig gevaar',hazardHeroEmergBadge:'Noodgeval',hazardHeroDangerTtl:'Hoog risico — stop en vraag hulp',hazardHeroEmergTtl:'Stop onmiddellijk. Dit is een noodgeval.',hazardHeroNoDetail:'ChickenEgg ziet een mogelijk gevaarlijke situatie. Ruik je gas, zie je vonken of vuur, of is er veel water? Gebruik de nummers hieronder — nu.',hazardHeroCallSub:'Nederland — tik om te bellen:',hazardHeroWarnBadge:'Waarschuwing',hazardHeroWarnTtl:'Let op: doe dit niet zonder bescherming',hazardHeroCautBadge:'Let op',hazardHeroCautTtl:'Wees voorzichtig met deze klus',hCall112:'112 — Noodnummer',hCallGas:'0800-9009 — Gaslucht / gaslek',hCallWater:'0900-9994 — Waterschade melden',pwProTtl:'ChickenEgg Pro',pwLeadEx:'Je gratis scans zijn op. Neem een maand- of jaarabonnement voor onbeperkte handleidingen.',pwMonthCta:'Pro per maand',pwYearCta:'Pro per jaar (beste waarde)',pwCloseLbl:'Sluiten',fmMonthShort:'Per maand',fmYearShort:'Per jaar',fmBestVal:'Beste waarde',fmNoteLeft:'Nog {n} gratis scan(s) — daarna onbeperkt met abonnement.',fmNoteGone:'Gratis scans op — kies maand- of jaarabonnement hieronder.',ceVerdictCtaShowHow:'Toon me hoe',ceVerdictCtaDetails:'Zie details',ceVerdictCtaConfirm:'Bevestig object',ceVerdictCtaUnlock:'Lees waarschuwing',ceVerdictCtaEmergency:'Noodnummers',ceVerdictCtaNoRepair:'Zie details',ceVerdictStopHead:'Stop — veiligheid eerst',ceVerdictNoRepairHead:'Geen reparatie nodig',gateConfirmTtl:'Klopt dit object?',gateConfirmMsg:'We zijn niet helemaal zeker dat we het goede onderdeel herkennen. Bevestig, of maak een scherpere foto voordat we alle stappen tonen.',gateConfirmOk:'Ja — toon stappen',gateRetakeLbl:'Betere foto maken',gateRetakeNote:'Als dit niet het kapotte deel is, helpt een snelle nieuwe foto voor een nauwkeurige gids.',retakePhotoBtn:'↩ Nieuwe foto',rentalHeadLandlord:'Dit hoort de verhuurder op te lossen',rentalHeadTenant:'Dit kun jij zelf oplossen',rentalHeadUnclear:'Niet zeker wie verantwoordelijk is',rentalCtaWa:'Stuur naar verhuurder',rentalCtaContract:'Lees je huurcontract',rentalFirstRunTip:'Nieuw: wij checken ook wie verantwoordelijk is',stepTransitionStart:'Start reparatiegids — stap 1 van {t}',stepTransitionChecklist:'Snelle startcheck, daarna stap 1 van {t}',rentalWaTplNl:'Hallo, ik heb een probleem in mijn woning geconstateerd: {issue}. Volgens mijn informatie is dit waarschijnlijk de verantwoordelijkheid van de verhuurder. Kunt u dit zo snel mogelijk oplossen? Geanalyseerd via ChickenEgg.',rentalContractUrlNl:'https://www.rijksoverheid.nl/onderwerpen/huurwoning/vraag-en-antwoord/wat-staat-er-in-een-huurcontract-'}
+  nl:{heroP:'Foto alles thuis — krijg exacte stap-voor-stap instructies',scanLbl:'Scan',ldSub:'Elk detail lezen',toolsLbl:'Dit heb je nodig',stepsLbl:'Stap voor Stap',doneLbl:'gedaan',safetyLbl:'Veiligheid',proLbl:'Pro Tip',savLbl:'Besparing vs loodgieter',savSub:'waarom bellen als je het zelf kunt?',shaWa:'Deel via WhatsApp',shCopy:'Link kopiëren',costLbl:'Geschatte kosten:',readAll:'Alle stappen voorlezen',ttsStop:'Stoppen',ttsSpeed:'Snelheid: normaal',doneH:'Klaar! Goed gedaan.',doneP:'Je hebt het zelf gerepareerd. Die overwinning vergeet je niet.',lockedTtl:'Taak Vergrendeld',lockedP:'3 gevaarswaarschuwingen. Stop. Raak dit niet verder aan — bel een professional.',whenProLbl:'Wanneer een professional bellen:',rstLbl:'Nog iets kapot? Scan opnieuw →',adCta:'Benodigdheden →',shopLinkAria:'Zoek "{product}" op {store} (nieuw tabblad)',shopLblBol:'Bol.com →',shopLblGamma:'Gamma →',shopLblPraxis:'Praxis →',ldEta:'Meestal klaar in minder dan 10 seconden.',walkStepProgress:'Stap {n} van {t}',tryExampleBtn:'Bekijk een voorbeeld',scanModeSingle:'1 foto (snel)',scanModeMulti:'3 foto\'s (scherper)',trustStripTpl:'Veiligheid eerst: ChickenEgg weigerde {n}+ DIY-gidsen die te riskant leken om zelf te doen.',decisionSafetyLow:'Veiligheidssignaal: lager risico — blijf zelf nadenken.',decisionSafetyMedium:'Veiligheidssignaal: extra voorzichtig — stop bij twijfel of gevaar.',decisionSafetyHigh:'Veiligheidssignaal: hoog risico — overweeg een vakman of 112/hulplijn.',decisionTrustShort:'ChickenEgg gebruikt AI op je foto — geen vakdiagnose. Ruik je gas, zie je vonken of voelt het onveilig? Stop en bel hulp.',rentalHint:'Huurwoning? Doe alleen wat je huurcontract toestaat — vraag de verhuurder bij constructief, elektrisch of gaswerk.',ttsSpSlow:'Snelheid: langzamer',ttsSpNorm:'Snelheid: normaal',ttsSpFast:'Snelheid: sneller',pmTtl:'Controleer je voortgang',pmUpLbl:'Maak een foto van je voortgang',pmGo:'Analyseer mijn voortgang',pmCancel:'Annuleren',checkProgress:'Voortgang controleren',readStep:'Voorlezen',dockBack:'Terug',dockNext:'Volgende',dockDone:'Klaar',stepPhotoHint:'Dubbeltik op deze kaart voor fotocontrole',eggNavHint:'Tik ei — volgende · Vasthouden — terug',edgeA:'Camera eerst',edgeB:'Stap-foto controle',edgeC:'Heel het huis — niet alleen gadgets',ubLbl:'Eerst checken',qcTtl:'Voordat je start',walkLookLbl:'Wat je zou moeten zien',pmStepMismatch:'Nog geen match met deze stap',glassBadge1:'CONTEXT',glassBadge2:'MATERIAAL',glassBadge3:'X-RAY',scanPhase1Ttl:'Scan 1 — Omgeving',scanPhase1Txt:'Het hele object + stukje ruimte: vloer/muur, snoer, leiding, en waar het op aansluit.',scanPhase2Ttl:'Scan 2 — Materiaal & typenummer',scanPhase2Txt:'Dichterbij: merk/modelsticker, koppelstukken (knel/koper/PVC), slangkleur, schroefkoppen, plaatjes — alles wat onderdelen identificeert.',scanPhase3Ttl:'Scan 3 — X-ray op de fout',scanPhase3Txt:'Zeer dichtbij het probleem: lekbron vs spat, scheur vs kras, slijtage, corrosie, losse verbinding — kalk/vuil versus echte breuk.',glassHint1:'Houd vast — context vastleggen…',glassHint2:'Herkader, tik dan op het ei',glassHint3:'Tik op het ei — X-ray scan',readoutMatLbl:'Materiaal & type',readoutXrayLbl:'X-ray uitlees',agTtl:'Voordat je begint',agSub:'Snel lezen — houdt je veilig.',agLimLbl:'AI Beperkingen',agLim:'chickenegg gebruikt AI-visie om objecten te identificeren. AI kan fouten maken. Gebruik altijd je eigen oordeel.',agNotLbl:'NIET gebruiken voor',agNot:'<li>Groepenkast of spanningsvoerende draden</li><li>Gasleiding installatie of reparatie</li><li>Constructief draagwerk</li><li>Werk waarvoor een vergunning vereist is</li>',agProLbl:'Hoe we je beschermen',agPro:"AI controleert je voortgangsfoto's bij elke stap. 3 gevaarswaarschuwingen vergrendelt de taak.",agResLbl:'Jouw verantwoordelijkheid',agRes:'Door chickenegg te gebruiken bevestig je dat je 18+ bent en volledige verantwoordelijkheid accepteert voor reparaties.',agAgreeLbl:'Ik heb dit gelezen en accepteer dat ik verantwoordelijk ben voor mijn eigen veiligheid en reparaties.',agBtn:'Ik ga akkoord — Laten we iets repareren 🔧',epTitle:'Dit is jouw moment',epBody:'Start gratis: <strong>3 reparaties/maand</strong>. Upgrade naar <strong>Pro €4,99/maand</strong> voor onbeperkte reparaties.',epPerksTtl:'Wat Pro ontgrendelt',epPerks:'✓ Onbeperkte reparaties &nbsp;✓ Prioriteit AI-checks &nbsp;✓ Geavanceerde veiligheids-triage',epSkip:'Nee bedankt, ik blijf voorlopig gratis',warnTxt:'gevaarswaarschuwing',camReady:'Klaar — tik op ei',camStarting:'Camera starten...',camFail:'Camera-fout — gebruik knop hieronder',camHttpBlocked:'Dit adres is niet beveiligd (http). Op je telefoon werkt live camera alleen via https. Tik “Kies foto” hieronder, of gebruik ngrok (https).',camUploadLbl:'📷 Kies foto',camNotReady:'Kies eerst een foto (knop hierboven), tik dan op het ei.',heroCtaScan:'Start Live Scan',heroCtaDemo:'Foto Uploaden',hazardCaution:'⚠️ Let op: ',hazardWarning:'⚠️ Waarschuwing: ',hazardDanger:'🚨 GEVAAR: ',ldMsgs:['Even kijken wat hier aan de hand is...','Schade herkennen...','Advies voorbereiden...','Jouw gids is bijna klaar...'],pmSafe:'Ziet er goed uit!',pmCaution:'Klein probleem opgemerkt',pmDanger:'Stop — herstel dit eerst',pmEmergency:'STOP ONMIDDELLIJK',noRepairTitle:'Geen reparatie nodig',noRepairP:'Er is hier niets kapots dat gerepareerd hoeft te worden. Goed nieuws!',noRepairCta:'↩ Opnieuw scannen',toolEmpty:'Geen gereedschap nodig voor dit.',ecH3:'Word Repair Pioneer',ecP:'Hoe was dit? E-mail voor updates — of tik Niet nu. Gereedschap en stappen staan hieronder.',ecSubBtn:'Aanmelden',ecSkip:'Niet nu',ecEmailPh:'jij@voorbeeld.nl',ecNotePh:'Iets om te verbeteren (optioneel)',foldMoreLbl:'Besparing, delen & extra tips — tik om te openen',badgesLbl:'Prestaties',langTip:'Tip: wissel hier tussen EN/NL.',langTipBtn:'Begrepen',hazardHeroDangerBadge:'Ernstig gevaar',hazardHeroEmergBadge:'Noodgeval',hazardHeroDangerTtl:'Hoog risico — stop en vraag hulp',hazardHeroEmergTtl:'Stop onmiddellijk. Dit is een noodgeval.',hazardHeroNoDetail:'ChickenEgg ziet een mogelijk gevaarlijke situatie. Ruik je gas, zie je vonken of vuur, of is er veel water? Gebruik de nummers hieronder — nu.',hazardHeroCallSub:'Nederland — tik om te bellen:',hazardHeroWarnBadge:'Waarschuwing',hazardHeroWarnTtl:'Let op: doe dit niet zonder bescherming',hazardHeroCautBadge:'Let op',hazardHeroCautTtl:'Wees voorzichtig met deze klus',hCall112:'112 — Noodnummer',hCallGas:'0800-9009 — Gaslucht / gaslek',hCallWater:'0900-9994 — Waterschade melden',pwProTtl:'ChickenEgg Pro',pwLeadEx:'Je gratis scans zijn op. Neem een maand- of jaarabonnement voor onbeperkte handleidingen.',pwMonthCta:'Pro per maand',pwYearCta:'Pro per jaar (beste waarde)',pwCloseLbl:'Sluiten',fmMonthShort:'Per maand',fmYearShort:'Per jaar',fmBestVal:'Beste waarde',fmNoteLeft:'Nog {n} gratis scan(s) — daarna onbeperkt met abonnement.',fmNoteGone:'Gratis scans op — kies maand- of jaarabonnement hieronder.',ceVerdictCtaShowHow:'Toon me hoe',ceVerdictCtaDetails:'Zie details',ceVerdictCtaConfirm:'Bevestig object',ceVerdictCtaUnlock:'Lees waarschuwing',ceVerdictCtaEmergency:'Noodnummers',ceVerdictCtaNoRepair:'Zie details',ceVerdictStopHead:'Stop — veiligheid eerst',ceVerdictNoRepairHead:'Geen reparatie nodig',gateConfirmTtl:'Klopt dit object?',gateConfirmMsg:'We zijn niet helemaal zeker dat we het goede onderdeel herkennen. Bevestig, of maak een scherpere foto voordat we alle stappen tonen.',gateConfirmOk:'Ja — toon stappen',gateRetakeLbl:'Betere foto maken',gateRetakeNote:'Als dit niet het kapotte deel is, helpt een snelle nieuwe foto voor een nauwkeurige gids.',retakePhotoBtn:'↩ Nieuwe foto',rentalHeadLandlord:'Dit hoort de verhuurder op te lossen',rentalHeadTenant:'Dit kun jij zelf oplossen',rentalHeadUnclear:'Niet zeker wie verantwoordelijk is',rentalCtaWa:'Stuur naar verhuurder',rentalCtaContract:'Lees je huurcontract',rentalFirstRunTip:'Nieuw: wij checken ook wie verantwoordelijk is',stepTransitionStart:'Start reparatiegids — stap 1 van {t}',stepTransitionChecklist:'Snelle startcheck, daarna stap 1 van {t}',rentalWaTplNl:'Hallo, ik heb een probleem in mijn woning geconstateerd: {issue}. Volgens mijn informatie is dit waarschijnlijk de verantwoordelijkheid van de verhuurder. Kunt u dit zo snel mogelijk oplossen? Geanalyseerd via ChickenEgg.',rentalContractUrlNl:'https://www.rijksoverheid.nl/onderwerpen/huurwoning/vraag-en-antwoord/wat-staat-er-in-een-huurcontract-'}
 };
 Object.assign(T.en,{
   analysis_complete:"Here's what we found",
@@ -4714,6 +4815,108 @@ Object.assign(T.nl,{
   welcomeL2:'Gebruik Volgende / Terug op de stappenkaart; open Fotocontrole om je werk te verifiëren.',
   welcomeL3:'Jij blijft verantwoordelijk voor je eigen veiligheid — stop en bel een professional zodra iets niet klopt.',
   welcomeSkip:'Intro overslaan'
+});
+Object.assign(T.en,{
+  agHowTtl:'How ChickenEgg works — and what it doesn\'t do',
+  agHowHtml:'<p>ChickenEgg uses AI to analyze photos and provide <strong>orienting guidance</strong>. That helps with many home jobs — but it is <strong>not a substitute for a professional</strong> or an on-site inspection.</p><p>We do not give permission for a job — <strong>you decide</strong>. If in doubt, stop and call someone.</p><p><strong>Never DIY via ChickenEgg:</strong></p><ul><li>Main electrical panel or live conductors</li><li>Gas line installation or repair</li><li>Load-bearing structural work</li><li>Anything that requires a permit or certified installer</li></ul><p>Your photo is used for this analysis and is not kept afterwards.<br>No ad profiling. No sharing of data with third parties.</p>',
+  safetyCompact:'ChickenEgg gives orienting advice — not a professional inspection. Stop if something feels wrong.',
+  scanGuideTtl:'Getting a good scan',
+  scanGuideHtml:'<h3>Distance</h3><p>Hold your phone 20–40 cm from the object. Closer = more detail; too close goes blurry.</p><h3>Light</h3><p>Daylight or a bright lamp works best. Avoid backlight (window behind the object). In doubt, turn on your phone torch.</p><h3>What to have in frame</h3><p>The broken part itself, plus a bit of surroundings. Leaking tap? Show the connection too. Mystery part? Show context (wall, floor, appliance).</p><h3>Multiple angles</h3><p>Use 3-photo mode for complex objects: first the whole, then closer on the problem, then serial number or brand if visible.</p><h3>Dirt vs damage</h3><p>Clean the object first if you are unsure whether it is dirt or damage — the analysis will be more accurate.</p><h3>What doesn’t work well</h3><ul><li>Photos of a screen or manual</li><li>Very dark rooms without extra light</li><li>Moving water or steam — wait until it is calm</li></ul>',
+  coachSkip:'Skip intro →',
+  coachBtn:'Got it',
+  coach1:'Point your camera at something broken, unknown, or doubtful. No account needed. Your photo is used only for this analysis.',
+  coach2:'Tap here when the image is sharp and well lit. Multiple photos? Use 3-photo mode for more confidence.',
+  coach3:'This is your diagnosis. Scroll for steps, safety info, and who is responsible. Renting? We also check if this concerns the landlord.',
+  rentalExplainerFirstHtml:'<p><strong>Renter or owner?</strong></p><p>ChickenEgg tries to estimate who is responsible for this repair. That is orientation, not a legal judgment.</p><p>For “landlord”: we help you write a factual message. For “tenant”: you get the step plan. If unclear, we explain what to check in your rental contract.</p><p>More: <a href="https://www.government.nl/topics/housing/rented-housing" target="_blank" rel="noopener">government.nl (housing)</a></p>',
+  rentalFirstRunTip:'New: tap for renter vs landlord info',
+  agFaqBtn:'Frequently asked questions',
+  faqTtl:'FAQ',
+  faqBodyHtml:'<dl><dt>Is my photo safe?</dt><dd>Your photo is used only for the analysis and deleted immediately after. We do not store images, sell data, or use photos for advertising. Read our <a href="/privacy">privacy statement</a> for details.</dd><dt>Why does the app say I should call a professional?</dt><dd>Some jobs are too risky to DIY — not because we don’t trust you, but because mistakes with gas, electrics or structural work can have serious consequences. The app always explains why, and what your next step can be.</dd><dt>My photo isn’t recognized. What now?</dt><dd>Try: more light, a bit more distance, another angle, or 3-photo mode. If it still fails, you can type a description — we will try without a photo.</dd><dt>I rent. How does the app know if it’s the landlord?</dt><dd>The app uses what it sees in the image and general rental rules in your region. This is orientation, not legal advice. In doubt: check your rental contract or contact a free legal help line.</dd><dt>How many scans are free?</dt><dd>You get <strong>5</strong> free analyses per month. After that you can take a monthly or yearly plan, or buy a scan pass. We warn you before you hit the limit — no surprises.</dd><dt>Does the app work offline?</dt><dd>The analysis needs internet (AI runs on our servers). The steps and safety info you already received stay available for a while without a connection.</dd><dt>Can I use the app for gas or electrical problems?</dt><dd>For orientation: yes. For carrying out work: no — except very simple actions the app explicitly allows. We block step plans where a certified installer is required.</dd><dt>The app says “landlord responsibility” but my landlord won’t act. What now?</dt><dd>We can help you draft a factual notice. For escalation there are formal routes: tenancy boards, local authorities for hazards, and free legal advice — depending on your case.</dd></dl>',
+  scanSoftHintTxt:'Two unclear scans in a row — a sharper photo usually fixes it.',
+  scanSoftHintBtn:'Open scan tips',
+  pwTtlLimit:'Your 5 free analyses are used up',
+  pwLeadLimit:'Continue with a subscription or a one-time scan pass. No hidden fees — you see the price before you pay.',
+  pwBrowseOpt:'View options',
+  pwNotNow:'Not now (back to home)',
+  pwProTtl:'ChickenEgg Pro',
+  pwLeadEx:'You reached your free scans. Unlimited repairs for less than one plumber bill.',
+  pwMonthCta:'Pro monthly — €8.99',
+  pwYearCta:'Pro yearly — €59 (best value)',
+  epBody:'Start free: <strong>3 repairs/month</strong>. Continue with <strong>Pro €4.99/month</strong> for unlimited repair sessions.',
+  pwCloseLbl:'Not now (back to home)',
+  fmNoteLeft:'{n} free scan(s) left — then continue with a subscription.',
+  fmNoteGone:'No free scans left — pick monthly or yearly to continue.',
+  agLim:'In short: AI can be wrong. Always use your own judgment before you act.',
+  privacyFootHtml:'🔒 No ad profiling. Your photo is used for this analysis — see <a href="/privacy">privacy policy</a>.',
+  camErrIntro:'ChickenEgg needs the camera to analyze something.',
+  camErrWhy:'Why we ask: we only use the camera when you actively scan. The app has no access in the background.',
+  camPermOpenSettings:'Open phone settings',
+  camPermPickGallery:'Choose photo from gallery',
+  unclearProceed:'Continue with this result anyway',
+  lowConfBanner:'Lower confidence — this result may be less reliable. Consider a sharper photo when you can.',
+  gateCtaLowConf:'Continue anyway',
+  surveyTtl:'Quick check',
+  surveyQ:'Did the app help you make a good decision?',
+  surveyO1:'Yes — I knew what to do',
+  surveyO2:'Partly — I still had doubts',
+  surveyO3:'No — it wasn’t clear enough',
+  surveyNoteLbl:'(optional) One thing that could be better:',
+  surveySubmit:'Send',
+  surveySkip:'Skip',
+  decisionConfHigh:'Solid diagnosis',
+  decisionConfMed:'Reasonably sure — double-check',
+  decisionConfLow:'Uncertain — a better photo helps'
+});
+Object.assign(T.nl,{
+  agHowTtl:'Hoe ChickenEgg werkt — en wat het niet doet',
+  agHowHtml:'<p>ChickenEgg gebruikt AI om foto\'s te analyseren en <strong>oriënterend advies</strong> te geven. Dat is handig voor veel klussen thuis. Maar het is <strong>geen vervanging voor een vakman</strong> en zeker niet voor een inspectie ter plekke.</p><p>Wij geven geen toestemming voor een klus — <strong>jij beslist zelf</strong>. Bij twijfel: stop en bel iemand.</p><p><strong>Nooit zelf doen via ChickenEgg:</strong></p><ul><li>Werkzaamheden aan de groepenkast of spanningsvoerende leidingen</li><li>Gasleiding installatie of reparatie</li><li>Constructief draagwerk (muren, balken, funderingen)</li><li>Alles waarvoor een vergunning of erkend installateur verplicht is</li></ul><p>Je foto wordt gebruikt voor de analyse en daarna niet opgeslagen.<br>Geen advertentieprofilering. Geen datadeling met derden.</p>',
+  safetyCompact:'ChickenEgg geeft oriënterend advies — geen vakkeuring. Stop als iets niet klopt.',
+  scanGuideTtl:'Zo maak je een goede scan',
+  scanGuideHtml:'<h3>Afstand</h3><p>Houd je telefoon 20–40 cm van het object. Dichterbij = meer detail; te dichtbij = onscherp.</p><h3>Licht</h3><p>Daglicht of een felle lamp werkt het best. Vermijd tegenlicht (raam achter het object). Bij twijfel: zet je telefoonlamp aan.</p><h3>Wat moet er in beeld?</h3><p>Het kapotte deel zelf, plus een stukje omgeving. Een lekkende kraan? Toon ook de aansluiting. Een mysterieus onderdeel? Toon ook de context (muur, vloer, apparaat).</p><h3>Meerdere hoeken</h3><p>Gebruik de 3-foto modus als het om een complex object gaat: eerst het geheel, dan dichterbij het probleem, dan het serienummer of merk als dat zichtbaar is.</p><h3>Vuil vs schade</h3><p>Maak het object eerst schoon als je twijfelt of iets vuil of beschadigd is. De analyse wordt er nauwkeuriger van.</p><h3>Wat werkt niet?</h3><ul><li>Foto\'s van een foto (van een instructieboekje fotograferen werkt matig)</li><li>Hele donkere ruimtes zonder extra licht</li><li>Bewegend water of stoom — wacht tot het rustig is</li></ul>',
+  coachSkip:'Sla intro over →',
+  coachBtn:'Begrepen',
+  coach1:'Richt je camera op iets kapots, onbekends of twijfelachtigs. Geen account nodig. Je foto wordt alleen voor deze analyse gebruikt.',
+  coach2:'Tik hier als het beeld scherp en goed belicht is. Meerdere foto\'s? Gebruik de 3-foto modus voor meer zekerheid.',
+  coach3:'Dit is je diagnose. Scroll voor stappen, veiligheidsinfo en wie verantwoordelijk is. Huurder? Wij checken ook of dit de verhuurder aangaat.',
+  rentalExplainerFirstHtml:'<p><strong>Huurder of eigenaar?</strong></p><p>ChickenEgg probeert in te schatten wie verantwoordelijk is voor deze reparatie. Dat is een oriëntatie, geen juridisch oordeel.</p><p>Bij “verhuurder”: wij helpen je een feitelijke melding te maken. Bij “huurder”: je krijgt gewoon het stappenplan. Bij “onduidelijk”: we leggen uit wat je kunt checken in je huurcontract.</p><p>Meer weten? <a href="https://www.huurrechten.nl" target="_blank" rel="noopener">Huurrechten.nl</a> · <a href="https://www.rijksoverheid.nl/onderwerpen/huurwoning" target="_blank" rel="noopener">Rijksoverheid huurwoning</a></p>',
+  rentalFirstRunTip:'Nieuw: tik voor uitleg huurder vs verhuurder',
+  agFaqBtn:'Veelgestelde vragen',
+  faqTtl:'Veelgestelde vragen',
+  faqBodyHtml:'<dl><dt>Is mijn foto veilig?</dt><dd>Je foto wordt alleen gebruikt voor de analyse en direct daarna verwijderd van onze servers. We slaan geen beelden op, verkopen geen data en gebruiken foto\'s niet voor advertenties. Lees onze <a href="/privacy">privacyverklaring</a> voor details.</dd><dt>Waarom geeft de app aan dat ik een vakman moet bellen?</dt><dd>Sommige klussen zijn te risicovol om zelf te doen — niet omdat wij je niet vertrouwen, maar omdat fouten bij gas, elektra of constructiewerk ernstige gevolgen kunnen hebben. De app legt altijd uit waaróm, en wat je volgende stap kan zijn.</dd><dt>Mijn foto wordt niet herkend. Wat nu?</dt><dd>Probeer: meer licht, iets meer afstand, een andere hoek, of gebruik de 3-foto modus. Als het nog steeds niet lukt, kun je een omschrijving typen — dan proberen we het zonder foto.</dd><dt>Ik huur. Hoe weet de app of het de verhuurder is?</dt><dd>De app baseert zich op wat er in beeld is en algemene Nederlandse huurregels (Burgerlijk Wetboek, Besluit kleine herstellingen). Dit is een oriëntatie, geen juridisch advies. Bij twijfel: check je huurcontract of neem contact op met het Juridisch Loket.</dd><dt>Hoeveel scans zijn gratis?</dt><dd>Je krijgt <strong>5</strong> gratis analyses per maand. Daarna kun je een maand- of jaarabonnement nemen, of een losse scanpas kopen. We laten je ruim van tevoren weten wanneer je limiet bijna bereikt is — geen verrassingen.</dd><dt>Werkt de app ook zonder internet?</dt><dd>De analyse zelf vereist een internetverbinding (de AI draait op onze servers). De stappenlijst en veiligheidsinfo die je al hebt ontvangen, zijn tijdelijk beschikbaar zonder verbinding.</dd><dt>Kan ik de app gebruiken voor gas- of elektriciteitsproblemen?</dt><dd>Voor oriëntatie: ja. Voor uitvoering: nee, tenzij het gaat om zeer eenvoudige handelingen die de app expliciet toelaat. De app blokkeert stappenplannen voor werk waarbij een erkend installateur verplicht is.</dd><dt>De app zegt "verhuurder verantwoordelijk" maar mijn verhuurder werkt niet mee. Wat nu?</dt><dd>De app kan je helpen een feitelijke melding op te stellen. Voor escalatie zijn er formele routes: Huurcommissie (servicekosten/gebreken), gemeente (leefbaarheid/noodgevallen), Juridisch Loket (gratis juridisch advies).</dd></dl>',
+  scanSoftHintTxt:'Twee onduidelijke scans op rij — meestal helpt een scherpere foto.',
+  scanSoftHintBtn:'Tips voor een goede scan',
+  pwTtlLimit:'Je 5 gratis analyses zijn op',
+  pwLeadLimit:'Je kunt doorgaan met een abonnement of een losse scanpas. Geen verborgen kosten — je ziet de prijs voordat je betaalt.',
+  pwBrowseOpt:'Bekijk opties',
+  pwNotNow:'Niet nu (terug naar home)',
+  pwProTtl:'ChickenEgg Pro',
+  pwLeadEx:'Je gratis scans zijn op. Onbeperkt klussen voor minder dan één loodgietersrekening.',
+  pwMonthCta:'Pro per maand — €8,99',
+  pwYearCta:'Pro per jaar — €59 (beste waarde)',
+  epBody:'Start gratis: <strong>3 reparaties/maand</strong>. Doorgaan met <strong>Pro €4,99/maand</strong> voor onbeperkte reparaties.',
+  pwCloseLbl:'Niet nu (terug naar home)',
+  fmNoteLeft:'Nog {n} gratis scan(s) — daarna doorgaan met abonnement.',
+  fmNoteGone:'Geen gratis scans meer — kies maand of jaar om door te gaan.',
+  agLim:'Kort: AI kan fouten maken. Gebruik altijd je eigen oordeel voordat je iets doet.',
+  privacyFootHtml:'🔒 Geen advertentieprofilering. Je foto wordt gebruikt voor deze analyse — zie <a href="/privacy">privacyverklaring</a>.',
+  camErrIntro:'ChickenEgg heeft de camera nodig om iets te analyseren.',
+  camErrWhy:'Waarom vragen we dit? We gebruiken de camera alleen als jij actief scant. De app heeft geen toegang als die op de achtergrond staat.',
+  camPermOpenSettings:'Open telefooninstellingen',
+  camPermPickGallery:'Kies foto uit galerij',
+  unclearProceed:'Toch doorgaan met dit resultaat',
+  lowConfBanner:'Lagere zekerheid — dit antwoord kan minder betrouwbaar zijn. Maak desnoods later een scherpere foto.',
+  gateCtaLowConf:'Toch doorgaan',
+  surveyTtl:'Korte vraag',
+  surveyQ:'Heeft de app je geholpen om een goede beslissing te maken?',
+  surveyO1:'Ja, ik wist wat ik moest doen',
+  surveyO2:'Deels — ik had nog twijfels',
+  surveyO3:'Nee, het was niet duidelijk genoeg',
+  surveyNoteLbl:'(optioneel) Eén ding dat beter kan:',
+  surveySubmit:'Verstuur',
+  surveySkip:'Sla over',
+  decisionConfHigh:'Zekere diagnose',
+  decisionConfMed:'Redelijk zeker — controleer zelf',
+  decisionConfLow:'Onzeker — betere foto helpt'
 });
 /* CE_UX_HANDOFF removed — dev-only documentation object, never read at runtime */
 
@@ -4764,7 +4967,7 @@ function setLang(l){
   if(ecNoteInp)ecNoteInp.placeholder=t.ecNotePh||'';
   var doneT=document.getElementById('done-screen-ttl'),doneS=document.getElementById('done-screen-sub'),doneB=document.getElementById('done-go-btn');
   if(doneT)doneT.textContent=t.doneH||'';
-  if(doneS)doneS.textContent=(l==='nl'?'Klaar. Laat je e-mail en feedback achter voor early access en upgrades.':'Task complete. Drop your email and feedback for early access and upgrades.');
+  if(doneS)doneS.textContent=(l==='nl'?'Klaar. Laat je e-mail en feedback achter voor early access en meer scans.':'Task complete. Drop your email and feedback for early access and more scans.');
   if(doneB)doneB.textContent=(l==='nl'?'Ga naar early access':'Go to early access');
   var fbBtn=document.getElementById('ec-feedback-send');
   if(fbBtn)fbBtn.textContent=(l==='nl'?'Feedback sturen':'Send feedback');
@@ -4776,6 +4979,22 @@ function setLang(l){
       else el.innerHTML=t[innerHTML_ids[id]]||'';
     }
   });
+  var agHowTtl=document.getElementById('ag-how-ttl');
+  var agHowBody=document.getElementById('ag-how-body');
+  if(agHowTtl)agHowTtl.textContent=t.agHowTtl||'';
+  if(agHowBody)agHowBody.innerHTML=t.agHowHtml||'';
+  var agFaq=document.getElementById('ag-faq-btn');
+  if(agFaq)agFaq.textContent=t.agFaqBtn||'FAQ';
+  ceSyncScanGuideCopy();
+  ceSyncCoachCopy();
+  ceSyncFaqSheet();
+  ceSyncRepairSurveyCopy();
+  ceSyncScanSoftHintCopy();
+  var privN=document.getElementById('ce-privacy-short');
+  if(privN){
+    if(t.privacyFootHtml)privN.innerHTML=t.privacyFootHtml;
+    else if(t.privacyFoot)privN.textContent=t.privacyFoot;
+  }
   var rb=document.getElementById('results-back-btn');
   if(rb)rb.textContent=(l==='nl'?'← Terug':'← Camera');
   var ru=CE_RESULT_UI[l]||CE_RESULT_UI.en;
@@ -4798,16 +5017,7 @@ function setLang(l){
   if(rgx)rgx.textContent=t.readoutXrayLbl||'';
   var hs=document.getElementById('hazard-step-unlock');
   if(hs)hs.textContent=(l==='nl')?'Toon stappen toch':'Show steps anyway';
-  var cgt=document.getElementById('confidence-gate-ttl');
-  if(cgt)cgt.textContent=t.gateConfirmTtl||'';
-  var cgm=document.getElementById('confidence-gate-msg');
-  if(cgm)cgm.textContent=t.gateConfirmMsg||'';
-  var cgo=document.getElementById('confidence-gate-confirm');
-  if(cgo)cgo.textContent=t.gateConfirmOk||'';
-  var cgr=document.getElementById('confidence-gate-retake');
-  if(cgr)cgr.textContent=t.gateRetakeLbl||'';
-  var cgn=document.getElementById('confidence-gate-note');
-  if(cgn)cgn.textContent=t.gateRetakeNote||'';
+  ceSyncConfidenceGateCopy(t);
   var whyLbl=document.getElementById('ce-why-label');
   if(whyLbl)whyLbl.textContent=t.why_toggle||'';
   var cmpT=document.getElementById('ce-completion-title');
@@ -4851,7 +5061,6 @@ function setLang(l){
   if(typeof updateWalkCardUI==='function')try{updateWalkCardUI()}catch(e){}
   if(typeof camReady!=='undefined'&&camReady&&typeof schedulePerception==='function') schedulePerception();
   if(typeof applyPaywallModalCopy==='function')applyPaywallModalCopy();
-  if(typeof applyPaywallModalCopy==='function')applyPaywallModalCopy();
   syncAgLangRow();
   if(typeof ceSyncScanModeBtn==='function')ceSyncScanModeBtn();
   var hTry2=document.getElementById('hero-try-example');
@@ -4859,7 +5068,7 @@ function setLang(l){
   if(typeof ceLoadTrustStrip==='function')ceLoadTrustStrip();
   if(typeof ceRefreshRentalCardI18n==='function')ceRefreshRentalCardI18n();
   if(typeof ceRefreshWelcomeI18n==='function')ceRefreshWelcomeI18n();
-  ceSetChecklistCopy();
+  if(typeof ceUpdateRepairCounter==='function')ceUpdateRepairCounter();
   ceSyncStepEntryCopy();
   ceSyncResultsFlowTrack();
   if(typeof lastScanResult!=='undefined'&&lastScanResult&&ceLastDecisionOpts){
@@ -5027,6 +5236,408 @@ function trackEvent(name,meta){
   }catch(e){}
 }
 
+var CE_COACH_V2='ce_coach_v2';
+function ceCoachV2Get(){try{return localStorage.getItem(CE_COACH_V2)||'';}catch(e){return'';}}
+function ceCoachV2Set(v){try{localStorage.setItem(CE_COACH_V2,v);}catch(e){}}
+function ceSyncCoachCopy(){
+  var t=T[LANG]||T.en;
+  var sk=document.getElementById('ce-coach-skip');
+  var bn=document.getElementById('ce-coach-next');
+  if(sk)sk.textContent=t.coachSkip||'Skip';
+  if(bn)bn.textContent=t.coachBtn||'OK';
+}
+function ceCoachClose(){
+  var root=document.getElementById('ce-coach-root');
+  document.body.classList.remove('ce-coach-step2');
+  if(root){
+    root.classList.remove('show','ce-coach--hide-primary');
+    root.removeAttribute('data-ce-coach-step');
+    root.setAttribute('aria-hidden','true');
+  }
+  ceCoachDetachScrollDismiss();
+}
+function ceCoachOpen(step){
+  var t=T[LANG]||T.en;
+  var root=document.getElementById('ce-coach-root');
+  var ttl=document.getElementById('ce-coach-ttl');
+  var txt=document.getElementById('ce-coach-txt');
+  var skip=document.getElementById('ce-coach-skip');
+  var next=document.getElementById('ce-coach-next');
+  if(!root||!txt)return;
+  root.setAttribute('data-ce-coach-step',String(step));
+  var title=(step===1)?((LANG==='nl')?'Camera':'Camera'):(step===2)?((LANG==='nl')?'Scan':'Scan'):((LANG==='nl')?'Diagnose':'Diagnosis');
+  if(ttl)ttl.textContent=title;
+  txt.textContent=(step===1?t.coach1:step===2?t.coach2:t.coach3)||'';
+  if(skip)skip.classList.toggle('off',step!==1);
+  if(step===2||step===3)root.classList.add('ce-coach--hide-primary');
+  else root.classList.remove('ce-coach--hide-primary');
+  document.body.classList.toggle('ce-coach-step2',step===2);
+  root.classList.add('show');
+  root.setAttribute('aria-hidden','false');
+  ceSyncCoachCopy();
+  if(step===3)ceCoachAttachScrollDismiss();
+  try{trackEvent('coach_mark_shown',{step:step});}catch(e){}
+}
+function ceCoachFinish3(){
+  ceCoachV2Set('done');
+  ceCoachClose();
+  ceCoachDetachScrollDismiss();
+}
+function ceCoachDetachScrollDismiss(){
+  var shell=document.getElementById('ce-results-shell');
+  if(shell&&shell._ceCoachScrollFn){
+    shell.removeEventListener('scroll',shell._ceCoachScrollFn);
+    shell._ceCoachScrollFn=null;
+  }
+}
+function ceCoachAttachScrollDismiss(){
+  ceCoachDetachScrollDismiss();
+  var shell=document.getElementById('ce-results-shell');
+  if(!shell)return;
+  var fn=function(){ceCoachFinish3();};
+  shell._ceCoachScrollFn=fn;
+  shell.addEventListener('scroll',fn,{passive:true,once:true});
+}
+function ceMaybeCoachAfterCamera(){
+  var k=ceCoachV2Get();
+  if(k==='done'||k==='skip')return;
+  try{if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;}catch(e){}
+  if(!k)ceCoachOpen(1);
+}
+function ceMaybeCoachOnResult(){
+  if(ceCoachV2Get()!=='saw2')return;
+  try{if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){ceCoachV2Set('done');return;}}catch(e){}
+  setTimeout(function(){ceCoachOpen(3);},400);
+}
+function ceCoachConsumeStep2Tap(){
+  var root=document.getElementById('ce-coach-root');
+  if(!root||!root.classList.contains('show'))return;
+  var step=parseInt(root.getAttribute('data-ce-coach-step')||'0',10);
+  if(step!==2)return;
+  ceCoachV2Set('saw2');
+  ceCoachClose();
+}
+function ceBindCoachOnce(){
+  var root=document.getElementById('ce-coach-root');
+  if(!root||root.dataset.ceCoachBound==='1')return;
+  root.dataset.ceCoachBound='1';
+  var skip=document.getElementById('ce-coach-skip');
+  var next=document.getElementById('ce-coach-next');
+  var scrim=document.getElementById('ce-coach-scrim');
+  function skipAll(e){
+    if(e)e.stopPropagation();
+    ceCoachV2Set('skip');
+    ceCoachClose();
+    try{trackEvent('coach_sequence_skipped',{phase:'all'});}catch(e2){}
+  }
+  function advanceFrom1(e){
+    if(e)e.stopPropagation();
+    if(!ceCoachV2Get()){
+      ceCoachV2Set('saw1');
+      ceCoachClose();
+      setTimeout(function(){ceCoachOpen(2);},220);
+    }
+  }
+  if(skip)skip.addEventListener('click',skipAll);
+  if(scrim)scrim.addEventListener('click',function(e){
+    if(e.target!==scrim)return;
+    var step=parseInt((root.getAttribute('data-ce-coach-step')||'0'),10);
+    if(step===1){advanceFrom1(e);return;}
+    if(step===3){ceCoachFinish3();return;}
+  });
+  if(next)next.addEventListener('click',function(e){
+    var step=parseInt((root.getAttribute('data-ce-coach-step')||'0'),10);
+    if(step===3){ceCoachFinish3();return;}
+    if(step===1){advanceFrom1(e);return;}
+  });
+}
+function ceSyncScanGuideCopy(){
+  var t=T[LANG]||T.en;
+  var ttl=document.getElementById('ce-scan-guide-ttl');
+  var body=document.getElementById('ce-scan-guide-body');
+  var close=document.getElementById('ce-scan-guide-close');
+  if(ttl)ttl.textContent=t.scanGuideTtl||'';
+  if(body)body.innerHTML=t.scanGuideHtml||'';
+  if(close)close.textContent=t.coachBtn||'OK';
+}
+function ceOpenScanGuide(){
+  ceSyncScanGuideCopy();
+  var g=document.getElementById('ce-scan-guide');
+  if(g){g.classList.add('show');g.setAttribute('aria-hidden','false');}
+  try{trackEvent('scan_guide_opened',{});}catch(e){}
+}
+function ceCloseScanGuide(){
+  var g=document.getElementById('ce-scan-guide');
+  if(g){g.classList.remove('show');g.setAttribute('aria-hidden','true');}
+}
+function ceBindScanGuideOnce(){
+  var g=document.getElementById('ce-scan-guide');
+  if(!g||g.dataset.ceBound==='1')return;
+  g.dataset.ceBound='1';
+  document.getElementById('ce-scan-guide-close').addEventListener('click',ceCloseScanGuide);
+  document.getElementById('ce-scan-guide-scrim').addEventListener('click',function(e){if(e.target===e.currentTarget)ceCloseScanGuide();});
+}
+function ceProceedWithPendingWeakScan(){
+  var data=window.__cePendingAnalyzeData;
+  window.__cePendingAnalyzeData=null;
+  hideUxError();
+  if(!data||!data.result)return;
+  ceResetUnclearStreak();
+  data.result=Object.assign({},data.result,{user_proceeded_despite_low_confidence:true});
+  showHazard(data.result);
+  var hzLv=(data.result.hazard_level||'').toLowerCase();
+  if(hzLv==='danger'||hzLv==='emergency'){dangerSnd();hap([200,100,200])}
+  setTimeout(function(){
+    try{
+      if(typeof stillEl!=='undefined'&&stillEl&&videoEl&&camReady&&camStream&&videoEl.style.display!=='none'&&videoEl.readyState>=2){
+        var fcv=document.createElement('canvas');
+        fcv.width=videoEl.videoWidth||1280;
+        fcv.height=videoEl.videoHeight||720;
+        fcv.getContext('2d').drawImage(videoEl,0,0,fcv.width,fcv.height);
+        stillEl.src=fcv.toDataURL('image/jpeg',0.88);
+        stillEl.style.display='block';
+        videoEl.style.display='none';
+      }
+    }catch(_){}
+    UX.resultRendered=false;
+    var resEl=document.getElementById('results');
+    if(resEl)resEl.style.display='';
+    renderResults(data.result);
+    triggerPaywallFlow(ceServerScanState);
+    requestAnimationFrame(function(){hap(10)});
+    if(resEl)resEl.querySelectorAll('.hazard-hero.show,#results-summary,#tip-safety,#r-confidence,.meta-row,.ec,.warn-ctr,.card,#tools-card,#steps-card,.ad-banner,.fold-more,.rst-btn,.tts-bar,.tip.pro').forEach(function(el,i){el.classList.remove('si');void el.offsetWidth;el.style.animationDelay=(i*16)+'ms';el.classList.add('si')});
+  },120);
+}
+function ceSyncFaqSheet(){
+  var t=T[LANG]||T.en;
+  var ttl=document.getElementById('ce-faq-ttl');
+  var body=document.getElementById('ce-faq-body');
+  var close=document.getElementById('ce-faq-close');
+  if(ttl)ttl.textContent=t.faqTtl||'FAQ';
+  if(body)body.innerHTML=t.faqBodyHtml||'';
+  if(close)close.textContent=t.coachBtn||'OK';
+}
+function ceOpenFaqSheet(){
+  ceSyncFaqSheet();
+  var g=document.getElementById('ce-faq-sheet');
+  if(g){g.classList.add('show');g.setAttribute('aria-hidden','false');}
+}
+function ceCloseFaqSheet(){
+  var g=document.getElementById('ce-faq-sheet');
+  if(g){g.classList.remove('show');g.setAttribute('aria-hidden','true');}
+}
+function ceBindFaqOnce(){
+  var g=document.getElementById('ce-faq-sheet');
+  if(!g||g.dataset.ceBound==='1')return;
+  g.dataset.ceBound='1';
+  document.getElementById('ce-faq-close').addEventListener('click',ceCloseFaqSheet);
+  document.getElementById('ce-faq-scrim').addEventListener('click',function(e){if(e.target===e.currentTarget)ceCloseFaqSheet();});
+  var btn=document.getElementById('ag-faq-btn');
+  if(btn&&!btn.dataset.ceFaqBound){btn.dataset.ceFaqBound='1';btn.addEventListener('click',ceOpenFaqSheet);}
+}
+function ceSyncRepairSurveyCopy(){
+  var t=T[LANG]||T.en;
+  var ttl=document.getElementById('ce-survey-ttl');
+  var q=document.getElementById('ce-survey-q');
+  var nl=document.getElementById('ce-survey-note-lbl');
+  var sub=document.getElementById('ce-survey-submit');
+  var sk=document.getElementById('ce-survey-skip');
+  if(ttl)ttl.textContent=t.surveyTtl||'';
+  if(q)q.textContent=t.surveyQ||'';
+  if(nl)nl.textContent=t.surveyNoteLbl||'';
+  if(sub)sub.textContent=t.surveySubmit||'';
+  if(sk)sk.textContent=t.surveySkip||'';
+  var wrap=document.getElementById('ce-survey-opts');
+  if(wrap){
+    wrap.innerHTML='';
+    [t.surveyO1,t.surveyO2,t.surveyO3].forEach(function(txt,ix){
+      var id='ce-survey-o'+(ix+1);
+      var lab=document.createElement('label');
+      lab.innerHTML='<input type="radio" name="ce_survey_choice" value="'+(ix+1)+'" id="'+id+'"/> <span></span>';
+      lab.querySelector('span').textContent=txt||'';
+      wrap.appendChild(lab);
+    });
+  }
+  var ta=document.getElementById('ce-survey-note');
+  if(ta)ta.value='';
+}
+function ceCloseRepairSurveyPersist(){
+  var g=document.getElementById('ce-repair-survey');
+  if(g){g.classList.remove('show');g.setAttribute('aria-hidden','true');}
+  var cb=window.__ceRepairSurveyDoneCb;
+  window.__ceRepairSurveyDoneCb=null;
+  if(cb)cb();
+}
+function ceOpenRepairSurvey(doneCb){
+  window.__ceRepairSurveyDoneCb=doneCb;
+  ceSyncRepairSurveyCopy();
+  var g=document.getElementById('ce-repair-survey');
+  if(g){g.classList.add('show');g.setAttribute('aria-hidden','false');}
+}
+function ceSubmitRepairSurvey(){
+  var picked=(document.querySelector('input[name="ce_survey_choice"]:checked')||{}).value||'';
+  var noteEl=document.getElementById('ce-survey-note');
+  var note=noteEl?String(noteEl.value||'').slice(0,120):'';
+  try{
+    localStorage.setItem('ce_repair_survey_v1','done');
+    trackEvent('repair_survey_submitted',{choice:String(picked).slice(0,4),note_len:String(note).length});
+    trackEvent('feedback_submitted',{survey:'repair_v1',choice:picked});
+  }catch(e){}
+  ceCloseRepairSurveyPersist();
+}
+function ceSkipRepairSurvey(){
+  try{localStorage.setItem('ce_repair_survey_v1','skipped');}catch(e){}
+  ceCloseRepairSurveyPersist();
+}
+function ceBindRepairSurveyOnce(){
+  var g=document.getElementById('ce-repair-survey');
+  if(!g||g.dataset.ceBound==='1')return;
+  g.dataset.ceBound='1';
+  document.getElementById('ce-survey-scrim').addEventListener('click',function(e){if(e.target===e.currentTarget)ceSkipRepairSurvey();});
+  document.getElementById('ce-survey-submit').addEventListener('click',ceSubmitRepairSurvey);
+  document.getElementById('ce-survey-skip').addEventListener('click',ceSkipRepairSurvey);
+}
+var CE_UNCLEAR_STREAK='ce_unclear_streak';
+function ceBumpUnclearStreak(){
+  try{
+    var n=parseInt(localStorage.getItem(CE_UNCLEAR_STREAK)||'0',10)||0;
+    localStorage.setItem(CE_UNCLEAR_STREAK,String(n+1));
+    if(n+1>=2)try{trackEvent('scan_guide_soft_prompt_shown',{count:n+1});}catch(e){}
+  }catch(e){}
+  ceRefreshScanSoftHint();
+}
+function ceResetUnclearStreak(){
+  try{localStorage.removeItem(CE_UNCLEAR_STREAK);}catch(e){}
+  ceRefreshScanSoftHint();
+}
+function ceSyncScanSoftHintCopy(){
+  var t=T[LANG]||T.en;
+  var tx=document.getElementById('ce-scan-soft-hint-txt');
+  var bt=document.getElementById('ce-scan-soft-hint-btn');
+  if(tx)tx.textContent=t.scanSoftHintTxt||'';
+  if(bt)bt.textContent=t.scanSoftHintBtn||'';
+}
+function ceRefreshScanSoftHint(){
+  var el=document.getElementById('ce-scan-soft-hint');
+  if(!el)return;
+  var n=0;
+  try{n=parseInt(localStorage.getItem(CE_UNCLEAR_STREAK)||'0',10)||0;}catch(e){}
+  var show=n>=2 && !document.body.classList.contains('result-open');
+  el.classList.toggle('show',!!show);
+}
+function ceBindScanSoftHintOnce(){
+  var btn=document.getElementById('ce-scan-soft-hint-btn');
+  if(!btn||btn.dataset.ceBound==='1')return;
+  btn.dataset.ceBound='1';
+  btn.addEventListener('click',function(){
+    try{trackEvent('scan_guide_opened',{from:'soft_hint'});}catch(e){}
+    ceOpenScanGuide();
+  });
+}
+function ceUpdateLowConfBanner(r){
+  var el=document.getElementById('ce-low-conf-banner');
+  if(!el||!r)return;
+  var t=T[LANG]||T.en;
+  var show=!!r.user_proceeded_despite_low_confidence;
+  if(show)el.textContent=t.lowConfBanner||'';
+  el.classList.toggle('show',show);
+}
+function ceUpdateCompactSafetyBanner(r){
+  var el=document.getElementById('ce-compact-safety');
+  if(!el||!r)return;
+  var t=T[LANG]||T.en;
+  var msg=t.safetyCompact||'';
+  var hz=String(r.hazard_level||'safe').toLowerCase();
+  var conf=String(r.confidence||'').toLowerCase();
+  var dec=String(r.decision_outcome||'').toLowerCase().replace(/-/g,'_').replace(/ /g,'_');
+  var show=!!msg && (hz==='caution'||hz==='warning'||conf==='low'||conf==='medium'||dec==='do_not_proceed'||dec==='proceed_with_caution');
+  if(hz==='danger'||hz==='emergency')show=false;
+  if(show){
+    el.textContent=msg;
+    el.classList.remove('off');
+  }else{
+    el.textContent='';
+    el.classList.add('off');
+  }
+}
+
+function ceForEachConfidenceGate(fn){
+  var r=document.getElementById('results');
+  if(!r)return;
+  r.querySelectorAll('.confidence-gate').forEach(fn);
+}
+function ceSetAllConfidenceGatesShown(show){
+  ceForEachConfidenceGate(function(g){
+    g.classList.toggle('show',!!show);
+  });
+}
+function ceSyncConfidenceGateCopy(tg){
+  tg=tg||(T[LANG]||T.en);
+  var r=document.getElementById('results');
+  if(!r)return;
+  var ttlD=tg.gateConfirmTtl||((LANG==='nl')?'Klopt dit object?':'Does this look right?');
+  var okD=tg.gateConfirmOk||((LANG==='nl')?'Ja — toon stappen':'Yes — show steps');
+  var rtD=tg.gateRetakeLbl||((LANG==='nl')?'Betere foto maken':'Take a clearer photo');
+  var msgD=tg.gateConfirmMsg||'';
+  var noteD=tg.gateRetakeNote||'';
+  r.querySelectorAll('.confidence-gate').forEach(function(gate){
+    var ttl=gate.querySelector('.confidence-gate-ttl');
+    var msg=gate.querySelector('.confidence-gate-msg');
+    var ok=gate.querySelector('.confidence-gate-btn.confirm');
+    var rtBtn=gate.querySelector('.confidence-gate-btn:not(.confirm)');
+    var note=gate.querySelector('.confidence-gate-note');
+    if(ttl)ttl.textContent=ttlD;
+    if(msg)msg.textContent=msgD;
+    if(ok)ok.textContent=okD;
+    if(rtBtn)rtBtn.textContent=rtD;
+    if(note)note.textContent=noteD;
+  });
+}
+function ceBindConfidenceGateOnce(){
+  var r=document.getElementById('results');
+  if(!r||r.dataset.ceGateDelegBound==='1')return;
+  r.dataset.ceGateDelegBound='1';
+  r.addEventListener('click',function(e){
+    var t=e.target;
+    if(!t||!t.closest)return;
+    var gate=t.closest('.confidence-gate');
+    if(!gate||!r.contains(gate))return;
+    var btnOk=t.closest('.confidence-gate-btn.confirm');
+    if(btnOk){
+      e.preventDefault();
+      ceMediumConfirmRequired=false;
+      ceSetAllConfidenceGatesShown(false);
+      var allow=ceRepairNeededFromCur() && !ceDangerLocked && !ceWarningUnlockRequired && !ceMediumConfirmRequired && !ceLandlordBlocksDiy();
+      setResultVisibility({showSteps:allow,showTools:ceRepairNeededFromCur(),showTts:allow,showFold:true,showAd:true});
+      if(lastScanResult)renderDecisionCard(lastScanResult,{
+        repairNeeded:ceRepairNeededFromCur(),
+        allowSteps:allow,
+        ceDangerLocked:ceDangerLocked,
+        ceWarningUnlockRequired:ceWarningUnlockRequired,
+        ceMediumConfirmRequired:ceMediumConfirmRequired
+      });
+      if(curSteps&&curSteps.length){
+        UX.repair.stepIdx=0;
+        walkIdx=0;
+        renderRepairUI();
+        if(allow){
+          var tb=document.getElementById('tts-bar');
+          if(tb)tb.classList.add('show');
+          var trl=document.getElementById('tts-read-lbl');
+          if(trl)trl.textContent=T[LANG].readAll;
+          ceActivateRepairTabs();
+        }
+      }
+      return;
+    }
+    var btnRet=t.closest('.confidence-gate-btn');
+    if(btnRet&&!btnRet.classList.contains('confirm')){
+      e.preventDefault();
+      retakePhoto();
+    }
+  });
+}
+
 /* TTS */
 var ttsUtter=null;
 var ceTtsRateIx=1;
@@ -5088,6 +5699,62 @@ function saveS(s){localStorage.setItem('ce_gs',JSON.stringify(s))}
 function getLvl(xp){var l=LEVELS[0];LEVELS.forEach(function(x){if(xp>=x.min)l=x});return l.name}
 function addXP(n){var s=loadS();s.xp+=n;saveS(s);updateHdr(s);var f=document.getElementById('xp-flash');f.textContent='+'+n+' XP';f.classList.remove('pop');void f.offsetWidth;f.classList.add('pop')}
 function updateHdr(s){s=s||loadS();document.getElementById('xp-num').textContent=s.xp;document.getElementById('streak-num').textContent=s.streak;document.getElementById('lvl-badge').textContent=getLvl(s.xp)}
+function ceUpdateRepairCounter(){
+  try{
+    var history=JSON.parse(localStorage.getItem('ce_repair_history')||'[]');
+    var pill=document.getElementById('repair-count-pill');
+    var num=document.getElementById('repair-count-num');
+    if(!pill||!num)return;
+    if(history.length>0){
+      num.textContent=history.length;
+      pill.style.display='';
+      pill.title=(LANG==='nl')
+        ?(history.length+' reparaties voltooid')
+        :(history.length+' repairs completed');
+    }
+  }catch(e){}
+}
+function ceSaveRepairToHistory(){
+  if(!lastScanResult)return;
+  var record={
+    id:window.CE_CURRENT_JOB_ID||Date.now().toString(36),
+    date:new Date().toISOString(),
+    what:String(lastScanResult.what_i_see||'').trim(),
+    task:String(lastScanResult.task||'').trim(),
+    steps:curSteps.length,
+    hazard:lastScanResult.hazard_level||'safe',
+    lang:LANG
+  };
+  try{
+    var history=JSON.parse(localStorage.getItem('ce_repair_history')||'[]');
+    if(history.length&&history[0]&&history[0].id===record.id)return;
+    history.unshift(record);
+    if(history.length>50)history=history.slice(0,50);
+    localStorage.setItem('ce_repair_history',JSON.stringify(history));
+  }catch(e){}
+  ceUpdateRepairCounter();
+}
+function ceGetSeasonalTip(){
+  var month=new Date().getMonth();
+  var tips={
+    nl:{
+      9:'Oktober tip: ontlucht je radiatoren voor het stookseizoen begint.',
+      10:'November tip: check je tochtstrips en verwarmingsketel.',
+      11:'December tip: weet waar je hoofdkraan zit bij vriesweer.',
+      2:'Maart tip: check dakgoten na de winter op bladafval.',
+      3:'April tip: goede tijd om je ventilatie te reinigen.'
+    },
+    en:{
+      9:'October tip: bleed your radiators before heating season.',
+      10:'November tip: check draught strips and your boiler.',
+      11:'December tip: know where your stopcock is before frost.',
+      2:'March tip: clear gutters after winter.',
+      3:'April tip: good time to clean your ventilation.'
+    }
+  };
+  var langTips=tips[LANG]||tips.en;
+  return langTips[month]||null;
+}
 function checkStreak(){var s=loadS(),today=new Date().toDateString(),yest=new Date(Date.now()-86400000).toDateString();if(s.ld===today)return;s.streak=s.ld===yest?s.streak+1:1;s.ld=today;saveS(s);updateHdr(s)}
 function checkBadges(){var s=loadS();BADGES.forEach(function(b){if(s.eb.indexOf(b.id)===-1&&b.check(s)){s.eb.push(b.id);s.xp+=b.xp;saveS(s);updateHdr(s);showAch(b.icon,b.name,'+'+b.xp+' XP')}});renderBadges()}
 function showAch(ico,txt,sub){var t=document.getElementById('ach-toast');document.getElementById('ach-ico').textContent=ico;document.getElementById('ach-txt').textContent=txt;document.getElementById('ach-sub').textContent=sub;t.classList.add('show');achSnd();hap([30,20,60]);setTimeout(function(){t.classList.remove('show')},3200)}
@@ -5345,17 +6012,27 @@ function hideUxError(){
   eb.innerHTML='';
   document.body.classList.remove('ce-cam-error');
   syncCamPerceptionFromHardware();
+  if(typeof ceRefreshScanSoftHint==='function')ceRefreshScanSoftHint();
 }
 function showUxError(kind, detail){
   var eb=document.getElementById('err-box');
   if(!eb)return;
   var isNl=(LANG==='nl');
+  var tloc=T[LANG]||T.en;
   var map={
     camera_permission:{
-      ttl:isNl?'Camera toestemming nodig':'Camera permission needed',
-      msg:isNl?'Sta camera-toegang toe om live scan te gebruiken. Je kunt ook een foto uploaden.':'Allow camera access to use live scan. You can also upload a photo.',
-      cta:isNl?'Kies foto':'Choose photo',
-      act:function(){if(fallbackFile)fallbackFile.click();}
+      ttl:isNl?'Geen toegang tot je camera':'No camera access',
+      msg:(tloc.camErrIntro||'')+'\n\n→ '+(isNl?'Tik hier om naar je telefooninstellingen te gaan':'Tap here to open phone settings')+'\n→ '+(isNl?'Of kies een foto uit je galerij':'Or choose a photo from your gallery')+'\n\n'+(tloc.camErrWhy||''),
+      cta:tloc.camPermOpenSettings||(isNl?'Instellingen':'Settings'),
+      cta2:tloc.camPermPickGallery||(isNl?'Kies foto':'Choose photo'),
+      act:function(){
+        try{
+          if(/iPhone|iPad|iPod/i.test(navigator.userAgent||''))window.location.href='app-settings:';
+          else if(/Android/i.test(navigator.userAgent||''))window.open('intent:#Intent;action=android.settings.APPLICATION_DETAILS_SETTINGS;end');
+          else alert(isNl?'Open jouw telefooninstellingen en geef deze site toegang tot de Camera.':'Open your device settings and allow Camera access for this website.');
+        }catch(_){}
+      },
+      act2:function(){if(fallbackFile)fallbackFile.click();}
     },
     insecure_context:{
       ttl:isNl?'Beveiligde verbinding nodig':'Secure connection required',
@@ -5364,8 +6041,8 @@ function showUxError(kind, detail){
       act:function(){if(fallbackFile)fallbackFile.click();}
     },
     network:{
-      ttl:isNl?'Netwerkprobleem':'Network issue',
-      msg:isNl?'Controleer je verbinding en probeer opnieuw.':'Check your connection and try again.',
+      ttl:isNl?'Geen verbinding':'No connection',
+      msg:isNl?'De analyse lukt niet zonder internet. Je vorige resultaten zijn nog zichtbaar als je die al had.':'Analysis needs internet. Previous results stay visible if you already had them.',
       cta:isNl?'Opnieuw proberen':'Try again',
       act:function(){if(camReady&&camStream){runEggPrimaryAction();}else{startCamera();}}
     },
@@ -5382,21 +6059,28 @@ function showUxError(kind, detail){
       act:function(){window.location.href='tel:112';}
     },
     unclear_image:{
-      ttl:isNl?'We konden dit niet goed genoeg zien':'We could not quite make that out',
-      msg:isNl?'Maak een rustige close-up dichter bij het probleem — beter licht helpt.':'Try a calmer close-up nearer the problem area — brighter, steadier light helps.',
-      cta:isNl?'Nieuwe foto':'New photo',
-      act:function(){retakePhoto();}
+      ttl:isNl?'We zien het niet goed genoeg':'We can\'t see this well enough',
+      msg:isNl?'De foto is mogelijk te donker, te ver weg of te onscherp voor een betrouwbare analyse.\n\nProbeer:\n• Meer licht (zet je lamp aan)\n• Iets dichterbij (20–30 cm)\n• Een andere hoek\n• 3-foto modus':'The photo may be too dark, far away, or blurry for a reliable analysis.\n\nTry:\n• More light\n• Stand 20–30 cm away\n• Another angle\n• 3-photo mode',
+      cta:isNl?'Opnieuw scannen':'Scan again',
+      cta2:tloc.unclearProceed||(isNl?'Toch doorgaan met dit resultaat':'Continue with this result anyway'),
+      act:function(){retakePhoto();},
+      act2:function(){ceProceedWithPendingWeakScan();}
     }
   };
   var cfg=map[kind]||map.server;
   var msg=cfg.msg;
-  if(detail&&typeof detail==='string'&&detail.trim()) msg=detail.trim();
-  eb.innerHTML=
-    '<div class="err-title">'+ceEsc(cfg.ttl)+'</div>'+
-    '<div class="err-msg">'+ceEsc(msg)+'</div>'+
-    '<button type="button" class="err-cta">'+ceEsc(cfg.cta)+'</button>';
-  var btn=eb.querySelector('.err-cta');
-  if(btn)btn.onclick=function(){try{cfg.act&&cfg.act()}catch(_){}};
+  if(detail&&typeof detail==='string'&&detail.trim()){
+    if(kind==='unclear_image')msg=msg+'\n\n'+detail.trim();
+    else msg=detail.trim();
+  }
+  var actionsHtml='<div class="err-actions"><button type="button" class="err-cta err-cta-primary">'+ceEsc(cfg.cta)+'</button>';
+  if(cfg.cta2)actionsHtml+='<button type="button" class="err-cta err-cta-secondary">'+ceEsc(cfg.cta2)+'</button>';
+  actionsHtml+='</div>';
+  eb.innerHTML='<div class="err-title">'+ceEsc(cfg.ttl)+'</div><div class="err-msg">'+ceEsc(msg)+'</div>'+actionsHtml;
+  var prim=eb.querySelector('.err-cta-primary');
+  var sec=eb.querySelector('.err-cta-secondary');
+  if(prim)prim.onclick=function(){try{cfg.act&&cfg.act()}catch(_){}};
+  if(sec&&cfg.act2)sec.onclick=function(){try{cfg.act2()}catch(_){}};
   eb.style.display='block';
   ceSetFlowStage('error',{errorKind:kind||'unknown'});
   ceNavPush('error');
@@ -5578,6 +6262,7 @@ function applyCamStream(stream){
   schedulePerception();
   ensureLockSampler();
   ensureLiveLabelTicker();
+  ceMaybeCoachAfterCamera();
 }
 
 function startCamera(){
@@ -5709,6 +6394,8 @@ function retakePhoto(){
   ceDangerLocked=false;
   ceWarningUnlockRequired=false;
   ceMediumConfirmRequired=false;
+  try{console.log('[CE] safety flags reset');}catch(_){}
+  if(typeof ceRefreshScanSoftHint==='function')ceRefreshScanSoftHint();
 }
 
 function cePrimeResultsStaggerItems(){
@@ -5931,14 +6618,12 @@ scanEgg.addEventListener('click',function(){
   if(help) help.addEventListener('click',function(){
     if(typeof clickSnd==='function') clickSnd();
     hap(10);
-    var msg=(LANG==='nl')
-      ?'Eén object, goed licht. Tik op het ei als de ring oplicht — of upload een foto.'
-      :'Frame one object in good light. Tap the egg when the ring glows — or upload a photo.';
-    alert(msg);
+    if(typeof ceOpenScanGuide==='function')ceOpenScanGuide();
   });
 })();
 
 async function runEggPrimaryAction(){
+  if(typeof ceCoachConsumeStep2Tap==='function')ceCoachConsumeStep2Tap();
   if(!scanEgg)return;
   if(document.body.classList.contains('ce-capture-focus') && camReady && camStream && !document.body.classList.contains('ce-can-scan')){
     applyPerceptionPhase('detecting',{source:'camera',title:(LANG==='nl'?'Zoeken naar vlak':'Finding surface'),sub:(LANG==='nl'?'Wacht op een rustig beeld':'Wait for a stable view'),copy:true});
@@ -6471,13 +7156,22 @@ async function startLiveScanSession(viewsTarget, initialBlob){
     var s=loadS();s.ts++;saveS(s);addXP(10);checkBadges();rotateAd();
 
     var resObj=data.result||{};
+    // #region agent log
+    (function(){
+      var rs=resObj.steps,rd=resObj.step_details;
+      ceDbgSend({sessionId:'e91706',hypothesisId:'H5',location:'index.html:scan:apiResult',message:'analyze response',data:{stepsLen:Array.isArray(rs)?rs.length:-1,stepDetailsLen:Array.isArray(rd)?rd.length:-1,decision:String(resObj.decision_outcome||''),hazard:String(resObj.hazard_level||'')},timestamp:Date.now(),runId:'pre'});
+    })();
+    // #endregion
     var lowNeedsRetake = (!!resObj.needs_retake) && String(resObj.confidence||'').toLowerCase()==='low';
     var hzGate=(resObj.hazard_level||'').toLowerCase();
     if(lowNeedsRetake && hzGate!=='danger' && hzGate!=='emergency'){
+      window.__cePendingAnalyzeData=data;
+      ceBumpUnclearStreak();
       showUxError('unclear_image',resObj.retake_guidance||'');
       if(document.getElementById('results'))document.getElementById('results').style.display='none';
       return;
     }
+    ceResetUnclearStreak();
 
     showHazard(data.result);
     var hzLv=(data.result.hazard_level||'').toLowerCase();
@@ -6517,6 +7211,7 @@ async function startLiveScanSession(viewsTarget, initialBlob){
     if(!navigator.onLine||/network|fetch|timeout/i.test(em)){
       showUxError('network');
     }else if(/no image|blurry|unclear|retake/i.test(em)){
+      ceBumpUnclearStreak();
       showUxError('unclear_image');
     }else{
       showUxError('server',em);
@@ -6602,7 +7297,8 @@ function updateHazardHero(r){
     document.getElementById('hazard-hero-badge').textContent='⚠️ '+t.hazardHeroWarnBadge;
     document.getElementById('hazard-hero-ttl').textContent=t.hazardHeroWarnTtl;
     document.getElementById('hazard-hero-note').textContent=note;
-    if(inlineAct)inlineAct.classList.add('show');
+    var dnp=(String(r.decision_outcome||'').toLowerCase().replace(/-/g,'_').replace(/ /g,'_'))==='do_not_proceed';
+    if(inlineAct && !dnp)inlineAct.classList.add('show');
     return true;
   }
   if(lv==='caution'&&note){
@@ -6718,6 +7414,18 @@ function ceSyncResultsFlowTrack(){
       }
     });
   }
+  if(!r._ceNavBound){
+    r._ceNavBound=true;
+    r.style.cursor='pointer';
+    r.addEventListener('click',function(){
+      try{if(typeof clickSnd==='function')clickSnd();}catch(e){}
+      if(typeof ceTryEnterRepairWalkthrough==='function'&&ceTryEnterRepairWalkthrough('results-flow-repair'))return;
+      if(typeof ceSwitchTab==='function'){
+        ceSwitchTab('steps');
+        try{ceDbgSend({sessionId:'e91706',hypothesisId:'H14',location:'index.html:results-flow-repair',message:'fallback steps tab',data:{ceCurrentScreen:String(ceCurrentScreen||''),curStepsLen:(curSteps&&curSteps.length)||0},timestamp:Date.now(),runId:'pre'});}catch(_){}
+      }
+    });
+  }
 }
 function ceUxSyncLegacyChecklistFlags(){
   ceChecklistRequired=ceShouldShowChecklist();
@@ -6819,8 +7527,31 @@ function ceEnsureRenderableResult(r){
   out.what_i_see=String(out.what_i_see||out.task||'Issue detected').trim()||'Issue detected';
   out.task=String(out.task||'Retake photo and retry analysis').trim()||'Retake photo and retry analysis';
   out.hazard_level=String(out.hazard_level||'caution').toLowerCase();
-  out.confidence=String(out.confidence||'low').toLowerCase();
-  out.decision_outcome=String(out.decision_outcome||'do_not_proceed');
+  (function(){
+    var ic=String(out.confidence||'').trim().toLowerCase();
+    if(!ic){
+      var tier=String(out.confidence_tier||'').toLowerCase().replace(/-/g,'_');
+      if(tier.indexOf('call')!==-1||tier.indexOf('not_diy')!==-1)ic='low';
+      else if(tier.indexOf('caution')!==-1||tier.indexOf('medium')!==-1)ic='medium';
+      else ic='high';
+    }
+    out.confidence=ic;
+  })();
+  (function(){
+    var raw=String(out.decision_outcome||'').trim().toLowerCase().replace(/-/g,'_').replace(/ /g,'_');
+    if(raw==='safe'||raw==='safe_to_proceed'||raw==='ok'||raw==='green'){out.decision_outcome='safe_to_proceed';return;}
+    if(raw==='caution'||raw==='proceed_with_caution'||raw==='careful'||raw==='yellow'){out.decision_outcome='proceed_with_caution';return;}
+    if(raw==='stop'||raw==='do_not_proceed'||raw==='dont'||raw==='no'||raw==='red'){out.decision_outcome='do_not_proceed';return;}
+    if(!raw){
+      var hz=out.hazard_level||'';
+      var ct=String(out.confidence_tier||'').toLowerCase();
+      if(hz==='danger'||hz==='emergency'||ct.indexOf('call')!==-1)out.decision_outcome='do_not_proceed';
+      else if(hz==='warning'||hz==='caution'||out.confidence==='medium')out.decision_outcome='proceed_with_caution';
+      else out.decision_outcome='safe_to_proceed';
+    }else{
+      out.decision_outcome=String(out.decision_outcome||'').trim()||'safe_to_proceed';
+    }
+  })();
   out.decision_rationale=String(out.decision_rationale||'We need a clearer image to provide safe step-by-step repair guidance.').trim();
   out.rental_liability_hint=ceNormalizeRentalHint(out.rental_liability_hint);
   if(!Array.isArray(out.steps)||!out.steps.length){
@@ -7020,7 +7751,7 @@ function cePruneDuplicateResultsNodes(){
     'ce-repair-sticky','ce-step-progress-bar','ce-prerepair-sheet','ce-sheet-backdrop'
   ].forEach(ceDedupById);
 }
-function ceEnforceSingleUxStructure(){
+function ceEnforceSingleUxStructure(targetScreenId){
   var resultsRoot=document.getElementById('results');
   if(!resultsRoot)return;
   if(!document.getElementById('ce-screen-diagnosis'))return;
@@ -7032,25 +7763,79 @@ function ceEnforceSingleUxStructure(){
   var completion=document.getElementById('ce-screen-completion');
   if(!diagnosis||!repair||!completion)return;
   var map={
-    diagnosis:['decision-card','hazard-hero','ce-visual-engine','results-summary','tip-safety','r-confidence','warn-ctr','confidence-gate','task-locked','all-done'],
-    repair:['tools-card','steps-card'],
+    /* results-summary stays inside #ce-results-shell (Details tab); reparenting it breaks the tab panel */
+    diagnosis:['decision-card','hazard-hero','ce-visual-engine','tip-safety','r-confidence','warn-ctr','confidence-gate','task-locked','all-done'],
     completion:['ce-completion-head','ce-completion-body']
   };
   map.diagnosis.forEach(function(id){
     var el=ceDedupById(id);
     if(el&&el.parentNode!==diagnosis)diagnosis.appendChild(el);
   });
-  map.repair.forEach(function(id){
+  /* Keep walkthrough cards under the active screen: on diagnosis they must live in the Steps tab, not under display:none repair. */
+  var walkIds=['tools-card','steps-card'];
+  var destRepair=(targetScreenId==='ce-screen-repair'||targetScreenId==='ce-screen-completion');
+  if(destRepair){
+    walkIds.forEach(function(id){
+      var el=ceDedupById(id);
+      if(el&&el.parentNode!==repair)repair.appendChild(el);
+    });
+  }else{
+    var stepsPanel=document.querySelector('[data-ce-panel="steps"]');
+    if(stepsPanel){
+      walkIds.forEach(function(id){
+        var el=ceDedupById(id);
+        if(el&&el.parentNode!==stepsPanel)stepsPanel.appendChild(el);
+      });
+    }
+  }
+  map.completion.forEach(function(id){
     var el=ceDedupById(id);
-    if(el&&el.parentNode!==repair)repair.appendChild(el);
+    if(el&&el.parentNode!==completion)completion.appendChild(el);
   });
+  // #region agent log
+  try{
+    var sc=document.getElementById('steps-card');
+    var tc=document.getElementById('tools-card');
+    ceDbgSend({sessionId:'e91706',hypothesisId:'H11',location:'index.html:ceEnforceSingleUxStructure',message:'reparent',data:{target:String(targetScreenId||''),stepsParentId:(sc&&sc.parentNode&&sc.parentNode.id)||'',stepsDataPanel:(sc&&sc.parentNode&&sc.parentNode.getAttribute&&sc.parentNode.getAttribute('data-ce-panel'))||''},timestamp:Date.now(),runId:'pre'});
+  }catch(_){}
+  // #endregion
+}
+/* On repair screen, walk cards live under #ce-screen-repair by default; opening the Steps tab must reparent them into #ce-panel-steps or the tab body is empty. */
+function ceSyncWalkCardsToActiveTab(){
+  var repair=document.getElementById('ce-screen-repair');
+  var stepsPanel=document.querySelector('[data-ce-panel="steps"]');
+  if(!stepsPanel)return;
+  var walkIds=['tools-card','steps-card'];
+  function moveTo(parent){
+    if(!parent)return;
+    walkIds.forEach(function(id){
+      var el=document.getElementById(id);
+      if(el&&el.parentNode!==parent)parent.appendChild(el);
+    });
+  }
+  var scr=typeof ceCurrentScreen==='undefined'?'':String(ceCurrentScreen);
+  if(scr==='ce-screen-diagnosis'){
+    moveTo(stepsPanel);
+  }else if(scr==='ce-screen-repair'&&repair){
+    var stepsTabOn=!stepsPanel.classList.contains('off')&&!stepsPanel.hasAttribute('hidden');
+    if(stepsTabOn)moveTo(stepsPanel);
+    else moveTo(repair);
+  }else if(scr==='ce-screen-completion'&&repair){
+    moveTo(repair);
+  }
+  // #region agent log
+  try{
+    var sc=document.getElementById('steps-card');
+    ceDbgSend({sessionId:'e91706',hypothesisId:'H13',location:'index.html:ceSyncWalkCardsToActiveTab',message:'sync',data:{screen:scr,stepsTabOn:!(stepsPanel.classList.contains('off')||stepsPanel.hasAttribute('hidden')),parentId:(sc&&sc.parentNode&&sc.parentNode.id)||'',dataPanel:(sc&&sc.parentNode&&sc.parentNode.getAttribute&&sc.parentNode.getAttribute('data-ce-panel'))||''},timestamp:Date.now(),runId:'pre'});
+  }catch(_){}
+  // #endregion
 }
 function showScreen(screenId,state){
   var prefersReduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var transitionKind=(arguments.length>2&&arguments[2])?arguments[2]:'push-right';
   var isBack=transitionKind==='pop-left';
   var enterCls=isBack?'ce-enter-left':'ce-enter-right';
-  ceEnforceSingleUxStructure();
+  ceEnforceSingleUxStructure(screenId);
   document.querySelectorAll('.ce-screen').forEach(function(s){
     s.classList.remove('active','ce-enter-right','ce-enter-left','ce-exit-left','ce-exit-right');
     s.style.display=(s.id===screenId)?'block':'none';
@@ -7074,24 +7859,32 @@ function showScreen(screenId,state){
       'ce-repair-sticky':1,
       'ce-step-progress-bar':1,
       'ce-prerepair-sheet':1,
-      'ce-sheet-backdrop':1
+      'ce-sheet-backdrop':1,
+      'ce-results-shell':1,
+      'ce-compact-safety':1,
+      'ce-low-conf-banner':1,
+      'ce-paywall-teaser':1,
+      'ce-rental-debug-badge':1,
+      'r-confidence':1,
+      'ec':1,
+      'rst-btn':1
     };
     Array.prototype.forEach.call(resultsRoot.children,function(ch){
       if(!ch||!ch.id)return;
       if(ch.classList&&ch.classList.contains('ce-screen'))return;
-      if(keepIds[ch.id])return;
+      if(keepIds[ch.id]){
+        if(ch.id!=='mailbox-scrim')ch.style.display='';
+        return;
+      }
       ch.style.display='none';
     });
+    // #region agent log
+    (function(){
+      var sh=document.getElementById('ce-results-shell');
+      ceDbgSend({sessionId:'e91706',hypothesisId:'H8',location:'index.html:showScreen',message:'chrome',data:{screenId:String(screenId||''),shellInlineDisplay:(sh&&sh.style&&sh.style.display)||'',shellInDom:!!sh},timestamp:Date.now(),runId:'pre'});
+    })();
+    // #endregion
   }
-  // Enforce single results UX: tools/steps must only live in repair screen.
-  var repairWrap=document.getElementById('ce-screen-repair');
-  if(repairWrap){
-    ['tools-card','steps-card'].forEach(function(id){
-      var el=document.getElementById(id);
-      if(el&&el.parentNode!==repairWrap)repairWrap.appendChild(el);
-    });
-  }
-  ceSetFlowFromScreen(screenId);
   var sticky=document.getElementById('ce-repair-sticky');
   var prog=document.getElementById('ce-step-progress-bar');
   var sheet=document.getElementById('ce-prerepair-sheet');
@@ -7136,6 +7929,8 @@ function enterRepairScreen(){
   ceUxSyncLegacyChecklistFlags();
   bindChecklistButtons();
   renderRepairUI();
+  ceSyncWalkCardsToActiveTab();
+  setTimeout(function(){ceForceWalkthroughPaint('enterRepairScreen');},0);
   if(!ceStepsStartedTracked){
     ceStepsStartedTracked=true;
     ceTrackAppClick('steps_started',String(curSteps.length||0));
@@ -7153,9 +7948,9 @@ function enterCompletionScreen(){
   var upT=document.getElementById('ce-upgrade-title');
   if(upT)upT.textContent=(LANG==='nl')?'Wil je onbeperkt kunnen klussen?':'Want unlimited repairs?';
   var upS=document.getElementById('ce-upgrade-sub');
-  if(upS)upS.textContent=(LANG==='nl')?'Upgrade voor €2,99/mnd — altijd opzegbaar.':'Upgrade for €2.99/month — cancel anytime.';
+  if(upS)upS.textContent=(LANG==='nl')?'Doorgaan met €2,99/mnd — altijd opzegbaar.':'Continue with €2.99/month — cancel anytime.';
   var upN=document.getElementById('ce-upgrade-now');
-  if(upN)upN.textContent=(LANG==='nl')?'Nu upgraden':'Upgrade now';
+  if(upN)upN.textContent=(LANG==='nl')?'Nu doorgaan':'Continue now';
   var upL=document.getElementById('ce-upgrade-later');
   if(upL)upL.textContent=(LANG==='nl')?'Misschien later':'Maybe later';
   var fbL=document.getElementById('ce-feedback-label');
@@ -7171,6 +7966,16 @@ function enterCompletionScreen(){
     body.style.opacity='0';
     setTimeout(function(){
       body.style.opacity='1';
+      var oldTip=document.getElementById('ce-seasonal-tip');
+      if(oldTip&&oldTip.parentNode)oldTip.parentNode.removeChild(oldTip);
+      var tip=ceGetSeasonalTip();
+      if(tip){
+        var tipEl=document.createElement('div');
+        tipEl.id='ce-seasonal-tip';
+        tipEl.style.cssText='margin:12px 0;padding:10px 12px;border-radius:12px;background:rgba(76,175,125,.12);border:1px solid rgba(76,175,125,.28);font-size:13px;color:var(--t2);line-height:1.45;';
+        tipEl.textContent=tip;
+        body.appendChild(tipEl);
+      }
     },800);
   }
 }
@@ -7204,26 +8009,86 @@ function ceSetStepsCardVisible(visible){
   try{console.log('[CE] steps-card visibility set to:',!!visible);}catch(e){}
 }
 
-function setResultVisibility(cfg){
-  cfg=cfg||{};
-  var showSteps=cfg.showSteps!==false;
-  var showTools=cfg.showTools!==false;
-  var showTts=cfg.showTts!==false;
-  var showFold=cfg.showFold!==false;
-  var showAd=cfg.showAd!==false;
-  var stepsCard=document.getElementById('steps-card');
-  var toolsCard=document.getElementById('tools-card');
-  var ttsBar=document.getElementById('tts-bar');
-  var foldMore=document.getElementById('fold-more');
-  var adBanner=document.getElementById('ad-banner');
-  if(stepsCard)stepsCard.style.display=showSteps?'':'none';
-  if(toolsCard)toolsCard.style.display=showTools?'':'none';
-  if(ttsBar){
-    if(!showTts)ttsBar.classList.remove('show');
-    ttsBar.style.display=showTts?'':'none';
+/* Walkthrough DOM lives under #ce-screen-repair; tab-only navigation left it empty on diagnosis. */
+function ceTryEnterRepairWalkthrough(source){
+  source=String(source||'unknown');
+  var dec=String((lastScanResult&&lastScanResult.decision_outcome)||'').toLowerCase().replace(/-/g,'_').replace(/ /g,'_');
+  var ceDecisionDoNot=(dec==='do_not_proceed');
+  var canEnter=typeof enterRepairScreen==='function'
+    &&ceRepairNeededFromCur()
+    &&!ceDangerLocked
+    &&!ceWarningUnlockRequired
+    &&!ceMediumConfirmRequired
+    &&!ceLandlordBlocksDiy()
+    &&!ceDecisionDoNot;
+  var screen=typeof ceCurrentScreen==='undefined'?'':String(ceCurrentScreen);
+  var onDiag=(screen===''||screen==='ce-screen-diagnosis');
+  // #region agent log
+  ceDbgSend({sessionId:'e91706',hypothesisId:'H7',location:'index.html:ceTryEnterRepairWalkthrough',message:source,data:{canEnter:!!canEnter,onDiag:!!onDiag,ceCurrentScreen:screen,curStepsLen:(curSteps&&curSteps.length)||0,ceDangerLocked:!!ceDangerLocked,ceWarningUnlockRequired:!!ceWarningUnlockRequired,ceMediumConfirmRequired:!!ceMediumConfirmRequired,landlord:!!ceLandlordBlocksDiy(),ceDecisionDoNot:!!ceDecisionDoNot},timestamp:Date.now(),runId:'pre'});
+  // #endregion
+  if(canEnter&&onDiag){
+    // #region agent log
+    ceDbgSend({sessionId:'e91706',hypothesisId:'H6',location:'index.html:ceTryEnterRepairWalkthrough',message:'enterRepairScreen',data:{source:source,curStepsLen:(curSteps&&curSteps.length)||0},timestamp:Date.now(),runId:'post-fix'});
+    // #endregion
+    enterRepairScreen();
+    return true;
   }
-  if(foldMore)foldMore.style.display=showFold?'':'none';
-  if(adBanner)adBanner.style.display=showAd?'':'none';
+  return false;
+}
+
+function ceSwitchTab(which){
+  which=String(which||'outcome').toLowerCase();
+  var tabId=which;
+  var panelId=which;
+  if(which==='details'){
+    setTimeout(function(){
+      var rs=document.getElementById('results-summary');
+      if(rs)rs.scrollIntoView({behavior:'smooth',block:'nearest'});
+    },80);
+  }
+  if(which==='steps'&&ceTryEnterRepairWalkthrough('ceSwitchTab'))return;
+  if(typeof ceCurrentScreen!=='undefined'&&ceCurrentScreen==='ce-screen-diagnosis'&&(which==='outcome'||which==='details')){
+    if(typeof ceSetStepsCardVisible==='function')ceSetStepsCardVisible(false);
+    else{var scHide=document.getElementById('steps-card');if(scHide)scHide.style.display='none';}
+  }
+  document.querySelectorAll('[data-ce-panel]').forEach(function(p){
+    var id=p.getAttribute('data-ce-panel');
+    if(!id)return;
+    var on=(id===panelId);
+    p.classList.toggle('off',!on);
+    if(on)p.removeAttribute('hidden');
+    else p.setAttribute('hidden','');
+  });
+  document.querySelectorAll('[data-ce-tab]').forEach(function(btn){
+    var id=btn.getAttribute('data-ce-tab');
+    var on=(id===tabId);
+    btn.classList.toggle('on',on);
+    btn.setAttribute('aria-selected',on?'true':'false');
+  });
+  ceSyncWalkCardsToActiveTab();
+  if(panelId==='steps'&&typeof renderRepairUI==='function'){
+    requestAnimationFrame(function(){
+      renderRepairUI();
+      requestAnimationFrame(function(){ceForceWalkthroughPaint('ceSwitchTab-steps');});
+    });
+  }
+  if(panelId==='steps'&&typeof ceCurrentScreen!=='undefined'&&ceCurrentScreen==='ce-screen-diagnosis'){
+    var decTab=String((lastScanResult&&lastScanResult.decision_outcome)||'').toLowerCase().replace(/-/g,'_').replace(/ /g,'_');
+    var decDoNotTab=(decTab==='do_not_proceed');
+    var blockInlineDiag=ceDangerLocked||decDoNotTab||ceLandlordBlocksDiy()||ceMediumConfirmRequired||ceWarningUnlockRequired;
+    var hasStepsDiag=curSteps&&curSteps.length>0;
+    if(!blockInlineDiag&&hasStepsDiag){
+      if(typeof ceSetStepsCardVisible==='function')ceSetStepsCardVisible(true);
+      else{var scD=document.getElementById('steps-card');if(scD)scD.style.display='';}
+    }
+    try{ceDbgSend({sessionId:'e91706',hypothesisId:'H10',location:'index.html:ceSwitchTab',message:'diagnosis steps tab',data:{blockInline:!!blockInlineDiag,hasSteps:!!hasStepsDiag,curStepsLen:hasStepsDiag?curSteps.length:0},timestamp:Date.now(),runId:'pre'});}catch(_){}
+  }
+  // #region agent log
+  (function(){
+    var sp=document.querySelector('[data-ce-panel="steps"]');
+    ceDbgSend({sessionId:'e91706',hypothesisId:'H4',location:'index.html:ceSwitchTab',message:'tab',data:{which:String(which),tabId:tabId,panelId:panelId,stepsOff:sp?sp.classList.contains('off'):null,stepsHidden:sp?sp.hasAttribute('hidden'):null},timestamp:Date.now(),runId:'pre'});
+  })();
+  // #endregion
 }
 
 function ensureJobId(){
@@ -7306,6 +8171,7 @@ Object.defineProperty(window,'walkIdx',{
   set:function(v){if(UX&&UX.repair)UX.repair.stepIdx=Number(v)||0;},
   configurable:true
 });
+try{console.log('[CE] walkIdx alias set, UX.repair.stepIdx:',UX&&UX.repair?UX.repair.stepIdx:0);}catch(_){}
 function ceStripPrefix(s){
   s=String(s||'').trim();
   return s.replace(/^(step|stap)\s*\d+\s*[:.\-–]?\s*|\d+\s*[.):\-–]\s*/i,'').trim()||s;
@@ -7449,7 +8315,43 @@ function ceNoStepsFallback(){
     : 'We could not generate detailed steps for this scan. Try a clearer photo or scan again.';
 }
 function ceEnsureWalkTextVisible(){
-  return;
+  ceForceWalkthroughPaint('ceEnsureWalkTextVisible');
+}
+/** Unstick .si / data-stagger opacity and backfill #walk-text if curSteps exist but UI stayed blank (mobile / animation races). */
+function ceForceWalkthroughPaint(reason){
+  reason=String(reason||'');
+  var card=document.getElementById('steps-card');
+  var wt=document.getElementById('walk-text');
+  var pane=document.getElementById('walk-pane');
+  if(card){
+    card.classList.remove('si');
+    card.style.removeProperty('opacity');
+    card.style.removeProperty('transform');
+    card.querySelectorAll('[data-stagger]').forEach(function(el){
+      el.removeAttribute('data-stagger');
+      el.style.opacity='1';
+      el.style.removeProperty('transform');
+    });
+  }
+  if(pane){
+    pane.style.display='';
+    pane.style.opacity='1';
+    pane.style.visibility='visible';
+  }
+  if(wt){
+    wt.style.opacity='1';
+    wt.style.visibility='visible';
+    var t=(wt.textContent||'').trim();
+    if(!t&&curSteps&&curSteps.length){
+      var ix=Math.max(0,Math.min((UX&&UX.repair&&typeof UX.repair.stepIdx==='number')?UX.repair.stepIdx:0,curSteps.length-1));
+      wt.textContent=String(curSteps[ix]||'').trim()||((LANG==='nl')?'Stap 1':'Step 1');
+    }
+  }
+  // #region agent log
+  try{
+    ceDbgSend({sessionId:'e91706',hypothesisId:'H16',location:'index.html:ceForceWalkthroughPaint',message:reason,data:{walkLen:wt?(wt.textContent||'').trim().length:0,curStepsLen:(curSteps&&curSteps.length)||0,ceCurrentScreen:String(typeof ceCurrentScreen!=='undefined'?ceCurrentScreen:'')},timestamp:Date.now(),runId:'pre'});
+  }catch(_){}
+  // #endregion
 }
 function ceHasChecklistUi(){
   return !!(document.getElementById('prc-ok')||document.getElementById('prc-skip')||document.getElementById('ce-checklist-confirm'));
@@ -7458,10 +8360,15 @@ function renderRepairUI(){
   var pane=document.getElementById('walk-pane');
   var checklist=document.getElementById('pre-repair-checklist');
   var hasChecklist=ceHasChecklistUi();
-  var showChecklist=hasChecklist && !UX.repair.checklistDone;
+  var showChecklist=!!checklist && hasChecklist && !UX.repair.checklistDone;
   if(checklist)checklist.style.display=showChecklist?'':'none';
   if(pane)pane.style.display=showChecklist?'none':'';
-  if(showChecklist)return;
+  if(showChecklist){
+    // #region agent log
+    ceDbgSend({sessionId:'e91706',hypothesisId:'H3',location:'index.html:renderRepairUI',message:'early checklist',data:{showChecklist:true,hasChecklist:!!hasChecklist,curStepsLen:(curSteps&&curSteps.length)||0},timestamp:Date.now(),runId:'pre'});
+    // #endregion
+    return;
+  }
 
   var idx=UX.repair.stepIdx||0;
   var total=curSteps.length||0;
@@ -7477,6 +8384,9 @@ function renderRepairUI(){
   var txt=String(curSteps[idx]||'').trim();
   if(!txt)txt=(LANG==='nl')?('Stap '+(idx+1)):('Step '+(idx+1));
   tx.textContent=txt;
+  // #region agent log
+  ceDbgSend({sessionId:'e91706',hypothesisId:'H3',location:'index.html:renderRepairUI:setText',message:'walk text',data:{idx:idx,total:total,txtLen:(txt||'').length},timestamp:Date.now(),runId:'pre'});
+  // #endregion
   ceLastWalkText=txt;
   try{console.log('[CE] step render:',idx);}catch(e){}
 
@@ -7606,14 +8516,19 @@ function ceBuildUxScreens(){
   else results.appendChild(diagnosis);
   results.appendChild(repair);
   results.appendChild(completion);
-  ['hazard-hero','ce-visual-engine','results-summary','tip-safety','r-confidence','warn-ctr','confidence-gate','task-locked','all-done'].forEach(function(id){
+  ['hazard-hero','ce-visual-engine','tip-safety','r-confidence','warn-ctr','confidence-gate','task-locked','all-done'].forEach(function(id){
     var elLegacy=document.getElementById(id);
     if(elLegacy)diagnosis.appendChild(elLegacy);
   });
   ['decision-card'].forEach(function(id){
     var el=document.getElementById(id);if(el)diagnosis.appendChild(el);
   });
-  ['tools-card','steps-card'].forEach(function(id){var el=document.getElementById(id);if(el)repair.appendChild(el);});
+  var stepsPanelInit=document.querySelector('[data-ce-panel="steps"]');
+  ['tools-card','steps-card'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el&&stepsPanelInit)stepsPanelInit.appendChild(el);
+    else if(el)repair.appendChild(el);
+  });
   var compHead=document.createElement('div');
   compHead.id='ce-completion-head';
   compHead.style.cssText='text-align:center;padding:10px 4px 14px;';
@@ -7631,7 +8546,7 @@ function ceBuildUxScreens(){
   var follow=document.createElement('div');
   follow.id='ce-completion-follow';
   follow.style.cssText='display:none;margin-top:10px;';
-  follow.innerHTML='<div id="ce-completion-upgrade" style="display:none;margin:0 0 12px;padding:12px;border:1px solid #3A3020;border-radius:12px;background:#1A1500;"><div id="ce-upgrade-title" style="font-size:16px;font-weight:600;color:#F0EDE8;margin:0 0 4px;">Want unlimited repairs?</div><div id="ce-upgrade-sub" style="font-size:13px;color:#BEB8AC;margin:0 0 10px;">Upgrade for €2.99/month — cancel anytime.</div><div style="display:flex;gap:8px;"><button id="ce-upgrade-now" type="button" class="ce-cta-primary" style="margin:0;">Upgrade now</button><button id="ce-upgrade-later" type="button" class="ce-cta-secondary" style="margin:0;">Maybe later</button></div></div><div id="ce-completion-feedback" style="display:none;margin:0 0 12px;"><label id="ce-feedback-label" for="ce-feedback-input" style="display:block;font-size:13px;color:#BEB8AC;margin:0 0 6px;">What went wrong? (optional)</label><textarea id="ce-feedback-input" style="width:100%;min-height:90px;border:1px solid #3A3A3A;border-radius:10px;padding:10px;background:#121212;color:#F0EDE8;"></textarea><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;"><button id="ce-feedback-skip" type="button" style="background:none;border:none;color:#BEB8AC;text-decoration:underline;padding:0;cursor:pointer;">Skip</button><button id="ce-feedback-continue" type="button" class="ce-cta-secondary" style="margin:0;">Continue</button></div></div><div id="ce-completion-share" style="display:none;margin:0 0 12px;padding:12px;border:1px solid #333;border-radius:12px;background:#171717;"><div id="ce-share-title" style="font-size:14px;color:#F0EDE8;margin-bottom:8px;">Know someone who\'d find this useful?</div><button id="ce-share-wa" type="button" class="ce-cta-secondary" style="margin:0;">Share on WhatsApp ↗</button></div><div id="ce-completion-email-wrap" style="display:none;margin:0 0 12px;"></div><div id="ce-completion-extras" style="display:none;"></div>';
+  follow.innerHTML='<div id="ce-completion-upgrade" style="display:none;margin:0 0 12px;padding:12px;border:1px solid #3A3020;border-radius:12px;background:#1A1500;"><div id="ce-upgrade-title" style="font-size:16px;font-weight:600;color:#F0EDE8;margin:0 0 4px;">Want unlimited repairs?</div><div id="ce-upgrade-sub" style="font-size:13px;color:#BEB8AC;margin:0 0 10px;">Continue with €2.99/month — cancel anytime.</div><div style="display:flex;gap:8px;"><button id="ce-upgrade-now" type="button" class="ce-cta-primary" style="margin:0;">Continue now</button><button id="ce-upgrade-later" type="button" class="ce-cta-secondary" style="margin:0;">Maybe later</button></div></div><div id="ce-completion-feedback" style="display:none;margin:0 0 12px;"><label id="ce-feedback-label" for="ce-feedback-input" style="display:block;font-size:13px;color:#BEB8AC;margin:0 0 6px;">What went wrong? (optional)</label><textarea id="ce-feedback-input" style="width:100%;min-height:90px;border:1px solid #3A3A3A;border-radius:10px;padding:10px;background:#121212;color:#F0EDE8;"></textarea><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;"><button id="ce-feedback-skip" type="button" style="background:none;border:none;color:#BEB8AC;text-decoration:underline;padding:0;cursor:pointer;">Skip</button><button id="ce-feedback-continue" type="button" class="ce-cta-secondary" style="margin:0;">Continue</button></div></div><div id="ce-completion-share" style="display:none;margin:0 0 12px;padding:12px;border:1px solid #333;border-radius:12px;background:#171717;"><div id="ce-share-title" style="font-size:14px;color:#F0EDE8;margin-bottom:8px;">Know someone who\'d find this useful?</div><button id="ce-share-wa" type="button" class="ce-cta-secondary" style="margin:0;">Share on WhatsApp ↗</button></div><div id="ce-completion-email-wrap" style="display:none;margin:0 0 12px;"></div><div id="ce-completion-extras" style="display:none;"></div>';
   completionBody.appendChild(follow);
   var stars=rating.querySelector('#ce-rating-stars');
   var completionStars=0;
@@ -7762,10 +8677,12 @@ function ceBuildUxScreens(){
   var shBtn=document.getElementById('ce-share-wa');
   if(shBtn)shBtn.addEventListener('click',function(){
     ceTrackAppClick('completion_share_tapped','whatsapp');
-    var what=((lastScanResult&&lastScanResult.what_i_see)||'').trim();
+    var what=((lastScanResult&&(lastScanResult.what_i_see||lastScanResult.task))||'').trim();
+    var fallback=(LANG==='nl')?'een probleem thuis':'a home repair';
+    var shareObj=what||fallback;
     var text=(LANG==='nl')
-      ?('Ik heb net een reparatie aangepakt met ChickenEgg: '+what)
-      :('I just handled a repair with ChickenEgg: '+what);
+      ?('Ik heb net een reparatie aangepakt met ChickenEgg: '+shareObj)
+      :('I just handled a repair with ChickenEgg: '+shareObj);
     window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank','noopener');
     ceRevealCompletionAfterShare();
   });
@@ -7842,21 +8759,23 @@ function openMailboxSheet(){
   hap([10,5,16,5,28]);
 }
 
-/* showDoneCelebration/continueFromDoneCelebration removed — single path: renderCompletion() */
-function showDoneCelebration(){renderCompletion();}
-function continueFromDoneCelebration(){}
-
 // ── STEP WALKTHROUGH ────────────────────────────────────
 var _ceWalkSliding=false;
 function ceSlideWalkStep(direction,cb){
   if(_ceWalkSliding)return;
   _ceWalkSliding=true;
+  try{console.log('[CE] slide lock:',_ceWalkSliding);}catch(_){}
   var tx=document.getElementById('walk-text');
   var fp=document.getElementById('repair-focus');
   var outCls=direction==='next'?'walk-slide-out-left':'walk-slide-out-right';
   var inCls=direction==='next'?'walk-slide-in-right':'walk-slide-in-left';
   var els=[tx,fp].filter(Boolean);
-  if(!els.length){_ceWalkSliding=false;cb();return;}
+  if(!els.length){
+    _ceWalkSliding=false;
+    try{console.log('[CE] slide lock:',_ceWalkSliding);}catch(_){}
+    cb();
+    return;
+  }
   els.forEach(function(el){el.classList.add(outCls);});
   setTimeout(function(){
     els.forEach(function(el){el.classList.remove(outCls);});
@@ -7868,7 +8787,10 @@ function ceSlideWalkStep(direction,cb){
         el.classList.remove(inCls);
       },{once:true});
     });
-    _ceWalkSliding=false;
+    requestAnimationFrame(function(){
+      _ceWalkSliding=false;
+      try{console.log('[CE] slide lock:',_ceWalkSliding);}catch(_){}
+    });
   },200);
 }
 function goWalkNext(){
@@ -7965,7 +8887,18 @@ function ceLaunchConfetti(){
   requestAnimationFrame(drawFrame);
 }
 function renderCompletion(){
+  ceSaveRepairToHistory();
   ceUxSetPhase('completion');
+  try{console.log('[CE] completion path: renderCompletion() only');}catch(_){}
+  try{
+    if(!localStorage.getItem('ce_repair_survey_v1')){
+      ceOpenRepairSurvey(function(){renderCompletionCore();});
+      return;
+    }
+  }catch(e){}
+  renderCompletionCore();
+}
+function renderCompletionCore(){
   UX.screen='done';
   var pane=document.getElementById('walk-pane');
   if(pane)pane.style.display='none';
@@ -7990,10 +8923,12 @@ function renderCompletion(){
     var waNew=waBtn.cloneNode(true);
     waBtn.parentNode.replaceChild(waNew,waBtn);
     waNew.addEventListener('click',function(){
-      var what2=lastScanResult?(String(lastScanResult.what_i_see||lastScanResult.task||'').trim()):'';
+      var what2=((lastScanResult&&(lastScanResult.what_i_see||lastScanResult.task))||'').trim();
+      var fallback2=(LANG==='nl')?'een probleem thuis':'a home repair';
+      var shareObj2=what2||fallback2;
       var msg=(LANG==='nl')
-        ?('Ik heb net zelf '+(what2?what2.toLowerCase():'een klus')+' gerepareerd met ChickenEgg 🐣 — scan gewoon je eigen kapotte ding. chickeneggbackup.vercel.app')
-        :('I just fixed '+(what2?what2.toLowerCase():'something at home')+' with ChickenEgg 🐣 chickeneggbackup.vercel.app');
+        ?('Ik heb net zelf '+shareObj2+' gerepareerd met ChickenEgg 🐣 — scan gewoon je eigen kapotte ding. chickeneggbackup.vercel.app')
+        :('I just fixed '+shareObj2+' with ChickenEgg 🐣 chickeneggbackup.vercel.app');
       window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank','noopener');
       ceTrackAppClick('completion_share_wa','done_screen');
     });
@@ -8225,6 +9160,14 @@ function openResultScreen(){
   var results=document.getElementById('results');
   if(!results)return;
   results.style.display='block';
+  /* Same chrome as showScreen keepIds: shell can remain display:none after a prior showScreen pass */
+  ['ce-results-shell','ce-compact-safety','ce-low-conf-banner','ce-paywall-teaser','ce-rental-debug-badge','r-confidence','ec','rst-btn'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el)el.style.display='';
+  });
+  // #region agent log
+  try{ceDbgSend({sessionId:'e91706',hypothesisId:'H9',location:'index.html:openResultScreen',message:'chrome reset',data:{},timestamp:Date.now(),runId:'pre'});}catch(_){}
+  // #endregion
   ['idle','detecting','locked','scanning','error'].forEach(function(x){document.body.classList.remove('ce-cam-'+x)});
   document.body.classList.remove('mailbox-open');
   document.body.classList.add('result-open');
@@ -8243,6 +9186,11 @@ function closeResultScreen(){
   ceRestoreHazardHeroSlot();
   ceResetResultPanels();
   document.body.classList.remove('result-open','mailbox-open','fixing','ce-step-active','fm-cta-open');
+  UX.resultRendered=false;
+  UX.resultRendering=false;
+  try{console.log('[CE] result guards reset in closeResultScreen');}catch(_){}
+  var rsClose=document.getElementById('results');
+  if(rsClose)rsClose.style.display='none';
   ceSetUiOwner('camera');
   enterCaptureFocus();
   var ecBox=document.getElementById('ec');
@@ -8251,14 +9199,15 @@ function closeResultScreen(){
   if(camStep){camStep.classList.remove('show');camStep.classList.add('off')}
   var rs=document.getElementById('results');
   if(rs){ceSetResultsStagger('off');rs.style.display='none';}
-  var gate=document.getElementById('confidence-gate');
-  if(gate)gate.classList.remove('show');
+  ceSetAllConfidenceGatesShown(false);
   var hs=document.getElementById('hazard-inline-actions');
   if(hs)hs.classList.remove('show');
   hideUxError();
   syncCamPerceptionFromHardware();
   var ve=document.getElementById('ce-visual-engine');
   if(ve)ve.classList.remove('ce-ve-ready');
+  var veOut=document.querySelector('#ce-panel-outcome .ce-outcome-panel-visual');
+  if(veOut)veOut.classList.remove('ce-ve-ready');
   var fm=document.getElementById('fm-cta');
   if(fm)fm.classList.remove('show');
   ceNavReset('camera');
@@ -8269,40 +9218,64 @@ function closeResultScreen(){
 function renderVisualDecisionEngine(r){
   r=ceEnsureRenderableResult(r);
   var root=document.getElementById('ce-visual-engine');
-  if(!root)return;
-  root.classList.remove('ce-ve-ready');
+  var outPanel=document.querySelector('#ce-panel-outcome .ce-outcome-panel-visual');
+  if(!root&&!outPanel)return;
+  if(root)root.classList.remove('ce-ve-ready');
+  if(outPanel)outPanel.classList.remove('ce-ve-ready');
   var isNl=LANG==='nl';
-  var pay=document.getElementById('ce-ve-paywall-hint');
-  if(pay){
-    if(typeof CE_FREE_LIMIT!=='undefined'&&typeof getCeScans==='function'&&getCeScans()>=CE_FREE_LIMIT){
-      pay.classList.remove('off');
-      pay.textContent=isNl
+  var payMsg=isNl
         ? 'Weet wat het is. Los het veilig op — ontgrendel volledige fotoverificatie en diepere stappen met Pro.'
         : 'Know what it is. Fix it safely — unlock full photo verification and deeper steps with Pro.';
+  ['ce-ve-paywall-hint','ce-ve-paywall-hint-outcome'].forEach(function(pid){
+    var payEl=document.getElementById(pid);
+    if(!payEl)return;
+    if(typeof CE_FREE_LIMIT!=='undefined'&&typeof getCeScans==='function'&&getCeScans()>=CE_FREE_LIMIT){
+      payEl.classList.remove('off');
+      payEl.textContent=payMsg;
     }else{
-      pay.classList.add('off');
+      payEl.classList.add('off');
     }
-  }
+  });
   var kP=document.getElementById('ce-ve-kicker-perc'),kD=document.getElementById('ce-ve-kicker-dec');
-  if(kP)kP.textContent=isNl?'Waarneming':'Perception';
+  var kpPerc=(isNl?'Waarneming':'Perception');
+  if(kP)kP.textContent=kpPerc;
+  var kPO=document.getElementById('ce-ve-kicker-perc-out');
+  if(kPO)kPO.textContent=kpPerc;
   if(kD)kD.textContent=isNl?'Beslissing':'Decision';
+  var oLbl=(isNl?'Belangrijkste waarnemingen':'Key observations');
+  var iLbl=(isNl?'Mogelijke problemen':'Possible issues');
   var oL=document.getElementById('ce-ve-obs-lbl'),iL=document.getElementById('ce-ve-issues-lbl');
-  if(oL)oL.textContent=isNl?'Belangrijkste waarnemingen':'Key observations';
-  if(iL)iL.textContent=isNl?'Mogelijke problemen':'Possible issues';
+  if(oL)oL.textContent=oLbl;
+  var oLO=document.getElementById('ce-ve-obs-lbl-out');
+  if(oLO)oLO.textContent=oLbl;
+  if(iL)iL.textContent=iLbl;
+  var iLO=document.getElementById('ce-ve-issues-lbl-out');
+  if(iLO)iLO.textContent=iLbl;
+  var wTxt=ceSentenceCase(r.what_i_see||'');
+  var titleFallback=ceSentenceCase(r.task||'');
+  var ohT=document.getElementById('ce-oh-title');
+  var ohS=document.getElementById('ce-oh-sub');
+  if(ohT)ohT.textContent=wTxt||titleFallback||'';
+  if(ohS)ohS.textContent=String(r.task||'').trim()||'';
   var wEl=document.getElementById('ce-ve-what');
-  if(wEl)wEl.textContent=ceSentenceCase(r.what_i_see||'');
+  if(wEl)wEl.textContent=wTxt;
+  var wEO=document.getElementById('ce-ve-what-out');
+  if(wEO)wEO.textContent=wTxt;
   function fillList(id, items, fallbackLine){
-    var ul=document.getElementById(id);
-    if(!ul)return;
-    ul.innerHTML='';
-    var safeItems=(items||[]).map(function(x){return String(x||'').trim();}).filter(Boolean);
-    if(!safeItems.length&&fallbackLine)safeItems=[fallbackLine];
-    safeItems.forEach(function(x){
-      if(!x)return;
-      var li=document.createElement('li');
-      li.textContent=String(x);
-      ul.appendChild(li);
-    });
+    function fillOne(ul){
+      if(!ul)return;
+      ul.innerHTML='';
+      var safeItems=(items||[]).map(function(x){return String(x||'').trim();}).filter(Boolean);
+      if(!safeItems.length&&fallbackLine)safeItems=[fallbackLine];
+      safeItems.forEach(function(x){
+        if(!x)return;
+        var li=document.createElement('li');
+        li.textContent=String(x);
+        ul.appendChild(li);
+      });
+    }
+    fillOne(document.getElementById(id));
+    fillOne(document.getElementById(id+'-out'));
   }
   fillList(
     'ce-ve-obs',
@@ -8314,13 +9287,10 @@ function renderVisualDecisionEngine(r){
     r.possible_issues||[],
     isNl?'Meer detail nodig voor een betrouwbare oorzaak':'More visual detail needed for a reliable root cause'
   );
-  var sevEl=document.getElementById('ce-ve-severity');
-  if(sevEl){
+  function applySeverity(sevEl, icon, st, sx){
+    if(!sevEl)return;
     sevEl.classList.remove('ce-sev-safe','ce-sev-attn','ce-sev-danger');
     var sev=r.severity_ui||'safe_cosmetic';
-    var icon=document.getElementById('ce-ve-sev-icon');
-    var st=document.getElementById('ce-ve-sev-title');
-    var sx=document.getElementById('ce-ve-sev-txt');
     if(sev==='potentially_dangerous'){
       sevEl.classList.add('ce-sev-danger');
       if(icon)icon.textContent='🔴';
@@ -8338,12 +9308,22 @@ function renderVisualDecisionEngine(r){
       if(sx)sx.textContent=isNl?'Lagere risicoklasse bij normale voorzichtigheid.':'Lower risk if you follow guidance.';
     }
   }
+  applySeverity(
+    document.getElementById('ce-ve-severity'),
+    document.getElementById('ce-ve-sev-icon'),
+    document.getElementById('ce-ve-sev-title'),
+    document.getElementById('ce-ve-sev-txt')
+  );
+  applySeverity(
+    document.getElementById('ce-ve-severity-out'),
+    document.getElementById('ce-ve-sev-icon-out'),
+    document.getElementById('ce-ve-sev-title-out'),
+    document.getElementById('ce-ve-sev-txt-out')
+  );
   var dec=r.decision_outcome||'safe_to_proceed';
-  var pill=document.getElementById('ce-ve-dec-pill');
-  if(pill){
+  function applyPill(pill, di, dl){
+    if(!pill)return;
     pill.classList.remove('ce-dec-safe','ce-dec-caution','ce-dec-stop');
-    var di=document.getElementById('ce-ve-dec-icon');
-    var dl=document.getElementById('ce-ve-dec-label');
     if(dec==='do_not_proceed'){
       pill.classList.add('ce-dec-stop');
       if(di)di.textContent='❌';
@@ -8358,28 +9338,49 @@ function renderVisualDecisionEngine(r){
       if(dl)dl.textContent=isNl?'Veilig om door te gaan':'Safe to proceed';
     }
   }
+  applyPill(
+    document.getElementById('ce-ve-dec-pill'),
+    document.getElementById('ce-ve-dec-icon'),
+    document.getElementById('ce-ve-dec-label')
+  );
+  applyPill(
+    document.getElementById('ce-ve-dec-pill-out'),
+    document.getElementById('ce-ve-dec-icon-out'),
+    document.getElementById('ce-ve-dec-label-out')
+  );
+  var drTxt=r.decision_rationale||'';
   var dr=document.getElementById('ce-ve-dec-rationale');
-  if(dr)dr.textContent=r.decision_rationale||'';
-  var ww=document.getElementById('ce-ve-why-wrap');
-  var wt=document.getElementById('ce-ve-why');
+  if(dr)dr.textContent=drTxt;
+  var drO=document.getElementById('ce-ve-dec-rationale-out');
+  if(drO)drO.textContent=drTxt;
   var why=String(r.why_safety_matters||'').trim();
-  if(ww&&wt){
+  function applyWhy(ww, wt, wlId){
+    if(!ww||!wt)return;
     if(why){
       ww.classList.remove('off');
       wt.textContent=why;
-      var wl=document.getElementById('ce-ve-why-lbl');
+      var wl=document.getElementById(wlId);
       if(wl)wl.textContent=isNl?'Waarom dit belangrijk is':'Why this matters';
     }else{
       ww.classList.add('off');
     }
   }
-  var sw=document.getElementById('ce-ve-stop-wrap');
-  var sl=document.getElementById('ce-ve-stop-list');
+  applyWhy(
+    document.getElementById('ce-ve-why-wrap'),
+    document.getElementById('ce-ve-why'),
+    'ce-ve-why-lbl'
+  );
+  applyWhy(
+    document.getElementById('ce-ve-why-wrap-out'),
+    document.getElementById('ce-ve-why-out'),
+    'ce-ve-why-lbl-out'
+  );
   var stops=r.when_to_stop||[];
-  if(sw&&sl){
+  function applyStop(sw, sl, sLabId){
+    if(!sw||!sl)return;
     if(stops&&stops.length){
       sw.classList.remove('off');
-      var sLab=document.getElementById('ce-ve-stop-lbl');
+      var sLab=document.getElementById(sLabId);
       if(sLab)sLab.textContent=isNl?'Wanneer stoppen':'When to stop';
       sl.innerHTML='';
       stops.forEach(function(t){
@@ -8392,8 +9393,21 @@ function renderVisualDecisionEngine(r){
       sl.innerHTML='';
     }
   }
+  applyStop(
+    document.getElementById('ce-ve-stop-wrap'),
+    document.getElementById('ce-ve-stop-list'),
+    'ce-ve-stop-lbl'
+  );
+  applyStop(
+    document.getElementById('ce-ve-stop-wrap-out'),
+    document.getElementById('ce-ve-stop-list-out'),
+    'ce-ve-stop-lbl-out'
+  );
   requestAnimationFrame(function(){
-    requestAnimationFrame(function(){root.classList.add('ce-ve-ready');});
+    requestAnimationFrame(function(){
+      if(root)root.classList.add('ce-ve-ready');
+      if(outPanel)outPanel.classList.add('ce-ve-ready');
+    });
   });
 }
 
@@ -8432,6 +9446,7 @@ function ceScrollToStepsCardSoon(){
 }
 function ceActivateRepairTabs(){
   ceResetResultPanels();
+  if(typeof ceSwitchTab==='function')ceSwitchTab('steps');
   ceScrollToStepsCardSoon();
 }
 function getScanViewsTarget(){
@@ -8508,7 +9523,6 @@ function ceSetResultsDetailsOpen(open){
   UX.resultsDetailsOpen=!!open;
   [
     'ce-visual-engine',
-    'results-summary',
     'r-confidence',
     'warn-ctr',
     'ce-conf-signal'
@@ -8524,13 +9538,12 @@ function ceSetResultsDetailsOpen(open){
       :((LANG==='nl')?'Bekijk analyse-details':'View analysis details');
   }
 }
-function ceUpdateRentalDebugBadge(){}
 function ceRepairNeededFromCur(){
   return curSteps.length>0 && curSteps.some(function(s){return (s||'').trim().length>0;});
 }
 function ceLandlordBlocksDiy(){
   if(!lastScanResult)return false;
-  return ceInferRentalHint(lastScanResult)==='landlord_likely' && ceRepairNeededFromCur();
+  return ceNormalizeRentalHint(lastScanResult.rental_liability_hint)==='landlord_likely' && ceRepairNeededFromCur();
 }
 function ceLandlordHidesVerdictCta(){
   if(!lastScanResult)return false;
@@ -8564,7 +9577,6 @@ function ceTrackPrimaryCtaVisibility(){
     ceTrackAppClick('results_above_fold_cta_visible',el.id||el.className||'cta');
   }
 }
-function ceSetChecklistCopy(){}
 function ceApplyChecklistVisibility(){
   document.querySelectorAll('#walk-pane').forEach(function(p){p.style.display='';});
 }
@@ -8770,21 +9782,21 @@ function renderRentalCard(r,opts){
   if(!opts.skipTrack)setTimeout(ceTrackPrimaryCtaVisibility,120);
   var seen=false;
   try{seen=localStorage.getItem('ce_rental_seen')==='true';}catch(e){}
-  if(!seen && tip && t.rentalFirstRunTip){
-    tip.textContent=t.rentalFirstRunTip;
+  if(!seen && tip && (t.rentalExplainerFirstHtml||t.rentalExplainerFirst)){
+    if(t.rentalExplainerFirstHtml)tip.innerHTML=t.rentalExplainerFirstHtml;
+    else tip.textContent=t.rentalExplainerFirst;
     tip.classList.add('ce-rental-tip--on');
     card.classList.add('ce-rental--first-run');
   }else if(tip){
     tip.classList.remove('ce-rental-tip--on');
     tip.textContent='';
+    tip.innerHTML='';
   }
   if(hint==='landlord_likely'||hint==='unclear'){
     var primaryEl=(wa&&!wa.classList.contains('off'))?wa:((ctaContract&&!ctaContract.classList.contains('off'))?ctaContract:null);
     if(primaryEl)ceMarkPrimaryCta(primaryEl);
   }
 }
-
-function renderVerdictCard(){/* removed — replaced by renderDecisionCard */}
 
 function ceShareToLandlord(r){
   var issue=(r&&r.what_i_see)?String(r.what_i_see).trim():'';
@@ -8806,6 +9818,7 @@ function renderDecisionCard(r,opts){
   opts=opts||{};
   var root=document.getElementById('decision-card');
   if(!root||!r)return;
+  var confPill=document.getElementById('decision-confidence-pill');
   var title=document.getElementById('decision-title');
   var outcome=document.getElementById('decision-outcome');
   var risk=document.getElementById('decision-risk');
@@ -8895,14 +9908,28 @@ function renderDecisionCard(r,opts){
   if(factConfV){
     var confLabel;
     if(confRaw==='high'){
-      confLabel=(LANG==='nl')?'Zeker van diagnose':'Confident diagnosis';
+      confLabel=tloc.decisionConfHigh||((LANG==='nl')?'Zekere diagnose':'Solid diagnosis');
     }else if(confRaw==='medium'){
-      confLabel=(LANG==='nl')?'Vrij zeker van diagnose':'Fairly confident';
+      confLabel=tloc.decisionConfMed||((LANG==='nl')?'Redelijk zeker — controleer zelf':'Reasonably sure — double-check');
     }else{
-      confLabel=(LANG==='nl')?'Neem scherpere foto':'Try a clearer photo';
+      confLabel=tloc.decisionConfLow||((LANG==='nl')?'Onzeker — betere foto helpt':'Uncertain — a better photo helps');
     }
     factConfV.textContent=confLabel;
   }
+  if(confPill){
+    confPill.className='ce-confidence-pill ce-stagger-item';
+    if(confRaw==='high'){
+      confPill.textContent=tloc.decisionConfHigh||'';
+      confPill.classList.add('show','ce-confidence-pill--high');
+    }else if(confRaw==='medium'){
+      confPill.textContent=tloc.decisionConfMed||'';
+      confPill.classList.add('show','ce-confidence-pill--med');
+    }else{
+      confPill.textContent=tloc.decisionConfLow||'';
+      confPill.classList.add('show','ce-confidence-pill--low');
+    }
+  }
+  root.classList.toggle('ce--low-confidence',confRaw==='low');
   if(detailsBtn){
     var newDetailsBtn=detailsBtn.cloneNode(true);
     detailsBtn.parentNode.replaceChild(newDetailsBtn,detailsBtn);
@@ -8943,13 +9970,19 @@ function renderDecisionCard(r,opts){
     ctaSubText=(decision==='caution')
       ?((LANG==='nl')?'Volg elke stap en check na elke actie met een foto.':'Follow every step and verify each move with a photo.')
       :((LANG==='nl')?'Je volgt nu een helder stappenplan met foto-checks.':'Start a clear step-by-step guide with photo checks.');
+    if(confRaw==='low'&&!r.user_proceeded_despite_low_confidence){
+      label=tloc.gateCtaLowConf||label;
+    }
     action=function(){enterRepairScreen();};
   }
   if(cta){
     cta.textContent=label;
     var newBtn=cta.cloneNode(true);
     cta.parentNode.replaceChild(newBtn,cta);
-    newBtn.addEventListener('click',action);
+    newBtn.addEventListener('click',function(){
+      try{trackEvent('primary_cta_tapped',{label:(label||'').slice(0,80)});}catch(e){}
+      action();
+    });
     ceMarkPrimaryCta(newBtn);
   }
   if(meta){
@@ -8988,6 +10021,9 @@ function renderDecisionCard(r,opts){
 
 function renderResults(r){
   if(UX.resultRendered||UX.resultRendering){
+    // #region agent log
+    ceDbgSend({sessionId:'e91706',hypothesisId:'H1',location:'index.html:renderResults',message:'skipped',data:{resultRendered:!!UX.resultRendered,resultRendering:!!UX.resultRendering},timestamp:Date.now(),runId:'pre'});
+    // #endregion
     try{console.warn('[CE] renderResults skipped (already rendered)');}catch(_){}
     return;
   }
@@ -8996,7 +10032,7 @@ function renderResults(r){
   cePruneDuplicateResultsNodes();
   r=ceEnsureRenderableResult(r);
   ceClearPlainResultFallback();
-  ceEnforceSingleUxStructure();
+  ceEnforceSingleUxStructure('ce-screen-diagnosis');
   ceResetResultPanels();
   ceSetFlowStage('diagnose',{screen:'ce-screen-diagnosis'});
   ceNavPush('diagnose');
@@ -9050,8 +10086,10 @@ function renderResults(r){
 
   var repairNeeded = curSteps.length>0 && curSteps.some(function(s){return (s||'').trim().length>0});
   var rentalHintNorm = ceInferRentalHint(r);
-  ceUpdateRentalDebugBadge(rentalHintNorm);
-  var landlordBlocksDiy = (rentalHintNorm === 'landlord_likely' && repairNeeded);
+  var explicitRentalHint = ceNormalizeRentalHint(r&&r.rental_liability_hint);
+  var decNorm=String(r.decision_outcome||'').toLowerCase().replace(/-/g,'_').replace(/ /g,'_');
+  var ceDecisionDoNot=(decNorm==='do_not_proceed');
+  var landlordBlocksDiy = (explicitRentalHint === 'landlord_likely' && repairNeeded);
   if(rentalHintNorm!=='not_applicable')ceSetFrameState('Diagnosis','With-rental');
   var resultsEl=document.getElementById('results');
   if(resultsEl){
@@ -9063,7 +10101,6 @@ function renderResults(r){
   openResultScreen();
   var shellEl=document.getElementById('ce-results-shell');
   if(shellEl)shellEl.classList.remove('ce-results-shell--locked');
-  if(typeof ceSwitchTab==='function')ceSwitchTab('outcome');
   var ecSheet=document.getElementById('ec');if(ecSheet) ecSheet.classList.remove('ec-sheet');
   var costStr = (r.estimated_cost||'').toString().trim().toLowerCase();
   var hasCost = !!costStr && costStr !== 'n/a' && costStr !== 'na';
@@ -9091,8 +10128,10 @@ function renderResults(r){
     document.getElementById('s-tot').textContent='0';
     document.getElementById('p-fill').style.width='0%';
   }
-  document.getElementById('r-title').textContent=ceSentenceCase(r.what_i_see||'');
-  document.getElementById('r-task2').textContent=r.task||'';
+  var rTitleEl=document.getElementById('r-title');
+  if(rTitleEl)rTitleEl.textContent=ceSentenceCase(r.what_i_see||'');
+  var rTaskEl=document.getElementById('r-task2');
+  if(rTaskEl)rTaskEl.textContent=r.task||'';
   renderVisualDecisionEngine(r);
   ceSetResultsDetailsOpen(false);
   var tloc=T[LANG]||T.en;
@@ -9216,19 +10255,12 @@ function renderResults(r){
   var wpBox=document.getElementById('when-pro-box');
   if(r.when_to_call_pro){document.getElementById('r-when-pro').textContent=r.when_to_call_pro;document.getElementById('when-pro-lbl').textContent=T[LANG].whenProLbl;wpBox.classList.add('show')}else wpBox.classList.remove('show');
 
-  var gate=document.getElementById('confidence-gate');
-  if(gate){
-    if(ceMediumConfirmRequired){
-      gate.classList.add('show');
-      var tg=T[LANG]||T.en;
-      document.getElementById('confidence-gate-ttl').textContent=tg.gateConfirmTtl||((LANG==='nl')?'Klopt dit object?':'Does this look right?');
-      document.getElementById('confidence-gate-msg').textContent=tg.gateConfirmMsg||'';
-      document.getElementById('confidence-gate-confirm').textContent=tg.gateConfirmOk||((LANG==='nl')?'Ja — toon stappen':'Yes — show steps');
-      document.getElementById('confidence-gate-retake').textContent=tg.gateRetakeLbl||((LANG==='nl')?'Betere foto maken':'Take a clearer photo');
-      document.getElementById('confidence-gate-note').textContent=tg.gateRetakeNote||'';
-    }else{
-      gate.classList.remove('show');
-    }
+  if(ceMediumConfirmRequired){
+    var tg=T[LANG]||T.en;
+    ceSyncConfidenceGateCopy(tg);
+    ceSetAllConfidenceGatesShown(true);
+  }else{
+    ceSetAllConfidenceGatesShown(false);
   }
 
   var diffKey=diff.replace('gemakkelijk','easy').replace('gemiddeld','medium').replace('moeilijk','hard');
@@ -9285,10 +10317,15 @@ function renderResults(r){
     });
   }
 
-  var allowSteps = repairNeeded && !ceDangerLocked && !ceWarningUnlockRequired && !ceMediumConfirmRequired && !landlordBlocksDiy;
+  var allowSteps = repairNeeded && !ceDangerLocked && !ceWarningUnlockRequired && !ceMediumConfirmRequired && !landlordBlocksDiy && !ceDecisionDoNot;
+  // #region agent log
+  ceDbgSend({sessionId:'e91706',hypothesisId:'H2',location:'index.html:renderResults:allowSteps',message:'gates',data:{allowSteps:!!allowSteps,repairNeeded:!!repairNeeded,ceDangerLocked:!!ceDangerLocked,ceWarningUnlockRequired:!!ceWarningUnlockRequired,ceMediumConfirmRequired:!!ceMediumConfirmRequired,landlordBlocksDiy:!!landlordBlocksDiy,ceDecisionDoNot:!!ceDecisionDoNot,decNorm:decNorm,curStepsLen:(curSteps&&curSteps.length)||0},timestamp:Date.now(),runId:'pre'});
+  // #endregion
   if(ceDangerLocked){
     setResultVisibility({showSteps:false,showTools:false,showTts:false,showFold:false,showAd:false});
     showUxError('dangerous_task');
+  }else if(ceDecisionDoNot){
+    setResultVisibility({showSteps:false,showTools:!!repairNeeded,showTts:false,showFold:true,showAd:true});
   }else if(ceWarningUnlockRequired){
     setResultVisibility({showSteps:false,showTools:repairNeeded,showTts:false,showFold:true,showAd:true});
   }else if(ceMediumConfirmRequired){
@@ -9330,6 +10367,14 @@ function renderResults(r){
     UX.repair.checklistDone=true;
     ceUxSyncLegacyChecklistFlags();
     document.getElementById('r-steps').innerHTML='';
+    if(repairNeeded&&curSteps&&curSteps.length){
+      UX.repair.stepIdx=0;
+      walkIdx=0;
+      renderRepairUI();
+      // #region agent log
+      try{ceDbgSend({sessionId:'e91706',hypothesisId:'H15',location:'index.html:renderResults:gated',message:'renderRepairUI despite !allowSteps',data:{ceMediumConfirmRequired:!!ceMediumConfirmRequired,ceWarningUnlockRequired:!!ceWarningUnlockRequired,curStepsLen:curSteps.length},timestamp:Date.now(),runId:'pre'});}catch(_){}
+      // #endregion
+    }
   }
   renderDecisionCard(r,{
     repairNeeded:repairNeeded,
@@ -9360,7 +10405,22 @@ function renderResults(r){
   var paywallState=(ceDangerLocked?'danger':(rentalHintNorm==='landlord_likely'?'landlord_likely':''));
   UX.screen='results';
   showScreen('ce-screen-diagnosis',paywallState,'push-right');
+  if(typeof ceSwitchTab==='function'){
+    ceSwitchTab('outcome');
+    // #region agent log
+    try{ceDbgSend({sessionId:'e91706',hypothesisId:'H12',location:'index.html:renderResults:afterShowScreen',message:'tab sync',data:{ceCurrentScreen:String(ceCurrentScreen||''),paywall:String(paywallState||'')},timestamp:Date.now(),runId:'pre'});}catch(_){}
+    // #endregion
+  }
   setTimeout(function(){ceHardRecoverBlankResults(r);},900);
+  if(repairNeeded&&curSteps&&curSteps.length){
+    setTimeout(function(){
+      if(!document.body.classList.contains('result-open'))return;
+      ceForceWalkthroughPaint('renderResults+420');
+    },420);
+  }
+  ceUpdateCompactSafetyBanner(r);
+  ceUpdateLowConfBanner(r);
+  ceMaybeCoachOnResult();
   UX.resultRendered=true;
   return hz;
   }finally{
@@ -9371,9 +10431,9 @@ function renderResults(r){
 var hazardUnlockBtn=document.getElementById('hazard-step-unlock');
 if(hazardUnlockBtn){
   hazardUnlockBtn.addEventListener('click',function(){
+    try{trackEvent('hard_stop_bypassed',{});}catch(e){}
     ceWarningUnlockRequired=false;
-    var gate=document.getElementById('confidence-gate');
-    if(gate)gate.classList.remove('show');
+    ceSetAllConfidenceGatesShown(false);
     var inlineAct=document.getElementById('hazard-inline-actions');
     if(inlineAct)inlineAct.classList.remove('show');
     var allow=ceRepairNeededFromCur()&&!ceDangerLocked&&!ceWarningUnlockRequired&&!ceMediumConfirmRequired&&!ceLandlordBlocksDiy();
@@ -9382,39 +10442,7 @@ if(hazardUnlockBtn){
     }
   });
 }
-var confGateOk=document.getElementById('confidence-gate-confirm');
-if(confGateOk){
-  confGateOk.addEventListener('click',function(){
-    ceMediumConfirmRequired=false;
-    var gate=document.getElementById('confidence-gate');
-    if(gate)gate.classList.remove('show');
-    var allow=ceRepairNeededFromCur() && !ceDangerLocked && !ceWarningUnlockRequired && !ceMediumConfirmRequired && !ceLandlordBlocksDiy();
-    setResultVisibility({showSteps:allow,showTools:ceRepairNeededFromCur(),showTts:allow,showFold:true,showAd:true});
-    if(lastScanResult)renderDecisionCard(lastScanResult,{
-      repairNeeded:ceRepairNeededFromCur(),
-      allowSteps:allow,
-      ceDangerLocked:ceDangerLocked,
-      ceWarningUnlockRequired:ceWarningUnlockRequired,
-      ceMediumConfirmRequired:ceMediumConfirmRequired
-    });
-    if(curSteps&&curSteps.length){
-      UX.repair.stepIdx=0;
-      walkIdx=0;
-      renderRepairUI();
-      if(allow){
-        document.getElementById('tts-bar').classList.add('show');
-        document.getElementById('tts-read-lbl').textContent=T[LANG].readAll;
-        ceActivateRepairTabs();
-      }
-    }
-  });
-}
-var confGateRetake=document.getElementById('confidence-gate-retake');
-if(confGateRetake){
-  confGateRetake.addEventListener('click',function(){
-    retakePhoto();
-  });
-}
+ceBindConfidenceGateOnce();
 function updateStepUI(){
   var tot=curSteps.length,done=doneSteps.size;
   document.getElementById('s-done').textContent=done;document.getElementById('s-tot').textContent=tot;
@@ -9466,8 +10494,6 @@ function updateWarn(){
   if(warnCt===0){el.classList.add('off');return}
   el.classList.remove('off');document.getElementById('warn-txt').textContent=warnCt+' / 3 '+T[LANG].warnTxt;
 }
-
-function confetti(){ceLaunchConfetti();}
 
 /* PROGRESS MODAL */
 var pmModal=document.getElementById('pm'),pmFile=document.getElementById('pm-file'),pmPrev=document.getElementById('pm-prev'),pmGo=document.getElementById('pm-go'),pmCancel=document.getElementById('pm-cancel'),pmRes=document.getElementById('pm-res'),pmIdx=0,pmTxtVal='',pmFile2=null;
@@ -9591,8 +10617,7 @@ document.getElementById('rst-btn').addEventListener('click',function(){
     var hzA=document.getElementById('hazard-hero-actions');if(hzA)hzA.classList.remove('show');
     var hzI=document.getElementById('hazard-inline-actions');if(hzI)hzI.classList.remove('show');
   }
-  var cg=document.getElementById('confidence-gate');if(cg)cg.classList.remove('show');
-  ceMediumConfirmRequired=false;ceWarningUnlockRequired=false;ceDangerLocked=false;
+  ceSetAllConfidenceGatesShown(false);
   document.getElementById('results').style.display='none';hideUxError();
   document.getElementById('results').classList.remove('fix-mode');
   var camStep=document.getElementById('cam-step');if(camStep){camStep.classList.remove('show');camStep.classList.add('off')}
@@ -9600,6 +10625,10 @@ document.getElementById('rst-btn').addEventListener('click',function(){
   curSteps=[];curVisualTips=[];doneSteps.clear();warnCt=0;updateWarn();
   UX.resultRendered=false;
   UX.resultRendering=false;
+  ceDangerLocked=false;
+  ceWarningUnlockRequired=false;
+  ceMediumConfirmRequired=false;
+  try{console.log('[CE] safety flags reset');}catch(_){}
   document.getElementById('all-done').style.display='none';document.getElementById('task-locked').style.display='none';
   document.getElementById('tts-bar').classList.remove('show');pmModal.classList.add('off');pmModal.setAttribute('aria-hidden','true');
   var rggR=document.getElementById('readout-glass');if(rggR)rggR.classList.add('off');
@@ -9616,7 +10645,7 @@ var doneGoBtn=document.getElementById('done-go-btn');
 if(doneGoBtn){
   doneGoBtn.addEventListener('click',function(){
     clickSnd();
-    continueFromDoneCelebration();
+    renderCompletion();
   });
 }
 var resultsBackBtn=document.getElementById('results-back-btn');
@@ -9800,15 +10829,6 @@ function ceLoadTrustStrip(){
 /* ── PAYWALL (Gumroad) ── */
 var CE_FREE_LIMIT = 5;
 var CE_CHECKOUT_URLS = {
-  month: 'https://pepesoup1000.gumroad.com/l/tarwyk',
-  year: 'https://pepesoup1000.gumroad.com/l/pnpfz'
-};
-
-/**
- * Paste your Gumroad product links (year + month). Share → copy full https://… link.
- * Leave '' until set; buttons fall back to gumroad.com homepage.
- */
-var CE_CHECKOUT_URLS = {
   year: 'https://pepesoup1000.gumroad.com/l/pnpfz',
   month: 'https://pepesoup1000.gumroad.com/l/tarwyk'
 };
@@ -9833,8 +10853,12 @@ function applyPaywallModalCopy(){
   var t=T[LANG]||T.en;
   var ttl=document.getElementById('pw-ttl');
   var lead=document.getElementById('pw-lead');
+  var anchor=document.getElementById('pw-value-anchor');
   if(ttl)ttl.textContent=t.pwProTtl||'ChickenEgg Pro';
   if(lead)lead.textContent=t.pwLeadEx||'';
+  if(anchor)anchor.textContent=(LANG==='nl')
+    ?'💡 Een loodgieter rekent €85–120 voor een kleine klus. Eén reparatie betaalt dit abonnement terug.'
+    :'💡 A plumber charges €85–120 for a small job. One repair pays for this subscription.';
   var bm=document.getElementById('pw-btn-month'),by=document.getElementById('pw-btn-year');
   if(bm)bm.textContent=t.pwMonthCta||'';
   if(by)by.textContent=t.pwYearCta||'';
@@ -9857,6 +10881,12 @@ function showPaywall(){
   var dismissedUntil=parseInt(localStorage.getItem('ce_paywall_dismissed_until')||'0',10)||0;
   if(Date.now()<dismissedUntil)return;
   applyPaywallModalCopy();
+  var lim=parseInt((ceServerScanState&&ceServerScanState.limit)||CE_FREE_LIMIT,10)||CE_FREE_LIMIT;
+  var t=T[LANG]||T.en;
+  var ttl=document.getElementById('pw-ttl');
+  var lead=document.getElementById('pw-lead');
+  if(ttl&&t.pwTtlLimit)ttl.textContent=String(t.pwTtlLimit).replace(/\{n\}/g,String(lim));
+  if(lead&&t.pwLeadLimit)lead.textContent=t.pwLeadLimit;
   var m=document.getElementById('pw-modal');
   if(m)m.classList.add('show');
   ceSetFlowStage('paywall',{screen:'modal'});
@@ -9874,8 +10904,10 @@ function closePaywall(){
     ceSetFrameState('Capture','Default');
   }
   ceTrackAppClick(CE_EVENTS.PAYWALL_SHEET_DISMISSED,'modal_close');
+  try{trackEvent('paywall_dismissed_home',{});}catch(e){}
 }
 function trackGumroad(tool){
+  try{trackEvent('paywall_options_tapped',{plan:String(tool||'')});}catch(e){}
   try{fetch('/track-click',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({store:'gumroad',tool:tool||'checkout'})}).catch(function(){})}catch(e){}
 }
 function fmtFmNote(tpl,n){
@@ -9884,13 +10916,13 @@ function fmtFmNote(tpl,n){
 }
 function getStripCopy(scansRemaining,lang){
   if(lang==='nl'){
-    if(scansRemaining>1)return scansRemaining+' scans over';
+    if(scansRemaining>1)return scansRemaining+' gratis scans over';
     if(scansRemaining===1)return 'Laatste gratis scan';
-    return 'Upgrade om door te gaan';
+    return 'Kies abonnement om door te gaan';
   }
-  if(scansRemaining>1)return scansRemaining+' scans left';
+  if(scansRemaining>1)return scansRemaining+' free scans left';
   if(scansRemaining===1)return 'Last free scan';
-  return 'Upgrade to keep scanning';
+  return 'Choose a plan to keep scanning';
 }
 function triggerPaywallFlow(scanState){
   var state=scanState||ceServerScanState||{};
@@ -9909,13 +10941,25 @@ function triggerPaywallFlow(scanState){
   }
   if(typeof ceRenderInlinePaywallTeaser==='function')ceRenderInlinePaywallTeaser(isPro,left);
   if(fmEl){
-    fmEl.classList.add('show');
-    document.body.classList.add('fm-cta-open');
-    void fmEl.offsetWidth;
+    if(isPro||n>=lim-1){
+      fmEl.classList.add('show');
+      document.body.classList.add('fm-cta-open');
+      void fmEl.offsetWidth;
+    }else{
+      fmEl.classList.remove('show');
+      document.body.classList.remove('fm-cta-open');
+    }
     if(fmNote){
-      fmNote.textContent=isPro
-        ?((LANG==='nl')?'Pro — onbeperkt scannen':'Pro — unlimited scans')
-        :getStripCopy(left,LANG);
+      if(!isPro&&left===1){
+        var warningNote=(LANG==='nl')
+          ?'⚠️ Laatste gratis scan — daarna kun je doorgaan met Pro.'
+          :'⚠️ Last free scan — continue with Pro after this.';
+        fmNote.textContent=warningNote;
+      }else{
+        fmNote.textContent=isPro
+          ?((LANG==='nl')?'Pro — onbeperkt scannen':'Pro — unlimited scans')
+          :getStripCopy(left,LANG);
+      }
     }
   }
   updatePaywallStrip(ceCurrentScreen||'ce-screen-diagnosis',ceCurrentPaywallState());
@@ -9934,8 +10978,8 @@ function ceRenderInlinePaywallTeaser(isPro,scansLeft){
     return;
   }
   copy.textContent=(LANG==='nl')
-    ?((scansLeft===0)?'Scanlimiet bereikt — upgrade voor onbeperkt':'Laatste gratis scan — upgrade om door te gaan')
-    :((scansLeft===0)?'Scan limit reached — upgrade for unlimited':'Last free scan — upgrade to keep fixing');
+    ?((scansLeft===0)?'Gratis scans op — kies Pro om door te gaan':'Laatste gratis scan — Pro helpt je door te gaan')
+    :((scansLeft===0)?'No free scans left — choose Pro to continue':'Last free scan — Pro keeps you going');
   if(!teaser.classList.contains('show')){
     ceTrackAppClick(CE_EVENTS.PAYWALL_TEASER_SHOWN,'inline|diagnosis');
   }
@@ -10089,6 +11133,15 @@ function initResults(){
   window.CE_STABLE_RESULTS=false;
   document.body.classList.remove('ce-stable-results');
   if(typeof ceBuildUxScreens==='function')ceBuildUxScreens();
+  var diagnosePill=document.getElementById('results-flow-diagnose');
+  if(diagnosePill){
+    diagnosePill.addEventListener('click',function(){
+      if(typeof ceCurrentScreen!=='undefined'&&ceCurrentScreen!=='ce-screen-diagnosis'){
+        clickSnd();
+        showScreen('ce-screen-diagnosis',undefined,'pop-left');
+      }
+    });
+  }
 }
 function initStepWalkthrough(){
   if(window.__ceInitStepWalkthroughDone)return;
@@ -10112,6 +11165,7 @@ function initI18n(){
   ceSetFrameState('Capture','Default');
   ceNavReset('camera');
   setLang(LANG);updateHdr();checkStreak();renderBadges();
+  if(typeof ceUpdateRepairCounter==='function')ceUpdateRepairCounter();
   showLangTip();
   if(localStorage.getItem('ce_pro_active')==='true'){
     var proEmail=localStorage.getItem('ce_pro_email')||'';
@@ -10140,6 +11194,11 @@ function initI18n(){
   if(typeof ceInitWelcome==='function')ceInitWelcome();
 }
 
+ceBindCoachOnce();
+ceBindScanGuideOnce();
+ceBindFaqOnce();
+ceBindRepairSurveyOnce();
+ceBindScanSoftHintOnce();
 initScanCounter();
 initCamera();
 initResults();
