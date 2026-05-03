@@ -5,6 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"/>
   <meta name="description" id="meta-app-desc" content="ChickenEgg: scan een kapot object thuis, krijg een duidelijk stappenplan en veiligheidstips. AI als hulp — geen vervanging voor een vakman."/>
   <title>ChickenEgg — thuis zelf slim klussen</title>
+  <script>
+  (function(){
+    try{
+      var p=location.pathname||'';
+      if(p==='/agreement'||p==='/safety-stop'||p==='/pricing'||p==='/privacy'||p==='/health'||p==='/metrics'||p==='/dashboard'||p==='/metrics-detail'||p==='/app-build')return;
+      if(p!=='/'&&p!=='')return;
+      if(!localStorage.getItem('ce_v3')){
+        location.replace('/agreement?next='+encodeURIComponent(p+location.search+location.hash));
+      }
+    }catch(e){}
+  })();
+  </script>
   <link rel="manifest" href="/static/manifest.json?v=8"/>
   <link rel="icon" type="image/png" sizes="192x192" href="/static/icon-192.png?v=8"/>
   <link rel="icon" type="image/png" sizes="512x512" href="/static/icon-512.png?v=8"/>
@@ -29,8 +41,11 @@
 
       /* Text Tiers */
       --text-primary:#F0F2F5;
-      --text-secondary:#A0A6B1;
-      --text-tertiary:#6B7280;
+      /* WCAG AA on #181A1F / #0F1115: #B8BEC9 ≈7.5:1 body; #9CA3AF on #22252B ≈5.8:1 */
+      --text-secondary:#B8BEC9;
+      --text-tertiary:#9CA3AF;
+      --text-faint:#6B7280;
+      --caution-on-dark:#FBB040;
       --text-inverse:#0F1115;
 
       /* Semantic Colors */
@@ -96,7 +111,7 @@
       --green:var(--success);
       --red:var(--danger);
       --org:var(--caution);
-      --t1:var(--text-primary);--t2:var(--text-secondary);--t3:var(--text-tertiary);--t4:rgba(107,114,128,.38);
+      --t1:var(--text-primary);--t2:var(--text-secondary);--t3:var(--text-tertiary);--t4:rgba(156,163,175,.45);
       --radius-none:0;
       --radius-sm:4px;
       --radius-md:8px;
@@ -1394,6 +1409,18 @@
     .or2{position:absolute;inset:10px;border-radius:50%;border:1px solid transparent;border-bottom-color:var(--green);animation:spin 2s linear infinite reverse}
     @keyframes spin{to{transform:rotate(360deg)}}
     .ld-txt{font-size:15px;font-weight:700;color:var(--t1);margin-bottom:4px;letter-spacing:-.2px}
+    .ce-ld-ritual-inner{position:relative;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px;min-height:160px}
+    .ce-ritual-brackets{width:min(68vw,200px);height:min(68vw,200px);margin:0 auto 8px;display:block}
+    @media (prefers-reduced-motion: no-preference){
+      .ce-ritual-brackets{animation:ceBracketPulse 1.8s ease-in-out infinite;transform-origin:center center}
+    }
+    @keyframes ceBracketPulse{0%,100%{transform:scale(1)}50%{transform:scale(0.94)}}
+    @media (prefers-reduced-motion: reduce){
+      .ce-ritual-brackets{animation:none!important}
+      .ce-done-check .ce-dc-circle,.ce-done-check .ce-dc-check{animation:none!important;stroke-dashoffset:0!important}
+    }
+    .ce-ritual-caption{font-size:14px;font-weight:650;color:var(--text-secondary);margin-top:4px}
+    .ce-ritual-dots{display:inline-block;min-width:3ch;text-align:left}
     .ld-sub{font-size:12px;color:var(--t2)}
     .ld-eta{font-size:11px;font-weight:700;color:var(--t3);margin-top:10px;max-width:280px;margin-left:auto;margin-right:auto;line-height:1.45}
     .stage1-confirm{
@@ -2900,16 +2927,17 @@
       inset:0!important;
       z-index:280!important;
       padding:0!important;
+      display:flex!important;
       align-items:center!important;
-      justify-content:flex-end!important;
+      justify-content:center!important;
       flex-direction:column!important;
-      background:rgba(0,0,0,.28)!important;
-      backdrop-filter:blur(14px) saturate(1.2)!important;
-      -webkit-backdrop-filter:blur(14px) saturate(1.2)!important;
+      background:rgba(15,17,21,.92)!important;
+      backdrop-filter:blur(12px) saturate(1.1)!important;
+      -webkit-backdrop-filter:blur(12px) saturate(1.1)!important;
       pointer-events:none!important;
     }
     body.cam-tiktok #ld .ld-orb{display:none!important}
-    body.cam-tiktok #ld .ld-txt,
+    body.cam-tiktok #ld .ce-ritual-caption,
     body.cam-tiktok #ld .ld-sub,
     body.cam-tiktok #ld .ld-eta,
     body.cam-tiktok #ld .stage1-confirm{display:block!important}
@@ -3412,10 +3440,44 @@
     .fold-more[open] > summary::after{transform:rotate(90deg)}
     .fold-inner{padding:4px 0 14px}
     .rst-btn{width:100%;background:transparent;border:.5px solid rgba(0,0,0,.12);color:var(--t2);border-radius:var(--rxl);padding:14px;font-size:14px;font-weight:600;cursor:pointer;margin-top:6px;transition:all .15s;font-family:inherit;box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
-    .err-box{background:rgba(160,50,40,.07);border:.5px solid rgba(160,50,40,.22);border-radius:var(--rmd);padding:12px;color:var(--red);font-size:13px;text-align:center;margin-top:10px;display:none}
+    .ce-home-empty{
+      display:none;position:absolute;inset:0;z-index:42;flex-direction:column;align-items:center;justify-content:center;
+      padding:max(12px,env(safe-area-inset-top)) 20px 120px;background:transparent;pointer-events:none;
+    }
+    .ce-home-empty.ce-home-empty--on{display:flex}
+    body.cam-tiktok .ce-home-empty.ce-home-empty--on{pointer-events:auto}
+    .ce-home-empty h2{font-size:18px;font-weight:800;color:var(--text-primary);text-align:center;margin-bottom:8px}
+    .ce-home-empty p{font-size:14px;color:var(--text-secondary);text-align:center;max-width:260px;line-height:1.45;margin-bottom:20px}
+    .ce-home-empty .ce-empty-cta{
+      width:100%;max-width:320px;min-height:52px;border:none;border-radius:12px;background:#60A5FA;color:#0F1115;
+      font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;
+    }
+    .ce-home-empty .ce-empty-cta:active{transform:scale(0.99)}
+    .ce-err-card{
+      background:#22252B;border-radius:12px;padding:20px;text-align:left;margin-top:10px;
+      max-width:100%;
+    }
+    .ce-err-card.ce-err--caution{border:1px solid rgba(251,176,64,0.35)}
+    .ce-err-card.ce-err--danger{border:1px solid rgba(239,68,68,0.35)}
+    .ce-err-card.ce-err--neutral{border:1px solid rgba(156,163,175,0.28)}
+    .ce-err-ico{width:40px;height:40px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center}
+    .ce-err-card h4{font-size:16px;font-weight:800;margin-bottom:8px;line-height:1.2}
+    .ce-err-card .ce-err-body{font-size:14px;color:var(--text-secondary);line-height:1.45;margin-bottom:14px;white-space:pre-line}
+    .ce-err-card .err-actions{display:flex;flex-direction:column;gap:10px}
+    .ce-err-card .err-cta{width:100%;min-height:48px;border-radius:12px;border:none;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer}
+    .ce-err-card .err-cta-primary{background:#60A5FA;color:#0F1115}
+    .ce-err-card .err-cta-secondary{min-height:48px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:transparent;color:var(--text-secondary);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer}
+    .ce-done-check{width:56px;height:56px;margin:0 auto 10px;display:block}
+    @media (prefers-reduced-motion: no-preference){
+      .ce-done-check .ce-dc-circle{stroke-dasharray:176;stroke-dashoffset:176;animation:ceDcCirc 0.3s ease-out forwards}
+      .ce-done-check .ce-dc-check{stroke-dasharray:48;stroke-dashoffset:48;animation:ceDcChk 0.2s ease-out 0.1s forwards}
+    }
+    @keyframes ceDcCirc{to{stroke-dashoffset:0}}
+    @keyframes ceDcChk{to{stroke-dashoffset:0}}
+    .err-box{background:transparent;border:none;border-radius:0;padding:0;color:inherit;font-size:13px;text-align:center;margin-top:10px;display:none}
     #all-done{display:none;background:linear-gradient(135deg,rgba(58,96,56,.14),rgba(38,76,36,.05));border:.5px solid rgba(58,96,56,.3);border-radius:var(--rxl);padding:24px 18px;text-align:center;margin-bottom:12px;animation:bP .55s cubic-bezier(.34,1.56,.64,1)}
     @keyframes bP{from{transform:scale(.84);opacity:0}to{transform:scale(1);opacity:1}}
-    #all-done .de{font-size:46px;margin-bottom:8px}
+    .ce-done-check-wrap{margin-bottom:6px}
     #all-done h3{font-size:22px;font-weight:900;color:var(--green);margin-bottom:5px}
     #all-done p{font-size:13px;color:var(--t2);line-height:1.5;margin-bottom:12px}
     .done-xp{display:inline-flex;align-items:center;gap:5px;background:rgba(144,112,24,.1);border:.5px solid rgba(144,112,24,.26);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:800;color:var(--gold)}
@@ -3548,10 +3610,10 @@
     .done-go:active{transform:scale(.98)}
 
     /* AGREEMENT — bottom sheet + scrim */
-    #ag-modal{position:fixed;inset:0;z-index:998;display:flex;align-items:flex-end;justify-content:center;padding:0;overflow:hidden;box-sizing:border-box}
-    #ag-modal.off{display:none}
+    #ag-modal{position:fixed;inset:0;z-index:998;display:none!important;visibility:hidden!important;pointer-events:none!important}
+    #ag-modal.off{display:none!important}
     /* First-run welcome (below agreement modal z-index) */
-    #ce-welcome{position:fixed;inset:0;z-index:996;display:flex;align-items:center;justify-content:center;padding:max(14px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));box-sizing:border-box;background:radial-gradient(120% 80% at 50% 0%,rgba(232,168,71,.12),transparent 55%),linear-gradient(165deg,#16120e 0%,#0a0908 55%,#101018 100%);overflow:auto;-webkit-overflow-scrolling:touch}
+    #ce-welcome{display:none!important}
     #ce-welcome.off{display:none}
     .ce-welcome-panel{width:100%;max-width:420px;border-radius:22px;border:1px solid rgba(255,255,255,.12);background:linear-gradient(165deg,rgba(34,30,26,.96),rgba(18,16,14,.98));box-shadow:0 24px 64px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06);padding:22px 18px 20px;text-align:left;color:var(--t1)}
     .ce-welcome-panel h1{font-size:24px;font-weight:900;letter-spacing:-.5px;margin:0 0 10px;line-height:1.15}
@@ -4250,6 +4312,19 @@
 
   <!-- LIVE CAMERA -->
   <div class="cam-container">
+    <div class="ce-home-empty" id="ce-home-empty" aria-hidden="true">
+      <svg width="120" height="120" viewBox="0 0 120 120" aria-hidden="true">
+        <rect x="8" y="8" width="104" height="104" rx="16" fill="#22252B"/>
+        <path d="M40 46 L56 62 L40 78" stroke="#60A5FA" stroke-width="4" stroke-linecap="round" fill="none"/>
+        <circle cx="72" cy="54" r="10" stroke="#9CA3AF" stroke-width="3" fill="none"/>
+        <path d="M76 62 L84 74" stroke="#9CA3AF" stroke-width="3" stroke-linecap="round"/>
+        <path d="M52 88 Q60 82 68 88 Q76 94 84 88" fill="#60A5FA" opacity="0.85"/>
+        <ellipse cx="62" cy="92" rx="4" ry="6" fill="#3B82F6"/>
+      </svg>
+      <h2>Zie je een probleem?</h2>
+      <p>Maak een foto en wij vertellen je wat het is en hoe je het aanpakt.</p>
+      <button type="button" class="ce-empty-cta" id="ce-empty-cta">Foto maken</button>
+    </div>
     <div class="live-build-flag" id="live-build-flag">SAFETY MODE V2</div>
     <video id="cam-video" autoplay playsinline muted></video>
     <canvas id="cam-canvas"></canvas>
@@ -4376,9 +4451,17 @@
   </div>
 
   <div class="ld" id="ld">
-    <div class="ld-orb"><div class="or1"></div><div class="or2"></div><div class="oc"></div></div>
-    <div class="ld-txt" id="ld-txt">Scanning image...</div>
-    <div class="ld-sub" id="ld-sub">Reading every detail</div>
+    <div class="ce-ld-ritual-inner">
+      <svg class="ce-ritual-brackets" viewBox="0 0 200 200" width="200" height="200" fill="none" aria-hidden="true">
+        <path d="M52 56 V36 H72" stroke="rgb(200,178,108)" stroke-width="2" stroke-linecap="round"/>
+        <path d="M144 36 H164 V56" stroke="rgb(200,178,108)" stroke-width="2" stroke-linecap="round"/>
+        <path d="M52 144 V164 H72" stroke="rgb(200,178,108)" stroke-width="2" stroke-linecap="round"/>
+        <path d="M144 164 H164 V144" stroke="rgb(200,178,108)" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div class="ce-ritual-caption" aria-live="polite"><span class="ce-ritual-base">Analyseren</span><span class="ce-ritual-dots" id="ce-ritual-dots">...</span></div>
+      <div class="ld-sub" id="ld-sub" style="display:none;margin-top:8px;text-align:center;max-width:300px"></div>
+    </div>
+    <div class="ld-orb" style="display:none" aria-hidden="true"><div class="or1"></div><div class="or2"></div><div class="oc"></div></div>
     <div class="ld-eta" id="ld-eta" aria-live="polite"></div>
     <div class="stage1-confirm" id="stage1-confirm">✅ Object confirmed</div>
   </div>
@@ -4386,7 +4469,10 @@
   <canvas id="ce-confetti-canvas" aria-hidden="true"></canvas>
   <div id="done-screen" aria-live="polite">
     <div class="done-card">
-      <div style="font-size:52px;margin-bottom:8px" aria-hidden="true">🎉</div>
+      <svg class="ce-done-check" viewBox="0 0 64 64" aria-hidden="true">
+        <circle class="ce-dc-circle" cx="32" cy="32" r="28" fill="none" stroke="#22C55E" stroke-width="2"/>
+        <path class="ce-dc-check" d="M20 34 L28 42 L44 24" fill="none" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
       <h2 id="done-screen-ttl">Reparatie geslaagd!</h2>
       <p id="done-screen-sub" style="margin-bottom:10px">Je hebt het zelf opgelost. Die overwinning vergeet je niet.</p>
       <p id="done-screen-recap" style="font-size:13px;color:rgba(229,238,255,.62);margin-bottom:16px;line-height:1.5"></p>
@@ -4414,7 +4500,7 @@
     </div>
     <div id="ce-compact-safety" class="ce-compact-safety off" role="note" aria-live="polite"></div>
     <div id="ce-low-conf-banner" role="note" aria-live="polite"></div>
-    <div id="all-done"><div class="de">🏆</div><h3 id="done-h3">Job Done!</h3><p id="done-p">You fixed it yourself. That win lasts for days.</p><div class="done-xp">⚡ +50 XP</div></div>
+    <div id="all-done"><div class="ce-done-check-wrap"><svg class="ce-done-check" viewBox="0 0 64 64" aria-hidden="true"><circle class="ce-dc-circle" cx="32" cy="32" r="28" fill="none" stroke="#22C55E" stroke-width="2"/><path class="ce-dc-check" d="M20 34 L28 42 L44 24" fill="none" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 id="done-h3">Job Done!</h3><p id="done-p">You fixed it yourself. That win lasts for days.</p><div class="done-xp">⚡ +50 XP</div></div>
     <div id="task-locked"><h3>⛔ <span id="locked-ttl">Task Locked</span></h3><p id="locked-p">3 danger warnings triggered. Stop and contact a professional.</p><div class="ec-contacts"><p>Emergency (NL)</p><div class="ec-item"><span>Emergency</span><a href="tel:112">112</a></div><div class="ec-item"><span>Gas</span><a href="tel:0800-9009">0800-9009</a></div><div class="ec-item"><span>Water</span><a href="tel:0900-9994">0900-9994</a></div></div></div>
     <section id="decision-card" class="ce-card ce-decision-card" aria-live="polite" style="display:none">
       <div id="decision-confidence-pill" class="ce-confidence-pill ce-stagger-item" aria-live="polite"></div>
@@ -5208,6 +5294,7 @@ function setAiThinking(on,opts){
     }
     updatePaywallStrip(ceCurrentScreen||'camera',ceCurrentPaywallState());
   }
+  if(typeof ceSyncHomeEmpty==='function')ceSyncHomeEmpty();
 }
 function snapStepSnd(){tone(784,.06,'sine',.11,0);tone(988,.07,'sine',.1,.06);tone(1319,.11,'sine',.09,.13)}
 function snapMailboxSnd(){tone(587,.1,'sine',.12,0);tone(880,.14,'sine',.11,.1);tone(1175,.24,'sine',.1,.22)}
@@ -5733,6 +5820,7 @@ function ceSaveRepairToHistory(){
     localStorage.setItem('ce_repair_history',JSON.stringify(history));
   }catch(e){}
   ceUpdateRepairCounter();
+  if(typeof ceSyncHomeEmpty==='function')ceSyncHomeEmpty();
 }
 function ceGetSeasonalTip(){
   var month=new Date().getMonth();
@@ -5868,12 +5956,13 @@ agBtn.addEventListener('click',function(){
   }
 });
 function requireAgreementBeforeScan(){
-  return new Promise(function(resolve){
-    if(localStorage.getItem(AK)){resolve();return;}
-    window._ceAfterAgree=resolve;
-    agModal.classList.remove('off');
-    agModal.setAttribute('aria-hidden','false');
-    syncAgLangRow();
+  return new Promise(function(resolve,reject){
+    try{
+      if(localStorage.getItem(AK)){resolve();return;}
+      var next=encodeURIComponent(location.pathname+location.search+location.hash);
+      location.replace('/agreement?next='+next);
+      reject(new Error('agreement'));
+    }catch(e){resolve();}
   });
 }
 var CE_WELCOME_KEY='ce_welcome_seen';
@@ -6005,6 +6094,32 @@ function setCamStatusSoft(text,ms){
     },ms);
   }
 }
+function ceStartRitualDots(){
+  ceStopRitualDots();
+  var el=document.getElementById('ce-ritual-dots');
+  if(!el)return;
+  var n=-1;
+  window.__ceRitualDotsIv=setInterval(function(){
+    n=(n+1)%3;
+    el.textContent='.'.repeat(n+1);
+  },500);
+}
+function ceStopRitualDots(){
+  if(window.__ceRitualDotsIv){clearInterval(window.__ceRitualDotsIv);window.__ceRitualDotsIv=null;}
+}
+function ceSyncHomeEmpty(){
+  var el=document.getElementById('ce-home-empty');
+  if(!el)return;
+  var n=0;
+  try{
+    var h=JSON.parse(localStorage.getItem('ce_repair_history')||'[]');
+    n=Array.isArray(h)?h.length:0;
+  }catch(e){}
+  var busy=document.body.classList.contains('result-open')||document.body.classList.contains('ce-ai-thinking')||document.body.classList.contains('fixing');
+  var on=n===0 && !busy;
+  el.classList.toggle('ce-home-empty--on',!!on);
+  el.setAttribute('aria-hidden',on?'false':'true');
+}
 function hideUxError(){
   var eb=document.getElementById('err-box');
   if(!eb)return;
@@ -6012,6 +6127,7 @@ function hideUxError(){
   eb.innerHTML='';
   document.body.classList.remove('ce-cam-error');
   syncCamPerceptionFromHardware();
+  if(typeof ceSyncHomeEmpty==='function')ceSyncHomeEmpty();
   if(typeof ceRefreshScanSoftHint==='function')ceRefreshScanSoftHint();
 }
 function showUxError(kind, detail){
@@ -6019,64 +6135,107 @@ function showUxError(kind, detail){
   if(!eb)return;
   var isNl=(LANG==='nl');
   var tloc=T[LANG]||T.en;
+  var ic=function(name){
+    if(name==='camx')return '<svg class="ce-err-ico" width="40" height="40" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="15" height="12" rx="2" stroke="#F59E0B" fill="none" stroke-width="1.8"/><path d="M6 4h8l2 3" stroke="#F59E0B" fill="none" stroke-width="1.8"/><path d="M4 3 L21 20" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/></svg>';
+    if(name==='qmark')return '<svg class="ce-err-ico" width="40" height="40" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="#F59E0B" fill="none" stroke-width="2"/><path d="M9.5 9a2.5 2.5 0 1 1 4.2 1.8c-.7.6-1.2 1.4-1.2 2.2V14" stroke="#F59E0B" fill="none" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.5" r="1.2" fill="#F59E0B"/></svg>';
+    if(name==='wifi')return '<svg class="ce-err-ico" width="40" height="40" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18h2M8 14h2M12 10h2M16 14h2M20 18h2" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/><path d="M2 20 L22 4" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/></svg>';
+    if(name==='warn')return '<svg class="ce-err-ico" width="40" height="40" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L2 20h20L12 2z" stroke="#EF4444" fill="none" stroke-width="2"/><path d="M12 9v5M12 17h.01" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/></svg>';
+    if(name==='lock')return '<svg class="ce-err-ico" width="40" height="40" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="10" width="12" height="10" rx="2" stroke="#818CF8" fill="none" stroke-width="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="#818CF8" fill="none" stroke-width="2" stroke-linecap="round"/></svg>';
+    return '';
+  };
   var map={
     camera_permission:{
+      sev:'caution',ico:'camx',
       ttl:isNl?'Geen toegang tot je camera':'No camera access',
-      msg:(tloc.camErrIntro||'')+'\n\n→ '+(isNl?'Tik hier om naar je telefooninstellingen te gaan':'Tap here to open phone settings')+'\n→ '+(isNl?'Of kies een foto uit je galerij':'Or choose a photo from your gallery')+'\n\n'+(tloc.camErrWhy||''),
+      msg:isNl?('Zonder camera kun je alleen een foto kiezen uit je galerij.\n\n'+(tloc.camErrWhy||'')):(tloc.camErrIntro||'Use gallery or enable camera.'),
       cta:tloc.camPermOpenSettings||(isNl?'Instellingen':'Settings'),
       cta2:tloc.camPermPickGallery||(isNl?'Kies foto':'Choose photo'),
       act:function(){
         try{
           if(/iPhone|iPad|iPod/i.test(navigator.userAgent||''))window.location.href='app-settings:';
           else if(/Android/i.test(navigator.userAgent||''))window.open('intent:#Intent;action=android.settings.APPLICATION_DETAILS_SETTINGS;end');
-          else alert(isNl?'Open jouw telefooninstellingen en geef deze site toegang tot de Camera.':'Open your device settings and allow Camera access for this website.');
+          else alert(isNl?'Open je telefooninstellingen en geef deze site toegang tot de Camera.':'Open device settings and allow Camera.');
         }catch(_){}
       },
       act2:function(){if(fallbackFile)fallbackFile.click();}
     },
     insecure_context:{
+      sev:'caution',ico:'camx',
       ttl:isNl?'Beveiligde verbinding nodig':'Secure connection required',
-      msg:isNl?'Op telefoon werkt live camera alleen via https. Gebruik foto-upload of open een https-link.':'On phones, live camera works only over https. Use photo upload or open an https URL.',
+      msg:isNl?'Op je telefoon werkt de live camera alleen via https. Kies een foto uit je galerij of open een https-link.':'Camera needs https on mobile.',
       cta:isNl?'Kies foto':'Choose photo',
       act:function(){if(fallbackFile)fallbackFile.click();}
     },
     network:{
+      sev:'neutral',ico:'wifi',
       ttl:isNl?'Geen verbinding':'No connection',
-      msg:isNl?'De analyse lukt niet zonder internet. Je vorige resultaten zijn nog zichtbaar als je die al had.':'Analysis needs internet. Previous results stay visible if you already had them.',
+      msg:isNl?'Controleer je internetverbinding en probeer opnieuw.':'Check your connection and try again.',
       cta:isNl?'Opnieuw proberen':'Try again',
       act:function(){if(camReady&&camStream){runEggPrimaryAction();}else{startCamera();}}
     },
     server:{
-      ttl:isNl?'Server tijdelijk niet beschikbaar':'Server temporarily unavailable',
-      msg:isNl?'Er ging iets mis op de server. Probeer over een paar seconden opnieuw.':'Something went wrong on the server. Try again in a few seconds.',
+      sev:'danger',ico:'warn',
+      ttl:isNl?'Er ging iets mis aan onze kant':'Something went wrong on our side',
+      msg:isNl?'Dit ligt niet aan jouw foto. Probeer het over een moment opnieuw.':'This is not your fault. Try again shortly.',
       cta:isNl?'Opnieuw proberen':'Try again',
-      act:function(){if(camReady&&camStream){runEggPrimaryAction();}}
+      act:function(){if(camReady&&camStream){runEggPrimaryAction();}else{startCamera();}}
     },
     dangerous_task:{
+      sev:'danger',ico:'warn',
       ttl:isNl?'Risicovolle taak geblokkeerd':'High-risk task blocked',
-      msg:isNl?'Voor deze taak geven we geen DIY-stappen. Bel een erkende professional.':'DIY steps are blocked for this task. Contact a licensed professional.',
+      msg:isNl?'Voor deze taak geven we geen DIY-stappen. Bel een erkende professional.':'Contact a licensed professional.',
       cta:isNl?'Bel 112':'Call 112',
       act:function(){window.location.href='tel:112';}
     },
+    blurry_image:{
+      sev:'caution',ico:'camx',
+      ttl:isNl?'Foto te onscherp':'Photo too blurry',
+      msg:isNl?'Probeer dichter bij het probleem te gaan staan of zorg voor meer licht. Een scherpe foto geeft een betere analyse.':'Move closer or add light for a sharper photo.',
+      cta:isNl?'Opnieuw proberen':'Try again',
+      act:function(){retakePhoto();}
+    },
     unclear_image:{
-      ttl:isNl?'We zien het niet goed genoeg':'We can\'t see this well enough',
-      msg:isNl?'De foto is mogelijk te donker, te ver weg of te onscherp voor een betrouwbare analyse.\n\nProbeer:\n• Meer licht (zet je lamp aan)\n• Iets dichterbij (20–30 cm)\n• Een andere hoek\n• 3-foto modus':'The photo may be too dark, far away, or blurry for a reliable analysis.\n\nTry:\n• More light\n• Stand 20–30 cm away\n• Another angle\n• 3-photo mode',
-      cta:isNl?'Opnieuw scannen':'Scan again',
-      cta2:tloc.unclearProceed||(isNl?'Toch doorgaan met dit resultaat':'Continue with this result anyway'),
+      sev:'caution',ico:'camx',
+      ttl:isNl?'Foto te onscherp':'Photo too blurry',
+      msg:isNl?'Probeer dichter bij het probleem te gaan staan of zorg voor meer licht. Een scherpe foto geeft een betere analyse.':'Move closer or add light for a sharper photo.',
+      cta:isNl?'Opnieuw proberen':'Try again',
+      cta2:tloc.unclearProceed||(isNl?'Toch doorgaan':'Continue anyway'),
       act:function(){retakePhoto();},
       act2:function(){ceProceedWithPendingWeakScan();}
+    },
+    unrecognised:{
+      sev:'caution',ico:'qmark',
+      ttl:isNl?'We herkennen dit niet goed':'Hard to recognize',
+      msg:isNl?'Voeg een korte omschrijving toe of maak een foto vanuit een andere hoek. Foto\'s van gezichten, documenten of schermen kunnen we niet analyseren.':'Add a short description or try another angle.',
+      cta:isNl?'Foto aanpassen':'Adjust photo',
+      cta2:isNl?'Omschrijving toevoegen':'Add description',
+      act:function(){retakePhoto();},
+      act2:function(){var qi=document.getElementById('q-inp');if(qi){qi.focus();qi.scrollIntoView({behavior:'smooth',block:'center'});}}
+    },
+    scan_limit:{
+      sev:'neutral',ico:'lock',
+      ttl:isNl?'Je hebt je 5 gratis scans gebruikt':'You used your 5 free scans',
+      msg:isNl?'Ga verder met ChickenEgg Pro en scan onbeperkt.':'Continue with ChickenEgg Pro for unlimited scans.',
+      cta:isNl?'Bekijk abonnementen':'View plans',
+      cta2:isNl?'Meer weten?':'Learn more',
+      act:function(){if(typeof showPaywall==='function')showPaywall();},
+      act2:function(){location.href='/pricing';}
     }
   };
   var cfg=map[kind]||map.server;
   var msg=cfg.msg;
   if(detail&&typeof detail==='string'&&detail.trim()){
-    if(kind==='unclear_image')msg=msg+'\n\n'+detail.trim();
-    else msg=detail.trim();
+    if(kind==='unclear_image'||kind==='blurry_image')msg=msg+'\n\n'+detail.trim();
+    else if(kind!=='server')msg=detail.trim();
   }
+  var sev=cfg.sev||'neutral';
   var actionsHtml='<div class="err-actions"><button type="button" class="err-cta err-cta-primary">'+ceEsc(cfg.cta)+'</button>';
   if(cfg.cta2)actionsHtml+='<button type="button" class="err-cta err-cta-secondary">'+ceEsc(cfg.cta2)+'</button>';
   actionsHtml+='</div>';
-  eb.innerHTML='<div class="err-title">'+ceEsc(cfg.ttl)+'</div><div class="err-msg">'+ceEsc(msg)+'</div>'+actionsHtml;
+  var cardClass='ce-err-card ce-err--'+(sev==='danger'?'danger':(sev==='caution'?'caution':'neutral'));
+  eb.innerHTML='<div class="'+cardClass+'">'+(cfg.ico?ic(cfg.ico):'')+'<h4>'+ceEsc(cfg.ttl)+'</h4><div class="ce-err-body"></div>'+actionsHtml+'</div>';
+  var bodyEl=eb.querySelector('.ce-err-body');
+  if(bodyEl)bodyEl.textContent=msg;
   var prim=eb.querySelector('.err-cta-primary');
   var sec=eb.querySelector('.err-cta-secondary');
   if(prim)prim.onclick=function(){try{cfg.act&&cfg.act()}catch(_){}};
@@ -6086,11 +6245,12 @@ function showUxError(kind, detail){
   ceNavPush('error');
   var st='Generic';
   if(kind==='network')st='Network';
-  else if(kind==='unclear_image')st='No-match';
+  else if(kind==='unclear_image'||kind==='blurry_image'||kind==='unrecognised')st='No-match';
   else if(kind==='camera_permission'||kind==='insecure_context')st='Camera-fail';
   ceSetFrameState('Error-Fallback',st);
   applyPerceptionPhase('error',{source:'camera',force:true,copy:true});
   hap(14);
+  if(typeof ceSyncHomeEmpty==='function')ceSyncHomeEmpty();
 }
 function getLiveLabelCanvas(){
   if(!liveLabelCanvas){
@@ -6995,7 +7155,7 @@ async function startLiveScanSession(viewsTarget, initialBlob){
   document.getElementById('hazard-banner').classList.remove('show');
   document.getElementById('results').style.display='none';
 
-  document.getElementById('ld').style.display='none';
+  ceStopRitualDots();document.getElementById('ld').style.display='none';
   var stage1ConfirmEl=document.getElementById('stage1-confirm');
   if(stage1ConfirmEl){stage1ConfirmEl.classList.remove('show');stage1ConfirmEl.textContent='';}
   camOverlay.classList.remove('scanning');
@@ -7055,15 +7215,11 @@ async function startLiveScanSession(viewsTarget, initialBlob){
     camOverlay.classList.add('scanning');
     document.getElementById('scan-lbl').textContent=(LANG==='nl')?'Analyseren...':'Analysing...';
     startHum();
-    var ldMsgs=T[LANG].ldMsgs,ldI=0,ldTxtEl=document.getElementById('ld-txt');
-    ldTxtEl.textContent=ldMsgs[0];
+    ceStartRitualDots();
+    var ldSubEl=document.getElementById('ld-sub');
+    if(ldSubEl){ldSubEl.textContent='';ldSubEl.style.display='none';}
     var slblThink=document.getElementById('scan-lbl-text');
-    if(slblThink) slblThink.textContent=ldMsgs[0];
-    LI=setInterval(function(){
-      ldI=(ldI+1)%ldMsgs.length;
-      ldTxtEl.textContent=ldMsgs[ldI];
-      if(slblThink) slblThink.textContent=ldMsgs[ldI];
-    },850);
+    if(slblThink) slblThink.textContent=(LANG==='nl')?'Analyseren':'Analysing';
 
     var qInput=(document.getElementById('q-inp').value||'').trim();
     var fd=new FormData();
@@ -7098,11 +7254,13 @@ async function startLiveScanSession(viewsTarget, initialBlob){
       var s1=stage1Data.result||{};
       var ql=(s1.quick_label||'').toString().trim();
       var qa=(s1.quick_action||'').toString().trim();
-      if(ldTxtEl) ldTxtEl.textContent=(ql&&qa)?(ql+' · '+qa):(ql||qa||ldTxtEl.textContent);
-      var ldSubEl=document.getElementById('ld-sub');
       if(ldSubEl){
+        ldSubEl.style.display='block';
         var okTxt=(LANG==='nl')?'Object bevestigd':'Object confirmed';
-        ldSubEl.textContent=ql?('✓ '+okTxt+': '+ql):('✓ '+okTxt);
+        if(ql&&qa) ldSubEl.textContent='✓ '+okTxt+': '+ql+' · '+qa;
+        else if(ql) ldSubEl.textContent='✓ '+okTxt+': '+ql;
+        else if(qa) ldSubEl.textContent='✓ '+okTxt+': '+qa;
+        else ldSubEl.textContent='✓ '+okTxt;
       }
       if(stage1ConfirmEl){
         var sTxt=(LANG==='nl')?'Object bevestigd':'Object confirmed';
@@ -7128,8 +7286,14 @@ async function startLiveScanSession(viewsTarget, initialBlob){
       ceServerScanState.limit=parseInt(data.limit||ceServerScanState.limit||5,10)||5;
       ceServerScanState.pro=!!data.pro;
       localStorage.setItem('ce_free_scans',String(ceServerScanState.scans_used));
-      showPaywall();
-      throw new Error(data.error||'Paywall');
+      if(LI){clearInterval(LI);LI=null;}
+      stopHum();
+      camOverlay.classList.remove('scanning');
+      ceStopRitualDots();document.getElementById('ld').style.display='none';
+      setAiThinking(false);
+      showUxError('scan_limit');
+      if(typeof showPaywall==='function')showPaywall();
+      return;
     }
     if(!data.success) throw new Error(data.error||'Analysis failed');
     if(data.scan_session){
@@ -7141,7 +7305,7 @@ async function startLiveScanSession(viewsTarget, initialBlob){
 
     if(LI){clearInterval(LI);LI=null}
     stopHum();
-    document.getElementById('ld').style.display='none';
+    ceStopRitualDots();document.getElementById('ld').style.display='none';
     if(stage1ConfirmEl)stage1ConfirmEl.classList.remove('show');
     setAiThinking(false);
     var slblDone=document.getElementById('scan-lbl-text');
@@ -7201,7 +7365,7 @@ async function startLiveScanSession(viewsTarget, initialBlob){
     camOverlay.classList.remove('scanning');
     xrayOn(false);
     xrayDeep(false);
-    document.getElementById('ld').style.display='none';
+    ceStopRitualDots();document.getElementById('ld').style.display='none';
     if(stage1ConfirmEl)stage1ConfirmEl.classList.remove('show');
     setAiThinking(false);
     applyPerceptionPhase('error',{source:'scan',force:true,copy:false});
@@ -8902,7 +9066,6 @@ function renderCompletionCore(){
   UX.screen='done';
   var pane=document.getElementById('walk-pane');
   if(pane)pane.style.display='none';
-  ceLaunchConfetti();
   /* personalised recap */
   var recap=document.getElementById('done-screen-recap');
   if(recap&&lastScanResult){
@@ -9213,6 +9376,7 @@ function closeResultScreen(){
   ceNavReset('camera');
   ceSetFlowStage('camera',{screen:'capture'});
   updatePaywallStrip('camera','');
+  if(typeof ceSyncHomeEmpty==='function')ceSyncHomeEmpty();
 }
 
 function renderVisualDecisionEngine(r){
@@ -10554,11 +10718,12 @@ pmGo.addEventListener('click',async function(){
       setTimeout(function(){pmModal.classList.add('off');pmModal.setAttribute('aria-hidden','true')},1800);
     }else if(lv==='danger'||lv==='emergency'){
       warnCt++;updateWarn();dangerSnd();hap([100,50,100,50,150]);
-      if(warnCt>=3){
-        pmModal.classList.add('off');pmModal.setAttribute('aria-hidden','true');document.getElementById('task-locked').style.display='block';
-        var sc=document.getElementById('r-steps');if(sc)sc.style.opacity='.35';
-        speak(LANG==='nl'?'GEVAAR. Stop onmiddellijk. Bel een professional.':'DANGER. Stop immediately. Call a professional.',LANG);
-      }
+      pmModal.classList.add('off');pmModal.setAttribute('aria-hidden','true');
+      try{
+        sessionStorage.setItem('ce_safety_msg',(bodyTxt||ttl||'').slice(0,1900));
+      }catch(_){}
+      speak(LANG==='nl'?'GEVAAR. Stop onmiddellijk.':'DANGER. Stop immediately.',LANG);
+      location.href='/safety-stop?tier='+encodeURIComponent(lv);
     }
   }catch(err){pmGo.innerHTML='🔍 '+T[LANG].pmGo;pmGo.classList.add('on')}
 });
@@ -10597,6 +10762,33 @@ pmGo.addEventListener('click',async function(){
   });
 })();
 
+(function(){
+  try{
+    var sp=new URLSearchParams(location.search);
+    if(sp.get('ce_reset')==='1'){
+      sp.delete('ce_reset');
+      var qs=sp.toString();
+      history.replaceState({},'',location.pathname+(qs?'?'+qs:''));
+      setTimeout(function(){
+        var b=document.getElementById('rst-btn');
+        if(b)b.click();
+      },0);
+    }
+  }catch(e){}
+})();
+
+(function(){
+  var b=document.getElementById('ce-empty-cta');
+  if(!b)return;
+  b.addEventListener('click',function(){
+    clickSnd();hap(12);
+    hideUxError();
+    if(typeof runEggPrimaryAction==='function')runEggPrimaryAction();
+  });
+})();
+
+setTimeout(function(){if(typeof ceSyncHomeEmpty==='function')ceSyncHomeEmpty();},500);
+
 /* RESET */
 document.getElementById('rst-btn').addEventListener('click',function(){
   clickSnd();hap(8);stopHum();stopSpeech();capturedBlob=null;
@@ -10633,6 +10825,7 @@ document.getElementById('rst-btn').addEventListener('click',function(){
   document.getElementById('tts-bar').classList.remove('show');pmModal.classList.add('off');pmModal.setAttribute('aria-hidden','true');
   var rggR=document.getElementById('readout-glass');if(rggR)rggR.classList.add('off');
   window.scrollTo({top:0,behavior:'smooth'});
+  if(typeof ceSyncHomeEmpty==='function')ceSyncHomeEmpty();
 });
 
 var nrCta=document.getElementById('no-repair-cta');

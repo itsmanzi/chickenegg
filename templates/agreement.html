@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <meta name="theme-color" content="#0F1115"/>
+  <title>ChickenEgg — Even dit eerst</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{min-height:100%;min-height:100dvh}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      background:#0F1115;color:#F0F2F5;
+      padding:max(20px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));
+      display:flex;align-items:center;justify-content:center;
+    }
+    .ce-ag-card{
+      width:100%;max-width:420px;
+      background:#181A1F;border-radius:16px;
+      padding:24px 20px;
+      border:1px solid rgba(255,255,255,0.1);
+      box-shadow:0 12px 40px rgba(0,0,0,0.45);
+    }
+    h1{font-size:22px;font-weight:800;letter-spacing:-0.02em;margin-bottom:16px;line-height:1.2}
+    ul{list-style:none;margin-bottom:20px}
+    li{
+      font-size:15px;line-height:1.45;color:#B8BEC9;
+      padding-left:22px;margin-bottom:12px;position:relative;
+    }
+    li::before{
+      content:'•';position:absolute;left:2px;color:#60A5FA;font-weight:700;
+    }
+    .ce-ag-chk{
+      display:flex;align-items:flex-start;gap:12px;margin-bottom:18px;
+      min-height:44px;
+    }
+    .ce-ag-chk input{
+      width:22px;height:22px;
+      min-width:22px;margin-top:2px;accent-color:#60A5FA;cursor:pointer;
+    }
+    .ce-ag-chk label{font-size:15px;line-height:1.45;color:#B8BEC9;cursor:pointer;flex:1}
+    .ce-ag-cta{
+      width:100%;min-height:52px;border:none;border-radius:12px;
+      font-size:16px;font-weight:800;font-family:inherit;
+      background:#60A5FA;color:#0F1115;cursor:pointer;
+      transition:opacity .15s;
+    }
+    .ce-ag-cta:disabled{
+      opacity:0.4;cursor:not-allowed;
+    }
+    .ce-ag-cta:not(:disabled):active{transform:scale(0.99)}
+  </style>
+</head>
+<body>
+  <div class="ce-ag-card">
+    <h1>Even dit eerst</h1>
+    <ul>
+      <li>De AI kan fouten maken. Gebruik je gezonde verstand bij elk stappenplan.</li>
+      <li>Jij bent zelf verantwoordelijk voor je veiligheid en wat je uitvoert.</li>
+      <li>Bel altijd een professional voor gas, dragend werk en hoge spanning.</li>
+      <li>Je foto wordt alleen gebruikt voor de analyse. We slaan niets zonder jouw toestemming op.</li>
+      <li>Je mag 5 gratis scans doen. Daarna vraagt de app om een abonnement.</li>
+    </ul>
+    <div class="ce-ag-chk">
+      <input type="checkbox" id="ce-ag-cb" autocomplete="off"/>
+      <label for="ce-ag-cb">Ik begrijp dit en ga akkoord</label>
+    </div>
+    <button type="button" class="ce-ag-cta" id="ce-ag-go" disabled>Aan de slag</button>
+  </div>
+  <script>
+(function(){
+  var AK='ce_v3';
+  var cb=document.getElementById('ce-ag-cb');
+  var go=document.getElementById('ce-ag-go');
+  if(!cb||!go)return;
+  cb.addEventListener('change',function(){go.disabled=!cb.checked});
+  go.addEventListener('click',function(){
+    if(!cb.checked)return;
+    try{localStorage.setItem(AK,'1');}catch(e){}
+    var params=new URLSearchParams(location.search||'');
+    var next=params.get('next')||'/';
+    if(next.indexOf('/')!==0)next='/';
+    location.replace(next);
+  });
+})();
+  </script>
+</body>
+</html>

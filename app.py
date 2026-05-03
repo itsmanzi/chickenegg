@@ -1326,6 +1326,25 @@ def _messages_create_with_fallback(system, messages, max_tokens, preferred_model
         raise last_error
     raise RuntimeError("No valid Anthropic model could be selected.")
 
+@app.route("/agreement")
+def agreement_page():
+    return render_template("agreement.html")
+
+
+@app.route("/safety-stop")
+def safety_stop_page():
+    tier = (request.args.get("tier") or "danger").lower().strip()
+    if tier not in ("caution", "danger", "emergency"):
+        tier = "danger"
+    message = _clean_small_str(request.args.get("m"), 2000)
+    return render_template("safety_stop.html", tier=tier, message=message)
+
+
+@app.route("/pricing")
+def pricing_page():
+    return render_template("pricing.html")
+
+
 @app.route("/")
 def home():
     # One-time helper: open /?reveal_fp=<CE_FINGERPRINT_REVEAL_TOKEN> on a device to copy its
