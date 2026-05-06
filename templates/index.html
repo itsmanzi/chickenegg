@@ -8170,6 +8170,7 @@ function ceHardRecoverBlankResults(r){
   ceSetResultsStagger('run');
   var ve=document.getElementById('ce-visual-engine');
   if(ve)ve.classList.add('ce-ve-ready');
+  ceSyncOutcomePanelVeReady();
   var fallback=(r&&r.task)?String(r.task):((LANG==='nl')?'Maak een duidelijke close-up en scan opnieuw.':'Take a clear close-up and scan again.');
   var rTitle=document.getElementById('r-title');
   var rTask=document.getElementById('r-task2');
@@ -8502,10 +8503,20 @@ function setResultVisibility(cfg){
   if(foldMore)foldMore.style.display=showFold?'':'none';
   if(adBanner)adBanner.style.display=showAd?'':'none';
 }
+function ceSyncOutcomePanelVeReady(){
+  var outPanel=document.querySelector('#ce-panel-outcome .ce-outcome-panel-visual');
+  if(outPanel)outPanel.classList.add('ce-ve-ready');
+}
 function ceSetStepsCardVisible(visible){
-  var card=document.getElementById('steps-card');
-  if(!card)return;
-  card.style.display=visible?'':'none';
+  var el=document.getElementById('steps-card');
+  if(!el)return;
+  var isTikTok=document.body.classList.contains('cam-tiktok')&&document.body.classList.contains('result-open');
+  if(isTikTok){
+    el.style.display='flex';
+    try{console.log('[CE] steps-card: TikTok result-open, keep visible');}catch(e){}
+    return;
+  }
+  el.style.display=visible?'flex':'none';
   try{console.log('[CE] steps-card visibility set to:',!!visible);}catch(e){}
 }
 
@@ -10923,6 +10934,7 @@ function renderResults(r){
       ceSetResultsStagger('run');
       var ve=document.getElementById('ce-visual-engine');
       if(ve)ve.classList.add('ce-ve-ready');
+      ceSyncOutcomePanelVeReady();
     },450);
   }
   var paywallState=(ceDangerLocked?'danger':(rentalHintNorm==='landlord_likely'?'landlord_likely':''));
@@ -10930,6 +10942,12 @@ function renderResults(r){
   showScreen('ce-screen-diagnosis',paywallState,'push-right');
   if(typeof ceSwitchTab==='function'){
     ceSwitchTab('outcome');
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        if(typeof ceFillTikTokResultsStepList==='function'){try{ceFillTikTokResultsStepList();}catch(e){}}
+        if(typeof renderRepairUI==='function'){try{renderRepairUI();}catch(e){}}
+      });
+    });
     // #region agent log
     try{ceDbgSend({sessionId:'e91706',hypothesisId:'H12',location:'index.html:renderResults:afterShowScreen',message:'tab sync',data:{ceCurrentScreen:String(ceCurrentScreen||''),paywall:String(paywallState||'')},timestamp:Date.now(),runId:'pre'});}catch(_){}
     // #endregion
