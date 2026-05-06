@@ -1482,14 +1482,18 @@ def home():
     _fp_reveal = (os.environ.get("CE_FINGERPRINT_REVEAL_TOKEN") or "").strip()
     _reveal_arg = _clean_small_str(request.args.get("reveal_fp"), 200).strip()
     ce_show_device_fingerprint = bool(_fp_reveal) and _reveal_arg == _fp_reveal
+    _vercel_sha = (os.environ.get("VERCEL_GIT_COMMIT_SHA") or "").strip()
     html = render_template(
         "index.html",
         BOL_PARTNER_ID=BOL_PARTNER_ID,
         ce_show_device_fingerprint=ce_show_device_fingerprint,
+        ce_deploy_sha=_vercel_sha[:7] if len(_vercel_sha) >= 7 else _vercel_sha,
     )
     resp = make_response(html)
     resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
     resp.headers["Pragma"] = "no-cache"
+    if _vercel_sha:
+        resp.headers["X-CE-Deploy-SHA"] = _vercel_sha[:7]
     return resp
 
 
