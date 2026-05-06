@@ -456,6 +456,11 @@
     }
     #cam-video{width:100%;flex:1;min-height:120px;height:100%;max-height:100%;object-fit:cover;display:block;border-radius:16px}
     #cam-canvas{display:none}
+    #frozen-frame{
+      width:100%;flex:1;min-height:120px;height:100%;max-height:100%;
+      display:none;border-radius:16px;object-fit:cover;pointer-events:none;
+      image-rendering:auto;
+    }
     #still-img{width:100%;flex:1;min-height:120px;height:100%;max-height:100%;object-fit:cover;display:none;border-radius:16px}
     .cam-overlay{position:absolute;inset:0;pointer-events:none;border-radius:18px}
     #xray-overlay{position:absolute;inset:0;pointer-events:none;display:none;border-radius:18px;opacity:.98;background:
@@ -675,6 +680,11 @@
       backdrop-filter:blur(var(--ce-card-blur,9px)) saturate(1.05)!important;
       -webkit-backdrop-filter:blur(var(--ce-card-blur,9px)) saturate(1.05)!important;
       text-align:left!important;display:block!important;
+    }
+    body.cam-tiktok .capture-job{
+      backdrop-filter:none!important;
+      -webkit-backdrop-filter:none!important;
+      background:rgba(16,17,21,.94)!important;
     }
     .capture-job-ttl{
       text-transform:none;font-size:19px;font-weight:600;line-height:1.25;letter-spacing:-.2px;
@@ -2491,7 +2501,8 @@
       border:none!important;
     }
     body.cam-tiktok #cam-video,
-    body.cam-tiktok #still-img{
+    body.cam-tiktok #still-img,
+    body.cam-tiktok #frozen-frame{
       border-radius:0!important;
     }
     body.cam-tiktok .cam-overlay,
@@ -2511,13 +2522,21 @@
     }
     /* Full-screen camera stack (z0 video → z10 reticle → z20 card → z30 egg via dock) */
     body.cam-tiktok #cam-video,
-    body.cam-tiktok #still-img{
+    body.cam-tiktok #still-img,
+    body.cam-tiktok #frozen-frame{
       position:absolute!important;
       inset:0!important;
       width:100%!important;height:100%!important;
       max-height:none!important;min-height:0!important;flex:none!important;
       object-fit:cover!important;
       z-index:0!important;
+    }
+    /* Default live preview: no stacked filters (xray toggles them on .cam-container). */
+    body.cam-tiktok .cam-container:not(.xray-on) #cam-video,
+    body.cam-tiktok .cam-container:not(.xray-on) #still-img,
+    body.cam-tiktok .cam-container:not(.xray-on) #frozen-frame{
+      filter:none!important;
+      opacity:1!important;
     }
     body.cam-tiktok .cam-container::before{
       content:'';
@@ -2546,7 +2565,8 @@
         linear-gradient(0deg,rgba(0,0,0,.5) 0%,rgba(0,0,0,.16) 32%,transparent 48%)!important;
     }
     body.cam-tiktok.ce-ai-thinking:not(.result-open) #cam-video,
-    body.cam-tiktok.ce-ai-thinking:not(.result-open) #still-img{
+    body.cam-tiktok.ce-ai-thinking:not(.result-open) #still-img,
+    body.cam-tiktok.ce-ai-thinking:not(.result-open) #frozen-frame{
       transform:scale(1.02);
       transition:transform .45s ease-out;
     }
@@ -2927,14 +2947,17 @@
       inset:0!important;
       z-index:280!important;
       padding:0!important;
-      display:flex!important;
+      display:none!important;
       align-items:center!important;
       justify-content:center!important;
       flex-direction:column!important;
       background:rgba(15,17,21,.92)!important;
-      backdrop-filter:blur(12px) saturate(1.1)!important;
-      -webkit-backdrop-filter:blur(12px) saturate(1.1)!important;
+      backdrop-filter:none!important;
+      -webkit-backdrop-filter:none!important;
       pointer-events:none!important;
+    }
+    body.cam-tiktok #ld:not([aria-hidden="true"]){
+      display:flex!important;
     }
     body.cam-tiktok #ld .ld-orb{display:none!important}
     body.cam-tiktok #ld .ce-ritual-caption,
@@ -2944,14 +2967,13 @@
     body.cam-tiktok #ld .ld-eta{color:var(--t2)!important}
     body.cam-tiktok.ce-ai-thinking #ld{
       background:rgba(0,0,0,.42)!important;
+      backdrop-filter:none!important;
+      -webkit-backdrop-filter:none!important;
       animation:ceVeilBreathe 2.4s ease-in-out infinite;
     }
     @keyframes ceVeilBreathe{
       0%,100%{background:rgba(0,0,0,.38)!important}
       50%{background:rgba(28,22,14,.52)!important}
-    }
-    body.cam-tiktok #ld[style*="block"]{
-      display:flex!important;
     }
     body.cam-tiktok #results{
       position:fixed;
@@ -2969,8 +2991,8 @@
       border-radius:22px 22px 0 0;
       background:linear-gradient(180deg,#1E1E1E 0%,#181818 45%,#141414 100%);
       box-shadow:0 -16px 56px rgba(0,0,0,.45),0 -1px 0 rgba(240,237,232,.08);
-      backdrop-filter:blur(18px) saturate(1.15);
-      -webkit-backdrop-filter:blur(18px) saturate(1.15);
+      backdrop-filter:none!important;
+      -webkit-backdrop-filter:none!important;
       transform:translateY(108%) scale(1);
       opacity:0;
       pointer-events:none;
@@ -2999,11 +3021,12 @@
       100%{transform:translateY(0) scale(1);box-shadow:0 -16px 52px rgba(0,0,0,.4),0 -1px 0 rgba(240,237,232,.08)}
     }
     body.result-open.cam-tiktok .cam-container{
-      animation:camReadoutDeepen .52s cubic-bezier(.25,1,.45,1) forwards;
+      filter:none!important;
     }
-    @keyframes camReadoutDeepen{
-      0%{filter:brightness(.92) saturate(.96)}
-      100%{filter:brightness(.74) saturate(.9)}
+    body.result-open.cam-tiktok #cam-video,
+    body.result-open.cam-tiktok #still-img,
+    body.result-open.cam-tiktok #frozen-frame{
+      filter:none!important;
     }
     body.result-open.cam-tiktok .perception-layer{
       opacity:0!important;pointer-events:none;
@@ -3060,9 +3083,9 @@
       color:var(--t1);
     }
     body.result-open.cam-tiktok #results-screen-bar{
-      background:rgba(24,24,24,.88);
-      backdrop-filter:blur(12px);
-      -webkit-backdrop-filter:blur(12px);
+      background:rgba(22,22,22,.98)!important;
+      backdrop-filter:none!important;
+      -webkit-backdrop-filter:none!important;
       border-bottom:1px solid var(--border);
       padding-top:2px;
     }
@@ -3441,7 +3464,7 @@
     .fold-inner{padding:4px 0 14px}
     .rst-btn{width:100%;background:transparent;border:.5px solid rgba(0,0,0,.12);color:var(--t2);border-radius:var(--rxl);padding:14px;font-size:14px;font-weight:600;cursor:pointer;margin-top:6px;transition:all .15s;font-family:inherit;box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
     .ce-home-empty{
-      display:none;position:absolute;inset:0;z-index:42;flex-direction:column;align-items:center;justify-content:center;
+      display:none;position:absolute;inset:0;z-index:80;flex-direction:column;align-items:center;justify-content:center;
       padding:max(12px,env(safe-area-inset-top)) 20px 120px;background:transparent;pointer-events:none;
     }
     .ce-home-empty.ce-home-empty--on{display:flex}
@@ -3613,8 +3636,32 @@
     #ag-modal{position:fixed;inset:0;z-index:998;display:none!important;visibility:hidden!important;pointer-events:none!important}
     #ag-modal.off{display:none!important}
     /* First-run welcome (below agreement modal z-index) */
-    #ce-welcome{display:none!important}
-    #ce-welcome.off{display:none}
+    /* First-run welcome — must beat .wrap (z-index:1) + fixed full-screen .cam-container */
+    #ce-welcome{
+      position:fixed!important;
+      inset:0!important;
+      z-index:4600!important;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
+      box-sizing:border-box;
+      background:rgba(6,8,12,.58);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+      visibility:hidden;
+      pointer-events:none;
+    }
+    #ce-welcome.off{
+      display:none!important;
+      visibility:hidden!important;
+      pointer-events:none!important;
+    }
+    #ce-welcome:not(.off){
+      display:flex!important;
+      visibility:visible!important;
+      pointer-events:auto!important;
+    }
     .ce-welcome-panel{width:100%;max-width:420px;border-radius:22px;border:1px solid rgba(255,255,255,.12);background:linear-gradient(165deg,rgba(34,30,26,.96),rgba(18,16,14,.98));box-shadow:0 24px 64px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06);padding:22px 18px 20px;text-align:left;color:var(--t1)}
     .ce-welcome-panel h1{font-size:24px;font-weight:900;letter-spacing:-.5px;margin:0 0 10px;line-height:1.15}
     .ce-welcome-panel .ce-welcome-lead{font-size:14px;color:var(--t2);line-height:1.5;margin:0 0 14px}
@@ -4327,6 +4374,7 @@
     </div>
     <div class="live-build-flag" id="live-build-flag">SAFETY MODE V2</div>
     <video id="cam-video" autoplay playsinline muted></video>
+    <canvas id="frozen-frame" width="2" height="2" aria-hidden="true"></canvas>
     <canvas id="cam-canvas"></canvas>
     <img id="still-img" src="" alt="Captured"/>
     <input id="fallback-file" type="file" accept="image/*" style="display:none" aria-hidden="true"/>
@@ -4450,7 +4498,7 @@
   </div>
   </div>
 
-  <div class="ld" id="ld">
+  <div class="ld" id="ld" style="display:none;" aria-hidden="true">
     <div class="ce-ld-ritual-inner">
       <svg class="ce-ritual-brackets" viewBox="0 0 200 200" width="200" height="200" fill="none" aria-hidden="true">
         <path d="M52 56 V36 H72" stroke="rgb(200,178,108)" stroke-width="2" stroke-linecap="round"/>
@@ -4463,7 +4511,7 @@
     </div>
     <div class="ld-orb" style="display:none" aria-hidden="true"><div class="or1"></div><div class="or2"></div><div class="oc"></div></div>
     <div class="ld-eta" id="ld-eta" aria-live="polite"></div>
-    <div class="stage1-confirm" id="stage1-confirm">✅ Object confirmed</div>
+    <div class="stage1-confirm" id="stage1-confirm" aria-hidden="true"></div>
   </div>
   <div class="err-box" id="err-box"></div>
   <canvas id="ce-confetti-canvas" aria-hidden="true"></canvas>
@@ -4806,6 +4854,17 @@ function ceDbgSend(payload){
     fetch('/api/debug-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(function(){});
   }catch(_){}
 }
+// #region agent log
+function ceDbgD78afc(hypothesisId,location,message,data){
+  var payload={sessionId:'d78afc',hypothesisId:hypothesisId,location:location,message:message,data:data||{},timestamp:Date.now(),runId:'pre'};
+  try{
+    fetch('http://127.0.0.1:7790/ingest/fe1fae3a-ca9f-43cb-9664-747fbd895f21',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'d78afc'},body:JSON.stringify(payload)}).catch(function(){});
+  }catch(_){}
+  try{
+    fetch('/api/debug-d78afc',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(function(){});
+  }catch(_){}
+}
+// #endregion
 var CE_STATE_COPY={
   en:{
     idle:['Point at object','Frame it in clear light'],
@@ -5043,7 +5102,9 @@ function setLang(l){
   };
   Object.keys(ids).forEach(function(id){
     var el=document.getElementById(id);
-    if(el)el.textContent=t[ids[id]]||'';
+    if(!el)return;
+    if(id==='ld-sub'&&document.body.classList.contains('ce-ai-thinking'))return;
+    el.textContent=t[ids[id]]||'';
   });
   var rhEl=document.getElementById('ce-rental-hint');
   if(rhEl)rhEl.textContent=t.rentalHint||'';
@@ -5481,7 +5542,7 @@ function ceProceedWithPendingWeakScan(){
         fcv.width=videoEl.videoWidth||1280;
         fcv.height=videoEl.videoHeight||720;
         fcv.getContext('2d').drawImage(videoEl,0,0,fcv.width,fcv.height);
-        stillEl.src=fcv.toDataURL('image/jpeg',0.88);
+        stillEl.src=fcv.toDataURL('image/jpeg',0.92);
         stillEl.style.display='block';
         videoEl.style.display='none';
       }
@@ -6025,10 +6086,9 @@ document.querySelectorAll('[data-welcome-lang]').forEach(function(b){
   if(ceWelStart)ceWelStart.addEventListener('click',function(){clickSnd();hap(50);ceWelcomeGoCamera();});
   if(ceWelSkip)ceWelSkip.addEventListener('click',function(){clickSnd();ceWelcomeGoCamera();});
 })();
-setTimeout(function(){if(typeof startCamera==='function')startCamera();},120);
 
 /* CAMERA */
-var videoEl=document.getElementById('cam-video'),canvasEl=document.getElementById('cam-canvas'),stillEl=document.getElementById('still-img'),camOverlay=document.getElementById('cam-overlay'),camStatusEl=document.getElementById('cam-status'),camStatusTxt=document.getElementById('cam-status-txt'),retakeBtn=document.getElementById('retake-btn'),camRetryBtn=document.getElementById('cam-retry-btn'),camUploadBtn=document.getElementById('cam-upload-btn'),fallbackFile=document.getElementById('fallback-file'),capturedBlob=null,camStream=null,camReady=false;
+var videoEl=document.getElementById('cam-video'),canvasEl=document.getElementById('cam-canvas'),frozenFrameEl=document.getElementById('frozen-frame'),stillEl=document.getElementById('still-img'),camOverlay=document.getElementById('cam-overlay'),camStatusEl=document.getElementById('cam-status'),camStatusTxt=document.getElementById('cam-status-txt'),retakeBtn=document.getElementById('retake-btn'),camRetryBtn=document.getElementById('cam-retry-btn'),camUploadBtn=document.getElementById('cam-upload-btn'),fallbackFile=document.getElementById('fallback-file'),capturedBlob=null,camStream=null,camReady=false;
 var captureJobTtlEl=document.getElementById('capture-job-ttl'),captureJobSubEl=document.getElementById('capture-job-sub');
 var camStatusLockUntil=0,liveLabelTimer=null,liveLabelCanvas=null,lastLiveLabel='',liveLabelCandidate='',liveLabelHits=0,liveLabelShownAt=0,liveLabelReqInFlight=false;
 var DEMO_MODE=(localStorage.getItem('ce_demo_mode')||'0')==='1'||(new URLSearchParams(location.search).get('demo')==='1');
@@ -6408,7 +6468,9 @@ function disableFallbackCapture(){
 }
 
 function applyCamStream(stream){
-  camStream=stream;videoEl.srcObject=stream;videoEl.style.display='block';stillEl.style.display='none';retakeBtn.style.display='none';capturedBlob=null;camReady=true;camStatusEl.classList.add('ready');setCamStatusSystem(T[LANG].camReady,1200);
+  camStream=stream;videoEl.srcObject=stream;videoEl.style.display='block';
+  if(frozenFrameEl)frozenFrameEl.style.display='none';
+  stillEl.style.display='none';retakeBtn.style.display='none';capturedBlob=null;camReady=true;camStatusEl.classList.add('ready');setCamStatusSystem(T[LANG].camReady,1200);
   enterCaptureFocus();
   document.body.classList.remove('ce-can-scan');
   applyPerceptionPhase('idle',{source:'camera',copy:true});
@@ -6505,12 +6567,53 @@ if(fallbackFile){
   });
 }
 
+function ceFreezeCamPreview(){
+  var ff=frozenFrameEl,v=videoEl;
+  if(!ff||!v)return;
+  if(v.style.display==='none')return;
+  var vw=v.videoWidth|0,vh=v.videoHeight|0;
+  if(vw<2||vh<2)return;
+  ff.width=vw;
+  ff.height=vh;
+  ff.getContext('2d').drawImage(v,0,0,vw,vh);
+  ff.style.display='block';
+  v.style.display='none';
+}
+function ceUnfreezeCamPreview(){
+  var ff=frozenFrameEl;
+  if(ff)ff.style.display='none';
+  if(videoEl&&camReady&&camStream)videoEl.style.display='block';
+}
+function ceDownscaleJpegBlob(blob,maxSide,jpegQ){
+  maxSide=maxSide||1024;
+  jpegQ=(jpegQ==null)?0.82:jpegQ;
+  if(!blob||typeof createImageBitmap!=='function')return Promise.resolve(blob);
+  return createImageBitmap(blob).then(function(bmp){
+    var w=bmp.width|0,h=bmp.height|0;
+    if(!w||!h){try{bmp.close();}catch(_){} return blob;}
+    var scale=1;
+    if(Math.max(w,h)>maxSide)scale=maxSide/Math.max(w,h);
+    if(scale>=1){try{bmp.close();}catch(_){} return blob;}
+    var tw=Math.max(1,Math.round(w*scale)),th=Math.max(1,Math.round(h*scale));
+    var c=document.createElement('canvas');
+    c.width=tw;c.height=th;
+    c.getContext('2d').drawImage(bmp,0,0,tw,th);
+    try{bmp.close();}catch(_){}
+    return new Promise(function(res){
+      c.toBlob(function(nb){res(nb||blob);},'image/jpeg',jpegQ);
+    });
+  }).catch(function(){return blob});
+}
 function captureFrame(opts){
   opts=opts||{};
   return new Promise(function(resolve,reject){
     if(!camStream||!camReady){reject(new Error('No camera — use photo upload or allow camera.'));return}
-    canvasEl.width=videoEl.videoWidth||1280;canvasEl.height=videoEl.videoHeight||720;
-    var ctx2=canvasEl.getContext('2d');ctx2.drawImage(videoEl,0,0,canvasEl.width,canvasEl.height);
+    var vw=videoEl.videoWidth||1280,vh=videoEl.videoHeight||720;
+    var maxSide=1024;
+    var scale=Math.min(1,maxSide/Math.max(vw,vh));
+    var tw=Math.max(1,Math.round(vw*scale)),th=Math.max(1,Math.round(vh*scale));
+    canvasEl.width=tw;canvasEl.height=th;
+    var ctx2=canvasEl.getContext('2d');ctx2.drawImage(videoEl,0,0,tw,th);
     canvasEl.toBlob(function(blob){
       if(blob){
         capturedBlob=blob;
@@ -6523,12 +6626,12 @@ function captureFrame(opts){
         }
         resolve(blob);
       } else reject(new Error('Capture failed'));
-    },'image/jpeg',0.86);
+    },'image/jpeg',0.82);
   });
 }
 
 function retakePhoto(){
-  capturedBlob=null;stillEl.style.display='none';stillEl.src='';retakeBtn.style.display='none';videoEl.style.display='block';
+  capturedBlob=null;ceUnfreezeCamPreview();stillEl.style.display='none';stillEl.src='';retakeBtn.style.display='none';videoEl.style.display='block';
   document.body.classList.remove('fixing','result-open','fm-cta-open');
   enterCaptureFocus();
   document.body.classList.remove('ce-can-scan');
@@ -7116,6 +7219,75 @@ function setGlassPhase(phase, total){
   }
 }
 // ── CAMERA & CAPTURE ────────────────────────────────────
+function ceRunAnalyzeFetch(fd,signal){
+  var t0=Date.now();
+  ceDbgD78afc('H2','index.html:ceRunAnalyzeFetch','fetch_start',{endpoint:'/analyze',ts:t0});
+  return fetch('/analyze',{
+    method:'POST',
+    body:fd,
+    signal:signal,
+    headers:{'X-CE-Stream':'1','Accept':'text/event-stream'}
+  }).then(function(resp){
+    var clen=resp.headers.get('content-length');
+    if(resp.status===402){
+      return resp.json().then(function(j){j._http_status=402;return j;}).catch(function(){
+        return {success:false,error:'Paywall',_http_status:402};
+      });
+    }
+    if(!resp.ok){
+      return resp.text().then(function(txt){
+        try{return JSON.parse(txt);}catch(_){
+          return {success:false,error:(txt&&txt.slice?txt.slice(0,280):'')||('HTTP '+resp.status),_http_status:resp.status};
+        }
+      });
+    }
+    var ct=(resp.headers.get('content-type')||'').toLowerCase();
+    if(ct.indexOf('text/event-stream')>=0&&resp.body&&resp.body.getReader)
+      return ceParseAnalyzeSse(resp,t0,clen);
+    return resp.text().then(function(txt){
+      try{return JSON.parse(txt);}catch(_){
+        return {success:false,error:(txt&&txt.slice?txt.slice(0,280):'')||('Bad response'),_http_status:resp.status};
+      }
+    });
+  }).catch(function(e){
+    if(String((e&&e.name)||'')==='AbortError'||/aborted/i.test(String((e&&e.message)||'')))
+      return {success:false,error:(LANG==='nl')?'Het duurde te lang — probeer opnieuw of een kleinere foto.':'That took too long — try again or use a smaller photo.',_client_abort:true};
+    return {success:false,error:(e&&e.message)?String(e.message):'Network error'};
+  });
+}
+function ceParseAnalyzeSse(resp,t0,clenHdr){
+  var reader=resp.body.getReader();
+  var dec=new TextDecoder();
+  var buf='';
+  function readMore(){
+    return reader.read().then(function(chunk){
+      if(chunk.done){
+        ceDbgD78afc('H2','index.html:ceParseAnalyzeSse','fetch_end',{endpoint:'/analyze',status:resp.status,duration_ms:Date.now()-t0,content_length:clenHdr,incomplete:true});
+        return {success:false,error:(LANG==='nl')?'Onvolledige serverreactie. Probeer opnieuw.':'Incomplete server response. Try again.'};
+      }
+      buf+=dec.decode(chunk.value,{stream:true});
+      var parts=buf.split('\n');
+      buf=parts.pop()||'';
+      for(var pi=0;pi<parts.length;pi++){
+        var line=parts[pi];
+        if(line.length>=6&&line.slice(0,6)==='data: '){
+          var payload=line.slice(6).trim();
+          if(payload==='[DONE]')continue;
+          if(!payload)continue;
+          try{
+            var parsed=JSON.parse(payload);
+            ceDbgD78afc('H2','index.html:ceParseAnalyzeSse','fetch_end',{endpoint:'/analyze',status:resp.status,duration_ms:Date.now()-t0,content_length:clenHdr,stream:true});
+            return parsed;
+          }catch(_){
+            return {success:false,error:'Invalid stream data'};
+          }
+        }
+      }
+      return readMore();
+    });
+  }
+  return readMore();
+}
 async function startLiveScanSession(viewsTarget, initialBlob){
   if(liveActive)return;
   var liveScanSucceeded=false;
@@ -7167,6 +7339,9 @@ async function startLiveScanSession(viewsTarget, initialBlob){
   var LI=null;
 
   try{
+    // #region agent log
+    ceDbgD78afc('H1','index.html:startLiveScanSession:try_start','after setup, before agreement',{views:viewsTarget,hasCam:!!(camReady&&camStream),hadInitialBlob:!!initialBlob});
+    // #endregion
     await requireAgreementBeforeScan();
     for(var phase=1; phase<=viewsTarget; phase++){
       ceSetFrameState('Loading-Analysis',phase===1?'Scanning':'Processing');
@@ -7209,8 +7384,29 @@ async function startLiveScanSession(viewsTarget, initialBlob){
       xrayOn(false);
     }
 
+    for(var bi=0;bi<blobs.length;bi++){
+      if(blobs[bi]){
+        var ob=blobs[bi].size||0;
+        blobs[bi]=await ceDownscaleJpegBlob(blobs[bi],1024,0.82);
+        ceDbgD78afc('P1','index.html:image_size','downscale',{
+          idx:bi,
+          original_kb:Math.round(ob/1024),
+          downscaled_kb:blobs[bi]?Math.round((blobs[bi].size||0)/1024):0
+        });
+      }
+    }
+
+    // #region agent log
+    ceDbgD78afc('H5','index.html:startLiveScanSession:blobs_ready','post downscale',{
+      sizes:(blobs.map(function(bb){return bb&&(bb.size!=null)?bb.size:0})),
+      qLen:(document.getElementById('q-inp')&&document.getElementById('q-inp').value)?String(document.getElementById('q-inp').value.length):0
+    });
+    // #endregion
+
     scanStart();
+    ceFreezeCamPreview();
     document.getElementById('ld').style.display='block';
+    document.getElementById('ld').removeAttribute('aria-hidden');
     setAiThinking(true);
     camOverlay.classList.add('scanning');
     document.getElementById('scan-lbl').textContent=(LANG==='nl')?'Analyseren...':'Analysing...';
@@ -7236,18 +7432,25 @@ async function startLiveScanSession(viewsTarget, initialBlob){
     if(fp){
       fd.append('device_fingerprint',fp);
     }
+    // #region agent log
+    ceDbgD78afc('H3','index.html:startLiveScanSession:before_analyze','calling /analyze',{sz0:blobs[0]&&blobs[0].size?blobs[0].size:0,hasFp:!!fp});
+    // #endregion
     // Two-stage architecture: fast stage-1 feedback + full deep analysis.
     var fdStage1=new FormData();
     fdStage1.append('image',blobs[0],'stage1.jpg');
     fdStage1.append('question',qInput);
     fdStage1.append('language',LANG);
     if(fp)fdStage1.append('device_fingerprint',fp);
-    var deepPromise=fetch('/analyze',{method:'POST',body:fd}).then(function(resp){
-      if(resp.status===402)return resp.json().then(function(j){j._http_status=402;return j;});
-      return resp.json();
-    });
+    var _ceAb=new AbortController();
+    var _ceAbT=setTimeout(function(){try{_ceAb.abort();}catch(_){}},120000);
+    var deepPromise=ceRunAnalyzeFetch(fd,_ceAb.signal)
+      .finally(function(){clearTimeout(_ceAbT);});
     var stage1Promise=fetch('/analyze-stage1',{method:'POST',body:fdStage1})
-      .then(function(resp){return resp.json()})
+      .then(function(resp){
+        return resp.text().then(function(txt){
+          try{return JSON.parse(txt);}catch(_){return null;}
+        });
+      })
       .catch(function(){return null});
     var stage1Data=await Promise.race([stage1Promise,_ceSleep(2400).then(function(){return null})]);
     if(stage1Data&&stage1Data.success&&stage1Data.result){
@@ -7281,6 +7484,15 @@ async function startLiveScanSession(viewsTarget, initialBlob){
       }
     }
     var data=await deepPromise;
+    // #region agent log
+    ceDbgD78afc('H2','index.html:startLiveScanSession:after_analyze','client parsed',{
+      ok:!!(data&&data.success),
+      abort:!!(data&&data._client_abort),
+      http402:!!(data&&data._http_status===402),
+      httpMeta:(data&&data._http_status)?data._http_status:0,
+      err:(data&&data.error)?String(data.error).slice(0,100):''
+    });
+    // #endregion
     if(data&&data._http_status===402){
       ceServerScanState.scans_used=parseInt(data.scans_used||ceServerScanState.scans_used||0,10)||0;
       ceServerScanState.limit=parseInt(data.limit||ceServerScanState.limit||5,10)||5;
@@ -7290,12 +7502,14 @@ async function startLiveScanSession(viewsTarget, initialBlob){
       stopHum();
       camOverlay.classList.remove('scanning');
       ceStopRitualDots();document.getElementById('ld').style.display='none';
+      document.getElementById('ld').setAttribute('aria-hidden','true');
       setAiThinking(false);
       showUxError('scan_limit');
+      ceUnfreezeCamPreview();
       if(typeof showPaywall==='function')showPaywall();
       return;
     }
-    if(!data.success) throw new Error(data.error||'Analysis failed');
+    if(!data||!data.success)throw new Error((data&&data.error)||'Analysis failed');
     if(data.scan_session){
       ceServerScanState.scans_used=parseInt(data.scan_session.scans_used||0,10)||0;
       ceServerScanState.limit=parseInt(data.scan_session.limit||5,10)||5;
@@ -7306,6 +7520,7 @@ async function startLiveScanSession(viewsTarget, initialBlob){
     if(LI){clearInterval(LI);LI=null}
     stopHum();
     ceStopRitualDots();document.getElementById('ld').style.display='none';
+    document.getElementById('ld').setAttribute('aria-hidden','true');
     if(stage1ConfirmEl)stage1ConfirmEl.classList.remove('show');
     setAiThinking(false);
     var slblDone=document.getElementById('scan-lbl-text');
@@ -7332,6 +7547,7 @@ async function startLiveScanSession(viewsTarget, initialBlob){
       window.__cePendingAnalyzeData=data;
       ceBumpUnclearStreak();
       showUxError('unclear_image',resObj.retake_guidance||'');
+      ceUnfreezeCamPreview();
       if(document.getElementById('results'))document.getElementById('results').style.display='none';
       return;
     }
@@ -7342,13 +7558,22 @@ async function startLiveScanSession(viewsTarget, initialBlob){
     if(hzLv==='danger'||hzLv==='emergency'){dangerSnd();hap([200,100,200])}
     setTimeout(function(){
       try{
-        if(typeof stillEl!=='undefined'&&stillEl&&videoEl&&camReady&&camStream&&videoEl.style.display!=='none'&&videoEl.readyState>=2){
+        var srcEl=null;
+        if(typeof frozenFrameEl!=='undefined'&&frozenFrameEl&&frozenFrameEl.style.display!=='none'&&(frozenFrameEl.width|0)>2){
+          srcEl=frozenFrameEl;
+        }else if(typeof stillEl!=='undefined'&&stillEl&&videoEl&&camReady&&camStream&&videoEl.style.display!=='none'&&videoEl.readyState>=2){
+          srcEl=videoEl;
+        }
+        if(typeof stillEl!=='undefined'&&stillEl&&srcEl){
           var fcv=document.createElement('canvas');
-          fcv.width=videoEl.videoWidth||1280;
-          fcv.height=videoEl.videoHeight||720;
-          fcv.getContext('2d').drawImage(videoEl,0,0,fcv.width,fcv.height);
-          stillEl.src=fcv.toDataURL('image/jpeg',0.88);
+          var sw=srcEl.videoWidth||srcEl.width||1280;
+          var sh=srcEl.videoHeight||srcEl.height||720;
+          fcv.width=sw;
+          fcv.height=sh;
+          fcv.getContext('2d').drawImage(srcEl,0,0,sw,sh);
+          stillEl.src=fcv.toDataURL('image/jpeg',0.92);
           stillEl.style.display='block';
+          if(frozenFrameEl)frozenFrameEl.style.display='none';
           videoEl.style.display='none';
         }
       }catch(_){}
@@ -7360,14 +7585,19 @@ async function startLiveScanSession(viewsTarget, initialBlob){
     },120);
 
   }catch(err){
+    // #region agent log
+    ceDbgD78afc('H4','index.html:startLiveScanSession:catch','exception',{msg:String((err&&err.message)||err).slice(0,160)});
+    // #endregion
     if(LI)clearInterval(LI);
     stopHum();
     camOverlay.classList.remove('scanning');
     xrayOn(false);
     xrayDeep(false);
     ceStopRitualDots();document.getElementById('ld').style.display='none';
+    document.getElementById('ld').setAttribute('aria-hidden','true');
     if(stage1ConfirmEl)stage1ConfirmEl.classList.remove('show');
     setAiThinking(false);
+    ceUnfreezeCamPreview();
     applyPerceptionPhase('error',{source:'scan',force:true,copy:false});
     setCaptureJob((LANG==='nl')?'Scan mislukt':'Scan failed',(LANG==='nl')?'Beeld bijstellen en opnieuw proberen':'Adjust view and try again',{scanWrites:true,skipClip:true});
     hap(22);
@@ -7390,8 +7620,16 @@ async function startLiveScanSession(viewsTarget, initialBlob){
     if(lpMiniTimer){clearTimeout(lpMiniTimer);lpMiniTimer=null}
     xrayDeep(false);
     xrayOn(false);
-    if(document.getElementById('ld').style.display!=='block'&&document.body.classList.contains('ce-ai-thinking'))
+    var _ldFin=document.getElementById('ld');
+    if(_ldFin&&_ldFin.style.display==='block'){
+      ceStopRitualDots();
+      _ldFin.style.display='none';
+      _ldFin.setAttribute('aria-hidden','true');
+    }
+    if(document.body.classList.contains('ce-ai-thinking'))
       setAiThinking(false);
+    if(!liveScanSucceeded)
+      ceUnfreezeCamPreview();
     if(!liveScanSucceeded&&!document.body.classList.contains('ce-cam-error')&&!document.body.classList.contains('result-open')){
       if(camReady&&camStream&&!document.body.classList.contains('ce-can-scan'))
         setCameraUiState('detecting',{copy:false});

@@ -2,6 +2,9 @@
 .env
 .env.local
 .env.*.local
+*.env
+secrets.env
+debug-d78afc.log
 
 # Python / tests — keeps Cursor & git quieter
 __pycache__/

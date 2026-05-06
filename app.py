@@ -3,11 +3,12 @@ import re
 import base64
 import json
 import sqlite3
+import threading
 import time
 import hmac
 import hashlib
 from datetime import datetime, timedelta, timezone
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, Response, stream_with_context
 from nl_corpus import get_corpus_for_language
 from anthropic import (
     Anthropic,
@@ -19,7 +20,87 @@ from anthropic import (
     RateLimitError,
 )
 
+
+def _load_local_dotenv():
+    """Load env files from app root into os.environ. Shell vars always win (never overwritten).
+
+    Files (in order; later files override earlier for the same key): `.env`, `.env.local`, `secrets.env`.
+    These files are optional; production (e.g. Vercel) uses dashboard env instead.
+    """
+    root = os.path.dirname(os.path.abspath(__file__))
+    merged = {}
+
+    def absorb(path):
+        try:
+            with open(path, encoding="utf-8") as f:
+                for raw in f:
+                    line = raw.strip()
+                    if not line or line.startswith("#"):
+                        continue
+                    if line.startswith("export "):
+                        line = line[7:].strip()
+                    if "=" not in line:
+                        continue
+                    key, _, val = line.partition("=")
+                    key = key.strip()
+                    val = val.strip()
+                    if len(val) >= 2 and val[0] == val[-1] and val[0] in "'\"":
+                        val = val[1:-1]
+                    if key:
+                        merged[key] = val
+        except OSError:
+            pass
+
+    for name in (".env", ".env.local", "secrets.env"):
+        path = os.path.join(root, name)
+        if os.path.isfile(path):
+            absorb(path)
+
+    for key, val in merged.items():
+        if key not in os.environ:
+            os.environ[key] = val
+
+
+_load_local_dotenv()
 app = Flask(__name__)
+
+
+def _dbg_d78afc(hypothesis_id, location, message, data=None):
+    """Session d78afc: append one NDJSON line to workspace log. No secrets/PII."""
+    try:
+        row = {
+            "sessionId": "d78afc",
+            "hypothesisId": hypothesis_id,
+            "location": location,
+            "message": message,
+            "data": data or {},
+            "timestamp": int(time.time() * 1000),
+            "runId": "pre",
+        }
+        path = os.path.join(app.root_path, "debug-d78afc.log")
+        with open(path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(row, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+
+
+@app.route("/api/debug-d78afc", methods=["POST"])
+def api_debug_d78afc():
+    """Browser session d78afc: append one NDJSON line (same file as _dbg_d78afc)."""
+    try:
+        j = request.get_json(silent=True) or {}
+        data = j.get("data")
+        if not isinstance(data, dict):
+            data = {}
+        _dbg_d78afc(
+            str(j.get("hypothesisId") or "?"),
+            str(j.get("location") or "?"),
+            str(j.get("message") or ""),
+            data,
+        )
+    except Exception:
+        pass
+    return jsonify({"ok": True})
 
 
 def _ce_debug_ndjson(hypothesis_id, location, message, data):
@@ -665,6 +746,55 @@ def _insert_event(payload):
         conn.commit()
 
 
+def _insert_analyze_success_events(payload, form_src, source_tag="analyze"):
+    """Persist scan_completed (+ hazard_flagged when needed). form_src supports .get like request.form."""
+    try:
+        result = (payload or {}).get("result") or {}
+        lang = _clean_small_str(form_src.get("language"), 12)
+        sess = _clean_small_str(form_src.get("session_id"), 80)
+        uid = _clean_small_str(form_src.get("user_id"), 80)
+        jid = _clean_small_str(form_src.get("job_id"), 80)
+        ch = _clean_small_str(form_src.get("source_channel"), 40)
+        ua = _clean_small_str(request.headers.get("User-Agent"), 260)
+        ip = _request_ip()
+        _insert_event(
+            {
+                "event_raw": "scan_completed",
+                "event_name": "scan_completed",
+                "language": lang,
+                "session_id": sess,
+                "user_id": uid,
+                "job_id": jid,
+                "task_category": _clean_small_str(result.get("job_category"), 60),
+                "hazard_level": _clean_small_str(result.get("hazard_level"), 20).lower(),
+                "source_channel": ch,
+                "meta_json": json.dumps({"from": source_tag}, ensure_ascii=False),
+                "ip": ip,
+                "user_agent": ua,
+            }
+        )
+        hz = _clean_small_str(result.get("hazard_level"), 20).lower()
+        if hz in {"caution", "warning", "danger", "emergency"}:
+            _insert_event(
+                {
+                    "event_raw": "hazard_flagged",
+                    "event_name": "hazard_flagged",
+                    "language": lang,
+                    "session_id": sess,
+                    "user_id": uid,
+                    "job_id": jid,
+                    "task_category": _clean_small_str(result.get("job_category"), 60),
+                    "hazard_level": hz,
+                    "source_channel": ch,
+                    "meta_json": json.dumps({"from": source_tag}, ensure_ascii=False),
+                    "ip": ip,
+                    "user_agent": ua,
+                }
+            )
+    except Exception:
+        pass
+
+
 def _insert_outcome(payload):
     with _db() as conn:
         conn.execute(
@@ -770,9 +900,9 @@ except Exception as _db_boot_err:
 def _get_client():
     global _client
     if _client is None:
-        key = (os.getenv("ANTHROPIC_API_KEY") or "").strip()
+        key = (os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY") or "").strip()
         if not key:
-            raise RuntimeError("ANTHROPIC_API_KEY is not set")
+            raise RuntimeError("ANTHROPIC_API_KEY is not set (or set CLAUDE_API_KEY, or add it to .env in the app folder)")
         _client = Anthropic(api_key=key)
     return _client
 
@@ -1394,17 +1524,52 @@ def _file_to_image_block(upload):
     return {"type": "image", "source": {"type": "base64", "media_type": mime, "data": b64}}
 
 
-def _do_analyze():
+def _immutable_analyze_snapshot():
+    """Materialize multipart to in-memory FileStorage objects (safe for background threads)."""
+    from io import BytesIO
+
+    from werkzeug.datastructures import FileStorage, ImmutableMultiDict
+
+    pairs = []
+    for key in ("image", "image_2", "image_3"):
+        uf = request.files.get(key)
+        if uf:
+            raw = uf.read()
+            fn = uf.filename or f"{key}.jpg"
+            ct = uf.mimetype or "image/jpeg"
+            pairs.append((key, FileStorage(stream=BytesIO(raw), filename=fn, content_type=ct)))
+    files = ImmutableMultiDict(pairs)
+    form = ImmutableMultiDict(list(request.form.items(multi=True)))
+    return files, form
+
+
+def _analyze_stream_error_payload(exc):
+    """JSON body for SSE when /analyze fails inside the worker thread."""
+    if isinstance(exc, json.JSONDecodeError):
+        return {"success": False, "error": f"AI returned invalid JSON: {str(exc)}"}
+    if isinstance(exc, AuthenticationError):
+        return {"success": False, "error": "AI authentication failed"}
+    if isinstance(exc, (RateLimitError, PermissionDeniedError)):
+        return {"success": False, "error": "AI service temporarily unavailable"}
+    if isinstance(exc, (APIStatusError, BadRequestError, NotFoundError)):
+        return {"success": False, "error": "AI upstream request failed"}
+    return {"success": False, "error": (str(exc) or "error")[:500]}
+
+
+def _do_analyze(req_files=None, req_form=None):
     try:
         _get_client()
     except RuntimeError as e:
         return None, (str(e), 503)
 
-    image_file = request.files.get("image")
-    image_2 = request.files.get("image_2")
-    image_3 = request.files.get("image_3")
-    question = request.form.get("question", "")
-    language = request.form.get("language", "nl")
+    files = req_files if req_files is not None else request.files
+    form = req_form if req_form is not None else request.form
+
+    image_file = files.get("image")
+    image_2 = files.get("image_2")
+    image_3 = files.get("image_3")
+    question = form.get("question", "")
+    language = form.get("language", "nl")
 
     if not image_file:
         return None, ("No image provided", 400)
@@ -1414,6 +1579,24 @@ def _do_analyze():
         (image_2, "VIEW 2 — MATERIALS & TYPEPLATE: brands, stickers, couplings, pipe material, wire entry."),
         (image_3, "VIEW 3 — X-RAY / PROBLEM ZONE: close-up; separate dirt/limescale from real damage or leak origin."),
     ]
+
+    def _snapshot_kb(upl):
+        if not upl or not getattr(upl, "stream", None):
+            return 0
+        try:
+            upl.stream.seek(0)
+            n = len(upl.stream.read())
+            upl.stream.seek(0)
+            return n // 1024
+        except Exception:
+            try:
+                upl.stream.seek(0)
+            except Exception:
+                pass
+            return 0
+
+    payload_kb_approx = sum(_snapshot_kb(u) for u, _ in view_defs if u)
+
     blocks = []
     n_views = 0
     for upload, caption in view_defs:
@@ -1521,11 +1704,33 @@ Hard rules:
     user_tail = {"type": "text", "text": (f"User note: {q}" if q else default_ask) + suffix}
     user_content = blocks + [user_tail]
 
+    t_api0 = time.time()
+    usage_extra = {}
+    _dbg_d78afc(
+        "H2",
+        "app.py:_do_analyze:anthropic_start",
+        "vision call",
+        {"payload_kb": payload_kb_approx, "n_views": n_views},
+    )
     response = _messages_create_with_fallback(
         system=system_prompt,
         max_tokens=2800,
         preferred_model=VISION_MODEL,
         messages=[{"role": "user", "content": user_content}],
+    )
+    try:
+        u = getattr(response, "usage", None)
+        if u is not None:
+            it = getattr(u, "input_tokens", None)
+            ot = getattr(u, "output_tokens", None)
+            usage_extra = {k: v for k, v in (("input_tokens", it), ("output_tokens", ot)) if v is not None}
+    except Exception:
+        pass
+    _dbg_d78afc(
+        "H2",
+        "app.py:_do_analyze:anthropic_end",
+        "vision done",
+        {"duration_ms": int((time.time() - t_api0) * 1000), **usage_extra},
     )
 
     ai_text = _extract_message_text(response)
@@ -1688,79 +1893,116 @@ Rules:
 
 @app.route("/analyze", methods=["POST"])
 def analyze():
+    _t0 = time.time()
+    _dbg_d78afc("H2", "app.py:analyze:entry", "POST /analyze", {})
+    want_stream = (request.headers.get("X-CE-Stream") or "").strip() == "1"
     try:
         fp, scan_state, limit_err = _check_scan_limit_or_402()
         if limit_err:
             if isinstance(limit_err[0], str):
+                _dbg_d78afc("H2", "app.py:analyze:limit", "reject string", {"ms": int((time.time() - _t0) * 1000)})
                 return jsonify({"success": False, "error": limit_err[0]}), limit_err[1]
+            _dbg_d78afc("H2", "app.py:analyze:limit", "reject 402", {"ms": int((time.time() - _t0) * 1000)})
             return limit_err[0], limit_err[1]
+
+        if want_stream:
+            snap_files, snap_form = _immutable_analyze_snapshot()
+            if not snap_files.get("image"):
+                return jsonify({"success": False, "error": "No image provided"}), 400
+
+            def generate():
+                holder = {}
+
+                def work():
+                    try:
+                        holder["pair"] = _do_analyze(snap_files, snap_form)
+                    except Exception as e:
+                        holder["exc"] = e
+
+                t = threading.Thread(target=work, daemon=True)
+                t.start()
+                last_keep = time.time()
+                while t.is_alive():
+                    now = time.time()
+                    if now - last_keep >= 4:
+                        yield ": keepalive\n\n"
+                        last_keep = now
+                    time.sleep(0.25)
+                t.join()
+                if holder.get("exc") is not None:
+                    body = _analyze_stream_error_payload(holder["exc"])
+                    yield f"data: {json.dumps(body)}\n\n"
+                    yield "data: [DONE]\n\n"
+                    return
+                payload, err = holder.get("pair", (None, None))
+                if err:
+                    yield f"data: {json.dumps({'success': False, 'error': err[0]})}\n\n"
+                    yield "data: [DONE]\n\n"
+                    return
+                scan_state2 = _consume_scan_after_success(fp, scan_state)
+                payload["scan_session"] = scan_state2
+                _insert_analyze_success_events(payload, snap_form, "analyze")
+                _dbg_d78afc("H2", "app.py:analyze:success", "sse payload", {"ms": int((time.time() - _t0) * 1000)})
+                yield f"data: {json.dumps(payload)}\n\n"
+                yield "data: [DONE]\n\n"
+
+            return Response(
+                stream_with_context(generate()),
+                mimetype="text/event-stream",
+                headers={
+                    "Cache-Control": "no-cache",
+                    "X-Accel-Buffering": "no",
+                },
+            )
+
         payload, err = _do_analyze()
         if err:
+            _dbg_d78afc(
+                "H2",
+                "app.py:analyze:do_analyze_err",
+                "upstream failed",
+                {"err": str(err[0])[:120], "status": err[1], "ms": int((time.time() - _t0) * 1000)},
+            )
             return jsonify({"success": False, "error": err[0]}), err[1]
         scan_state = _consume_scan_after_success(fp, scan_state)
         payload["scan_session"] = scan_state
-        try:
-            result = (payload or {}).get("result") or {}
-            _insert_event(
-                {
-                    "event_raw": "scan_completed",
-                    "event_name": "scan_completed",
-                    "language": _clean_small_str(request.form.get("language"), 12),
-                    "session_id": _clean_small_str(request.form.get("session_id"), 80),
-                    "user_id": _clean_small_str(request.form.get("user_id"), 80),
-                    "job_id": _clean_small_str(request.form.get("job_id"), 80),
-                    "task_category": _clean_small_str(result.get("job_category"), 60),
-                    "hazard_level": _clean_small_str(result.get("hazard_level"), 20).lower(),
-                    "source_channel": _clean_small_str(request.form.get("source_channel"), 40),
-                    "meta_json": json.dumps({"from": "analyze"}, ensure_ascii=False),
-                    "ip": _request_ip(),
-                    "user_agent": _clean_small_str(request.headers.get("User-Agent"), 260),
-                }
-            )
-            hz = _clean_small_str(result.get("hazard_level"), 20).lower()
-            if hz in {"caution", "warning", "danger", "emergency"}:
-                _insert_event(
-                    {
-                        "event_raw": "hazard_flagged",
-                        "event_name": "hazard_flagged",
-                        "language": _clean_small_str(request.form.get("language"), 12),
-                        "session_id": _clean_small_str(request.form.get("session_id"), 80),
-                        "user_id": _clean_small_str(request.form.get("user_id"), 80),
-                        "job_id": _clean_small_str(request.form.get("job_id"), 80),
-                        "task_category": _clean_small_str(result.get("job_category"), 60),
-                        "hazard_level": hz,
-                        "source_channel": _clean_small_str(request.form.get("source_channel"), 40),
-                        "meta_json": json.dumps({"from": "analyze"}, ensure_ascii=False),
-                        "ip": _request_ip(),
-                        "user_agent": _clean_small_str(request.headers.get("User-Agent"), 260),
-                    }
-                )
-        except Exception:
-            pass
+        _insert_analyze_success_events(payload, request.form, "analyze")
+        _dbg_d78afc("H2", "app.py:analyze:success", "jsonify ok", {"ms": int((time.time() - _t0) * 1000)})
         return jsonify(payload)
     except json.JSONDecodeError as e:
+        _dbg_d78afc("H2", "app.py:analyze:exc", "JSONDecodeError", {"ms": int((time.time() - _t0) * 1000)})
         return jsonify({"success": False, "error": f"AI returned invalid JSON: {str(e)}"}), 500
     except AuthenticationError:
+        _dbg_d78afc("H2", "app.py:analyze:exc", "AuthenticationError", {"ms": int((time.time() - _t0) * 1000)})
         return jsonify({"success": False, "error": "AI authentication failed"}), 503
     except (RateLimitError, PermissionDeniedError):
+        _dbg_d78afc("H2", "app.py:analyze:exc", "RateLimit/Permission", {"ms": int((time.time() - _t0) * 1000)})
         return jsonify({"success": False, "error": "AI service temporarily unavailable"}), 503
     except (APIStatusError, BadRequestError, NotFoundError):
+        _dbg_d78afc("H2", "app.py:analyze:exc", "APIStatus/BadRequest/NotFound", {"ms": int((time.time() - _t0) * 1000)})
         return jsonify({"success": False, "error": "AI upstream request failed"}), 502
     except Exception as e:
+        _dbg_d78afc("H2", "app.py:analyze:exc", "Exception", {"err": str(e)[:160], "ms": int((time.time() - _t0) * 1000)})
         return jsonify({"success": False, "error": str(e)}), 500
 
 
 @app.route("/analyze-stage1", methods=["POST"])
 def analyze_stage1():
     """Fast first-pass response for perceived speed; full result comes from /analyze."""
+    _t0 = time.time()
+    _dbg_d78afc("H2", "app.py:analyze_stage1:entry", "POST /analyze-stage1", {})
     try:
         payload, err = _do_stage1_quick_analyze()
         if err:
+            _dbg_d78afc("H2", "app.py:analyze_stage1:err", "stage1 failed", {"err": str(err[0])[:120], "ms": int((time.time() - _t0) * 1000)})
             return jsonify({"success": False, "error": err[0]}), err[1]
+        _dbg_d78afc("H2", "app.py:analyze_stage1:ok", "success", {"ms": int((time.time() - _t0) * 1000)})
         return jsonify(payload)
     except json.JSONDecodeError as e:
+        _dbg_d78afc("H2", "app.py:analyze_stage1:exc", "JSONDecodeError", {"ms": int((time.time() - _t0) * 1000)})
         return jsonify({"success": False, "error": f"AI returned invalid JSON: {str(e)}"}), 500
     except Exception as e:
+        _dbg_d78afc("H2", "app.py:analyze_stage1:exc", "Exception", {"err": str(e)[:160], "ms": int((time.time() - _t0) * 1000)})
         return jsonify({"success": False, "error": str(e)}), 500
 
 
@@ -1779,44 +2021,7 @@ def analyze_live():
         scan_state = _consume_scan_after_success(fp, scan_state)
         payload["live"] = {"needs_more_views": False, "next_prompt": ""}
         payload["scan_session"] = scan_state
-        try:
-            result = (payload or {}).get("result") or {}
-            _insert_event(
-                {
-                    "event_raw": "scan_completed",
-                    "event_name": "scan_completed",
-                    "language": _clean_small_str(request.form.get("language"), 12),
-                    "session_id": _clean_small_str(request.form.get("session_id"), 80),
-                    "user_id": _clean_small_str(request.form.get("user_id"), 80),
-                    "job_id": _clean_small_str(request.form.get("job_id"), 80),
-                    "task_category": _clean_small_str(result.get("job_category"), 60),
-                    "hazard_level": _clean_small_str(result.get("hazard_level"), 20).lower(),
-                    "source_channel": _clean_small_str(request.form.get("source_channel"), 40),
-                    "meta_json": json.dumps({"from": "analyze_live"}, ensure_ascii=False),
-                    "ip": _request_ip(),
-                    "user_agent": _clean_small_str(request.headers.get("User-Agent"), 260),
-                }
-            )
-            hz = _clean_small_str(result.get("hazard_level"), 20).lower()
-            if hz in {"caution", "warning", "danger", "emergency"}:
-                _insert_event(
-                    {
-                        "event_raw": "hazard_flagged",
-                        "event_name": "hazard_flagged",
-                        "language": _clean_small_str(request.form.get("language"), 12),
-                        "session_id": _clean_small_str(request.form.get("session_id"), 80),
-                        "user_id": _clean_small_str(request.form.get("user_id"), 80),
-                        "job_id": _clean_small_str(request.form.get("job_id"), 80),
-                        "task_category": _clean_small_str(result.get("job_category"), 60),
-                        "hazard_level": hz,
-                        "source_channel": _clean_small_str(request.form.get("source_channel"), 40),
-                        "meta_json": json.dumps({"from": "analyze_live"}, ensure_ascii=False),
-                        "ip": _request_ip(),
-                        "user_agent": _clean_small_str(request.headers.get("User-Agent"), 260),
-                    }
-                )
-        except Exception:
-            pass
+        _insert_analyze_success_events(payload, request.form, "analyze_live")
         return jsonify(payload)
     except json.JSONDecodeError as e:
         return jsonify({"success": False, "error": f"AI returned invalid JSON: {str(e)}"}), 500
@@ -2673,7 +2878,7 @@ def privacy():
 @app.route("/health")
 def health():
     """Quick prod sanity check: no secrets returned."""
-    key_ok = bool(os.getenv("ANTHROPIC_API_KEY", "").strip())
+    key_ok = bool((os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY") or "").strip())
     return jsonify(
         {
             "ok": True,
