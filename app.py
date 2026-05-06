@@ -8,7 +8,7 @@ import time
 import hmac
 import hashlib
 from datetime import datetime, timedelta, timezone
-from flask import Flask, request, jsonify, render_template, Response, stream_with_context, make_response
+from flask import Flask, request, jsonify, render_template, Response, stream_with_context, make_response, send_from_directory
 from nl_corpus import get_corpus_for_language
 from anthropic import (
     Anthropic,
@@ -213,7 +213,7 @@ ALLOWED_EVENTS = REQUIRED_EVENTS | {
     "paywall_options_tapped",
     "paywall_dismissed_home",
 }
-FREE_SCAN_LIMIT = 5
+FREE_SCAN_LIMIT = int(os.getenv("FREE_SCAN_LIMIT", "3"))
 LICENSE_VERIFY_WINDOW_SEC = 60
 LICENSE_VERIFY_MAX_PER_WINDOW = 20
 _license_verify_hits = {}
@@ -1530,6 +1530,24 @@ def home():
     if _vercel_sha:
         resp.headers["X-CE-Deploy-SHA"] = _vercel_sha[:7]
     return resp
+
+
+@app.route("/favicon.ico")
+def favicon():
+    return send_from_directory("static", "icon-192.png", mimetype="image/png")
+
+
+@app.route("/robots.txt")
+def robots():
+    body = (
+        "User-agent: *\n"
+        "Allow: /\n"
+        "Disallow: /metrics\n"
+        "Disallow: /metrics-detail\n"
+        "Disallow: /dashboard\n"
+        "Disallow: /api/\n"
+    )
+    return Response(body, mimetype="text/plain")
 
 
 @app.route("/app-build")
