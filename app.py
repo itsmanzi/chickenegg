@@ -8,7 +8,7 @@ import time
 import hmac
 import hashlib
 from datetime import datetime, timedelta, timezone
-from flask import Flask, request, jsonify, render_template, Response, stream_with_context
+from flask import Flask, request, jsonify, render_template, Response, stream_with_context, make_response
 from nl_corpus import get_corpus_for_language
 from anthropic import (
     Anthropic,
@@ -1482,11 +1482,15 @@ def home():
     _fp_reveal = (os.environ.get("CE_FINGERPRINT_REVEAL_TOKEN") or "").strip()
     _reveal_arg = _clean_small_str(request.args.get("reveal_fp"), 200).strip()
     ce_show_device_fingerprint = bool(_fp_reveal) and _reveal_arg == _fp_reveal
-    return render_template(
+    html = render_template(
         "index.html",
         BOL_PARTNER_ID=BOL_PARTNER_ID,
         ce_show_device_fingerprint=ce_show_device_fingerprint,
     )
+    resp = make_response(html)
+    resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    resp.headers["Pragma"] = "no-cache"
+    return resp
 
 
 @app.route("/app-build")
