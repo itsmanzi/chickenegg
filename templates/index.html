@@ -6876,6 +6876,7 @@ function captureFrame(opts){
 function retakePhoto(){
   capturedBlob=null;ceUnfreezeCamPreview();stillEl.style.display='none';stillEl.src='';retakeBtn.style.display='none';videoEl.style.display='block';
   document.body.classList.remove('fixing','result-open','fm-cta-open');
+  document.body.classList.remove('ce-stable-results');
   enterCaptureFocus();
   document.body.classList.remove('ce-can-scan');
   applyPerceptionPhase('idle',{source:'camera',copy:true});
@@ -8296,7 +8297,7 @@ function ceClearPlainResultFallback(){
 }
 function ceHardRecoverBlankResults(r){
   if(!document.body.classList.contains('result-open'))return;
-  if(ceCurrentScreen!=='ce-screen-diagnosis')return;
+  if(ceCurrentScreen!=='ce-screen-diagnosis'&&ceCurrentScreen!=='ce-screen-repair')return;
   var results=document.getElementById('results');
   if(!results)return;
   var title=(document.getElementById('r-title')&&document.getElementById('r-title').textContent||'').trim();
@@ -8541,7 +8542,12 @@ function showScreen(screenId,state){
   var isRepair=screenId==='ce-screen-repair';
   var toolsCard=document.getElementById('tools-card');
   var stepsCard=document.getElementById('steps-card');
-  if(resultsBar)resultsBar.style.display=isRepair?'none':'';
+  if(resultsBar){
+    if(document.body.classList.contains('cam-tiktok')&&document.body.classList.contains('result-open'))
+      resultsBar.style.display='';
+    else
+      resultsBar.style.display=isRepair?'none':'';
+  }
   // Single UX guarantee: diagnosis/completion never show walkthrough cards.
   if(!isRepair){
     if(toolsCard)toolsCard.style.display='none';
@@ -9907,6 +9913,7 @@ function closeResultScreen(){
   ceRestoreHazardHeroSlot();
   ceResetResultPanels();
   document.body.classList.remove('result-open','mailbox-open','fixing','ce-step-active','fm-cta-open');
+  document.body.classList.remove('ce-stable-results');
   UX.resultRendered=false;
   UX.resultRendering=false;
   try{console.log('[CE] result guards reset in closeResultScreen');}catch(_){}
@@ -11135,6 +11142,7 @@ function renderResults(r){
   if(isTikTok&&allowSteps){
     enterRepairScreen(paywallState);
     ceEnsureFlowLeadBanner();
+    if(typeof ceSwitchTab==='function')try{ceSwitchTab('outcome');}catch(_){}
   }else{
     showScreen('ce-screen-diagnosis',paywallState,'push-right');
     if(typeof ceSwitchTab==='function')ceSwitchTab('outcome');
@@ -11162,6 +11170,8 @@ function renderResults(r){
   }
   ceUpdateCompactSafetyBanner(r);
   ceUpdateLowConfBanner(r);
+  document.body.classList.add('ce-stable-results');
+  try{ceSetResultsStagger('run');}catch(_){}
   ceMaybeShowPostScanFlowCoach();
   ceMaybeCoachOnResult();
   UX.resultRendered=true;
