@@ -3154,6 +3154,15 @@
       animation:ceStaggerItem .26s cubic-bezier(.25,1,.45,1) forwards;
       animation-delay:calc(var(--stagger-order,0) * 12ms + 24ms);
     }
+    body.result-open.cam-tiktok #results [data-stagger]{
+      opacity:1!important;
+      transform:none!important;
+      animation:none!important;
+    }
+    body.result-open.cam-tiktok #ce-panel-outcome .ce-outcome-verdict{
+      opacity:1!important;
+      transform:none!important;
+    }
     #walk-pane[data-live-ui]{isolation:isolate}
     #walk-text,#cam-step-txt{opacity:1!important;visibility:visible!important}
     #cam-step-txt{will-change:opacity,transform}
@@ -9692,6 +9701,17 @@ function renderCamStepOverlay(stepText){
 function openResultScreen(){
   var results=document.getElementById('results');
   if(!results)return;
+  var ld=document.getElementById('ld');
+  if(ld){
+    try{ceStopRitualDots();}catch(e){}
+    ld.style.display='none';
+    ld.setAttribute('aria-hidden','true');
+  }
+  var st1=document.getElementById('stage1-confirm');
+  if(st1){st1.classList.remove('show');st1.textContent='';}
+  var ldSubOpen=document.getElementById('ld-sub');
+  if(ldSubOpen){ldSubOpen.textContent='';ldSubOpen.style.display='none';}
+  try{document.body.classList.remove('ce-ai-thinking');}catch(e){}
   results.style.display='block';
   /* Same chrome as showScreen keepIds: shell can remain display:none after a prior showScreen pass */
   ['ce-results-shell','ce-compact-safety','ce-low-conf-banner','ce-paywall-teaser','ce-rental-debug-badge','r-confidence','ec','rst-btn'].forEach(function(id){
@@ -9713,6 +9733,8 @@ function openResultScreen(){
   ceSyncResultsFlowTrack();
   exitCaptureFocus();
   updatePaywallStrip(ceCurrentScreen||'ce-screen-diagnosis',ceCurrentPaywallState());
+  if(typeof ceSyncOutcomePanelVeReady==='function')ceSyncOutcomePanelVeReady();
+  if(typeof ceRefreshScanSoftHint==='function')ceRefreshScanSoftHint();
 }
 
 function closeResultScreen(){
