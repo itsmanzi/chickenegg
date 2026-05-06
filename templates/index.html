@@ -10598,10 +10598,14 @@ function renderResults(r){
   ceClearPlainResultFallback();
   ceEnforceSingleUxStructure('ce-screen-diagnosis');
   ceResetResultPanels();
+  lastScanResult=r;
+  /* Kill loaders / camera chrome ASAP — before heavier DOM fills (stagger + tab sync follow). */
+  document.body.classList.remove('fixing','ce-step-active');
+  document.body.classList.remove('mailbox-open');
+  openResultScreen();
   ceSetFlowStage('diagnose',{screen:'ce-screen-diagnosis'});
   ceNavPush('diagnose');
   ceSetFrameState('Diagnosis','Standard');
-  lastScanResult=r;
   ceStepsStartedTracked=false;
   ceStepsCompletedTracked=false;
   ceTransitionSeenTracked=false;
@@ -10660,9 +10664,6 @@ function renderResults(r){
     resultsEl.classList.remove('fix-mode');
     if(document.body.classList.contains('cam-tiktok'))ceSetResultsStagger('ready');
   }
-  document.body.classList.remove('fixing','ce-step-active');
-  document.body.classList.remove('mailbox-open');
-  openResultScreen();
   var shellEl=document.getElementById('ce-results-shell');
   if(shellEl)shellEl.classList.remove('ce-results-shell--locked');
   var ecSheet=document.getElementById('ec');if(ecSheet) ecSheet.classList.remove('ec-sheet');
@@ -10680,7 +10681,12 @@ function renderResults(r){
       document.getElementById('no-repair-cta').textContent=T[LANG].noRepairCta;
     }
   }
-  ceSetStepsCardVisible(repairNeeded && !landlordBlocksDiy);
+  var stepsVisible=repairNeeded && !landlordBlocksDiy;
+  ceSetStepsCardVisible(stepsVisible);
+  if(document.body.classList.contains('cam-tiktok')&&stepsVisible){
+    try{ceFillTikTokResultsStepList();}catch(_){}
+    try{renderRepairUI();}catch(_){}
+  }
   if(transLine){
     transLine.textContent='';
     transLine.classList.remove('show');
