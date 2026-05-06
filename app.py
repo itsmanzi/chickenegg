@@ -64,6 +64,43 @@ def _load_local_dotenv():
 _load_local_dotenv()
 app = Flask(__name__)
 
+# ── DASHBOARD AUTH ──────────────────────────────────────────────────────────
+# Set DASHBOARD_TOKEN in production. If unset, dashboards stay open (dev only).
+DASHBOARD_TOKEN = os.getenv("DASHBOARD_TOKEN", "").strip()
+
+
+def _check_dashboard_auth():
+    """Return (ok, error_response). Protects /dashboard and /metrics* routes."""
+    if not DASHBOARD_TOKEN:
+        return True, None
+    tok = (
+        request.args.get("token")
+        or request.headers.get("X-Dashboard-Token")
+        or ""
+    ).strip()
+    if not hmac.compare_digest(tok, DASHBOARD_TOKEN):
+        return False, (jsonify({"error": "Unauthorized"}), 401)
+    return True, None
+
+
+# ── /analyze RATE LIMITER (in-memory, per-IP) ───────────────────────────────
+_analyze_rate_lock = threading.Lock()
+_analyze_rate_buckets: dict = {}  # ip -> [timestamps]
+RATE_LIMIT_ANALYZE = int(os.getenv("RATE_LIMIT_ANALYZE", "20"))  # reqs per minute per IP
+MAX_IMAGE_BYTES = int(os.getenv("MAX_IMAGE_BYTES", str(10 * 1024 * 1024)))  # 10 MB default
+
+
+def _analyze_rate_check(ip: str, limit: int = RATE_LIMIT_ANALYZE, window: int = 60) -> bool:
+    now = time.monotonic()
+    with _analyze_rate_lock:
+        bucket = [t for t in _analyze_rate_buckets.get(ip, []) if now - t < window]
+        if len(bucket) >= limit:
+            _analyze_rate_buckets[ip] = bucket
+            return False
+        bucket.append(now)
+        _analyze_rate_buckets[ip] = bucket
+        return True
+
 
 def _dbg_d78afc(hypothesis_id, location, message, data=None):
     """Session d78afc: append one NDJSON line to workspace log. No secrets/PII."""
@@ -1385,11 +1422,9 @@ def _model_fallback_chain(preferred_model):
         preferred_model,
         env_override,
         DEFAULT_VISION_MODEL,
+        "claude-haiku-4-5-20251001",
         "claude-sonnet-4-5-20250929",
-        "claude-3-5-haiku-20241022",
         "claude-3-5-sonnet-20241022",
-        "claude-3-5-haiku-latest",
-        "claude-3-haiku-20240307",
     ]
     seen = set()
     out = []
@@ -1573,14 +1608,35 @@ def _do_analyze(req_files=None, req_form=None):
     files = req_files if req_files is not None else request.files
     form = req_form if req_form is not None else request.form
 
+    # Per-IP rate limit (keeps API costs bounded against abuse / runaway loops)
+    try:
+        _ip_for_rate = _request_ip()
+    except Exception:
+        _ip_for_rate = ""
+    if _ip_for_rate and not _analyze_rate_check(_ip_for_rate):
+        return None, ("Rate limit exceeded — please wait a moment", 429)
+
     image_file = files.get("image")
     image_2 = files.get("image_2")
     image_3 = files.get("image_3")
-    question = form.get("question", "")
+    question = (form.get("question", "") or "")[:500]  # cap question length
     language = form.get("language", "nl")
 
     if not image_file:
         return None, ("No image provided", 400)
+
+    # Reject oversized images before paying the API tokens
+    for _img in (image_file, image_2, image_3):
+        if _img is None:
+            continue
+        try:
+            _img.stream.seek(0, 2)
+            _sz = _img.stream.tell()
+            _img.stream.seek(0)
+        except Exception:
+            _sz = 0
+        if _sz > MAX_IMAGE_BYTES:
+            return None, ("Image too large — maximum 10 MB per photo", 413)
 
     view_defs = [
         (image_file, "VIEW 1 — CONTEXT: Whole object + a bit of surroundings (orientation)."),
@@ -1770,7 +1826,7 @@ Hard rules:
     result, hard_stop_triggers = _apply_server_hard_stop(result, question, language)
     if hard_stop_triggers:
         result["hard_stop_triggered"] = True
-        result["hard_stop_reasons"] = hard_stop_triggers[:6]
+        result["hard_stop_reasons"] = []  # don't expose internal filter keywords
     else:
         result["hard_stop_triggered"] = False
         result["hard_stop_reasons"] = []
@@ -1891,7 +1947,7 @@ Rules:
         result["quick_action"] = safe_result.get("task") or result["quick_action"]
         result["retake_guidance"] = safe_result.get("hazard_note") or result["retake_guidance"]
         result["hard_stop_triggered"] = True
-        result["hard_stop_reasons"] = triggers[:6]
+        result["hard_stop_reasons"] = []  # don't expose internal filter keywords
     else:
         result["hard_stop_triggered"] = False
         result["hard_stop_reasons"] = []
@@ -2058,17 +2114,14 @@ def live_label():
         prompt = f"""You are a fast live camera labeler for a home-fix app.
 {lang_instruction}
 
-Goal: Return one SHORT object label for what is most central in frame, plus confidence.
-
-Allowed labels (English): chair, tv, window, laptop, bottle, cable, pan, airfryer, sink, faucet, door, hinge, shelf, pipe, radiator, object
-Allowed labels (Dutch): stoel, tv, raam, laptop, fles, kabel, pan, airfryer, wasbak, kraan, deur, scharnier, plank, pijp, radiator, object
+Goal: Return one SHORT generic object label (1–3 words) for what is most central in frame, plus confidence.
 
 Rules:
 - Return ONLY valid JSON with this exact shape:
   {{"label":"<label>","confidence":"high|medium|low"}}
-- No brands.
-- Prefer generic if uncertain.
-- Never output materials/conditions.
+- Use the user's language (Dutch if instructed, otherwise English).
+- Generic nouns only — no brands, no materials, no conditions.
+- Prefer a broader generic label if uncertain (e.g. "object").
 """
 
         response = _messages_create_with_fallback(
@@ -2493,6 +2546,9 @@ def submit_outcome():
 @app.route("/metrics")
 def metrics():
     """Simple KPI snapshot for product and investor updates."""
+    ok, err = _check_dashboard_auth()
+    if not ok:
+        return err
     try:
         try:
             days = int(request.args.get("days", 7))
@@ -2586,12 +2642,18 @@ def metrics():
 @app.route("/dashboard")
 def dashboard():
     """Founder-facing live dashboard UI."""
+    ok, err = _check_dashboard_auth()
+    if not ok:
+        return err
     return render_template("dashboard.html")
 
 
 @app.route("/metrics-detail")
 def metrics_detail():
     """Detailed KPI payload for live dashboard and funding updates."""
+    ok, err = _check_dashboard_auth()
+    if not ok:
+        return err
     try:
         try:
             days = int(request.args.get("days", 14))

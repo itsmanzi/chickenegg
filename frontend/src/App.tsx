@@ -70,6 +70,7 @@ export default function App() {
   const [stepIdx, setStepIdx] = useState(0);
   const [signupEmail, setSignupEmail] = useState("");
   const [signupErr, setSignupErr] = useState("");
+  const [signupSubmitting, setSignupSubmitting] = useState(false);
 
   const startCamera = useCallback(async () => {
     setCamError(null);
@@ -87,7 +88,7 @@ export default function App() {
         await v.play();
       }
     } catch {
-      setCamError("Camera off — tap Memories to pick a photo.");
+      setCamError("Camera blocked — allow camera access in your browser, or tap Memories to pick a photo.");
     }
   }, [camFacing]);
 
@@ -215,12 +216,14 @@ export default function App() {
   };
 
   const submitSignup = async () => {
+    if (signupSubmitting) return;
     const em = signupEmail.trim();
-    if (!em || !em.includes("@")) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) {
       setSignupErr("Enter a valid email");
       return;
     }
     setSignupErr("");
+    setSignupSubmitting(true);
     try {
       await fetch(collectEmailUrl, {
         method: "POST",
@@ -235,6 +238,7 @@ export default function App() {
     } catch {
       /* ignore */
     }
+    setSignupSubmitting(false);
     setPhase("wrap");
   };
 
@@ -379,8 +383,8 @@ export default function App() {
               }}
             />
             {signupErr ? <p className="mvp-signup-err">{signupErr}</p> : null}
-            <button type="button" className="btn-snap-primary mvp-signup-submit" onClick={() => void submitSignup()}>
-              Count me in
+            <button type="button" className="btn-snap-primary mvp-signup-submit" onClick={() => void submitSignup()} disabled={signupSubmitting}>
+              {signupSubmitting ? "Saving…" : "Count me in"}
             </button>
             <button type="button" className="mvp-signup-skip" onClick={skipSignup}>
               Not now
