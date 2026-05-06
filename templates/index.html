@@ -11069,6 +11069,12 @@ function renderResults(r){
   ceUpdateLowConfBanner(r);
   ceMaybeCoachOnResult();
   UX.resultRendered=true;
+  /* Scroll results panel to top AFTER content is in the DOM */
+  requestAnimationFrame(function(){
+    var _rp=document.getElementById('results');
+    if(_rp){_rp.scrollTop=0;}
+    window.scrollTo(0,0);
+  });
   return hz;
   }finally{
     UX.resultRendering=false;
@@ -11478,7 +11484,7 @@ if(btnNlFab)btnNlFab.addEventListener('click',function(){setLang('nl');hideLangT
     }
   }catch(_){}
 })();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=20').catch(function(){});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=21').catch(function(){});
 
 function ceLoadTrustStrip(){
   var el=document.getElementById('ce-trust-strip');
