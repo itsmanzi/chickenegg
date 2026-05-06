@@ -3502,6 +3502,16 @@
     .step-item.col-rose{background:linear-gradient(135deg,rgba(192,72,100,.12),rgba(172,52,80,.05));border-left-color:#A03850}
     .step-item.col-slate{background:linear-gradient(135deg,rgba(110,98,86,.14),rgba(72,64,56,.06));border-left-color:#6E6254}
     .step-item.done{opacity:.7}
+    /* Soft paywall: blur steps 3+ for free users after first scan */
+    .step-item.step-locked .s-txt{filter:blur(5px);user-select:none;pointer-events:none;color:var(--t2)}
+    .step-item.step-locked{position:relative;cursor:default}
+    .step-item.step-locked::after{content:"🔒";position:absolute;right:12px;top:9px;font-size:14px;opacity:.65}
+    .paywall-inline{margin:14px 4px 6px;padding:14px 16px;border-radius:14px;background:linear-gradient(145deg,rgba(232,168,71,.18),rgba(180,130,50,.08));border:1px solid rgba(232,168,71,.42);text-align:center}
+    .paywall-inline .pw-headline{font-weight:700;font-size:15px;color:var(--t1);margin:0 0 4px}
+    .paywall-inline .pw-sub{font-size:12.5px;color:var(--t2);margin:0 0 10px}
+    .paywall-inline .pw-cta{display:inline-block;background:linear-gradient(145deg,#E8A847,#B88328);color:#1a1308;font-weight:700;font-size:14px;padding:10px 20px;border-radius:10px;text-decoration:none;box-shadow:0 4px 12px rgba(180,130,50,.32)}
+    .paywall-inline .pw-cta:active{transform:scale(.97)}
+    .paywall-inline .pw-trust{font-size:11px;color:var(--t3);margin:8px 0 0;letter-spacing:.02em}
     .step-item.active-step{box-shadow:0 0 0 1px rgba(232,168,71,.45),0 8px 18px rgba(0,0,0,.28)}
     .step-item.done .s-txt{text-decoration:line-through;color:var(--t3)}
     .step-top{display:flex;gap:11px;align-items:flex-start}
@@ -8896,18 +8906,43 @@ function ceFillTikTokResultsStepList(){
   if(!curSteps||!curSteps.length){sl.innerHTML='';return;}
   var idx=Math.max(0,Math.min((UX&&UX.repair&&typeof UX.repair.stepIdx==='number')?UX.repair.stepIdx:0,curSteps.length-1));
   var colors=['col-teal','col-purple','col-amber','col-rose','col-slate'];
+  // Soft-paywall: after 1st free scan, blur steps 3+ for non-pro users
+  var _isPro=!!(window.ceServerScanState&&ceServerScanState.pro);
+  var _scansUsed=parseInt((window.ceServerScanState&&ceServerScanState.scans_used)||0,10)||0;
+  var _showLock=!_isPro && _scansUsed>=2 && curSteps.length>2;
   sl.innerHTML='';
   curSteps.forEach(function(stepText,i){
     var li=document.createElement('li');
     li.className='step-item '+colors[i%colors.length];
     if(i<idx)li.classList.add('done');
     if(i===idx)li.classList.add('active-step');
+    if(_showLock && i>=2)li.classList.add('step-locked');
     var st=document.createElement('div');
     st.className='s-txt';
     st.textContent=String(stepText||'').trim()||((LANG==='nl')?('Stap '+(i+1)):('Step '+(i+1)));
     li.appendChild(st);
     sl.appendChild(li);
   });
+  // Paywall CTA inserted after the list
+  var oldCta=document.getElementById('paywall-inline-cta');
+  if(oldCta&&oldCta.parentNode)oldCta.parentNode.removeChild(oldCta);
+  if(_showLock){
+    var hidden=Math.max(0,curSteps.length-2);
+    var ctaWrap=document.createElement('div');
+    ctaWrap.id='paywall-inline-cta';
+    ctaWrap.className='paywall-inline';
+    var headline=(LANG==='nl')?('Nog '+hidden+' stappen om je klus te voltooien'):('Unlock the remaining '+hidden+' steps');
+    var sub=(LANG==='nl')?'€4,99/week of €39,99/jaar — bespaar 84%':'€4.99/week or €39.99/year — save 84%';
+    var btn=(LANG==='nl')?'Ontgrendel volledige reparatie':'Unlock full repair';
+    var trust=(LANG==='nl')?'🔒 AVG-veilig · Stop wanneer je wilt · iDEAL':'🔒 GDPR-safe · Cancel anytime';
+    var checkout=(window.CE_CHECKOUT_URLS&&CE_CHECKOUT_URLS.year)||'/pricing';
+    ctaWrap.innerHTML='<p class="pw-headline">'+headline+'</p><p class="pw-sub">'+sub+'</p><a class="pw-cta" href="'+checkout+'" target="_blank" rel="noopener" data-pw-cta="1">'+btn+'</a><p class="pw-trust">'+trust+'</p>';
+    if(sl.parentNode)sl.parentNode.insertBefore(ctaWrap,sl.nextSibling);
+    try{
+      var _ctaBtn=ctaWrap.querySelector('[data-pw-cta]');
+      if(_ctaBtn)_ctaBtn.addEventListener('click',function(){try{if(typeof ceTrackEvent==='function')ceTrackEvent('paywall_inline_cta_clicked',{scans_used:_scansUsed});}catch(_){}});
+    }catch(_){}
+  }
 }
 function renderRepairUI(){
   var pane=document.getElementById('walk-pane');
@@ -11444,7 +11479,7 @@ function ceLoadTrustStrip(){
 
 // ── SCAN COUNTER & PAYWALL ──────────────────────────────
 /* ── PAYWALL (Gumroad) ── */
-var CE_FREE_LIMIT = 5;
+var CE_FREE_LIMIT = 3;
 var CE_CHECKOUT_URLS = {
   year: 'https://pepesoup1000.gumroad.com/l/pnpfz',
   month: 'https://pepesoup1000.gumroad.com/l/tarwyk'
