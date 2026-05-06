@@ -19,6 +19,16 @@ python app.py
 
 Open `http://localhost:5000/pin` and enter your PIN.
 
+## Deploy to Vercel
+
+This repo routes all traffic through `api/index.py` (`vercel.json`). Set in the Vercel project **Settings → Environment Variables**:
+
+- `ANTHROPIC_API_KEY` — required for scans
+- `SECRET_KEY` — Flask sessions / signing
+- `APP_PIN` — optional; PIN gate if you use `pin.html`
+
+Redeploy after changing env vars. Production URL is your `*.vercel.app` domain.
+
 ## Deploy to Render
 
 This repo includes:

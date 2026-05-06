@@ -3455,6 +3455,24 @@
     body.result-open.cam-tiktok #ce-ve-acc-out{display:none!important}
     body.result-open.cam-tiktok .ce-outcome-actions{display:none!important}
     body.result-open.cam-tiktok #ce-results-sticky{display:none!important}
+    /* One continuous scroll: no tab row; show summary + details, hide empty steps panel (walk UI is in #ce-screen-repair) */
+    body.result-open.cam-tiktok .ce-results-shell .ce-tab-bar{display:none!important}
+    body.result-open.cam-tiktok #ce-panel-outcome,
+    body.result-open.cam-tiktok #ce-panel-details{
+      display:block!important;
+      visibility:visible!important;
+      opacity:1!important;
+    }
+    body.result-open.cam-tiktok #ce-panel-outcome.off,
+    body.result-open.cam-tiktok #ce-panel-details.off{display:block!important;}
+    body.result-open.cam-tiktok #ce-panel-outcome[hidden],
+    body.result-open.cam-tiktok #ce-panel-details[hidden]{display:block!important;}
+    body.result-open.cam-tiktok #ce-panel-steps{display:none!important;}
+    body.result-open.cam-tiktok #ce-screen-repair{
+      margin-top:10px;
+      padding-top:12px;
+      border-top:1px solid rgba(240,237,232,.1);
+    }
     body.result-open.cam-tiktok #results{
       transform:translateY(0) scale(1);
     }
@@ -4412,8 +4430,6 @@
     <button type="button" class="pw-close" id="pw-close">Close</button>
   </div>
 </div>
-
-<div id="fm-cta" aria-live="polite"><span id="fm-free-note"></span></div>
 
 <div id="xp-flash"></div>
 <div id="ach-toast"><div class="ach-ico" id="ach-ico">🏆</div><div><div class="ach-txt" id="ach-txt">Achievement!</div><div class="ach-sub" id="ach-sub">+XP</div></div></div>
