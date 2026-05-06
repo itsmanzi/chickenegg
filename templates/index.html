@@ -2510,7 +2510,94 @@
     body.cam-tiktok #xray-overlay{
       border-radius:0!important;
     }
-    body.cam-tiktok .prompt-wrap{display:none!important}
+    body.cam-tiktok .prompt-wrap{
+      display:block!important;
+      position:fixed!important;
+      left:0!important;
+      right:0!important;
+      bottom:calc(136px + env(safe-area-inset-bottom))!important;
+      z-index:310!important;
+      margin:0!important;
+      padding:0 16px!important;
+      pointer-events:auto!important;
+    }
+    body.cam-tiktok .prompt-box{
+      background:rgba(22,23,28,.9)!important;
+      border:1px solid rgba(255,255,255,.12)!important;
+      color:rgba(248,248,250,.96)!important;
+      border-radius:14px!important;
+      padding:12px 44px 12px 14px!important;
+      font-size:15px!important;
+      min-height:48px!important;
+      box-shadow:0 4px 18px rgba(0,0,0,.32)!important;
+    }
+    body.cam-tiktok .prompt-box::placeholder{color:rgba(255,255,255,.36)!important}
+    body.cam-tiktok .mic-btn{right:24px!important}
+    body.cam-tiktok.ce-ai-thinking:not(.result-open) .prompt-wrap{
+      opacity:.4!important;
+      pointer-events:none!important;
+    }
+    body.cam-tiktok:not(.result-open) #lang-fab{
+      top:max(50px,calc(env(safe-area-inset-top) + 46px))!important;
+      padding:2px!important;
+      gap:2px!important;
+      z-index:420!important;
+    }
+    body.cam-tiktok:not(.result-open) .lang-fab-btn{
+      min-width:38px!important;
+      min-height:28px!important;
+      font-size:11px!important;
+    }
+    body.cam-tiktok:not(.result-open) .live-build-flag{display:none!important}
+    body.cam-tiktok:not(.result-open) .ce-scan-soft-hint.show{
+      position:fixed!important;
+      left:12px!important;
+      right:12px!important;
+      bottom:calc(252px + env(safe-area-inset-bottom))!important;
+      z-index:308!important;
+      margin:0!important;
+      max-height:16vh!important;
+      overflow:auto!important;
+      -webkit-overflow-scrolling:touch!important;
+      font-size:11px!important;
+      padding:8px 10px!important;
+    }
+    body.cam-tiktok:not(.result-open) .perception-layer{
+      bottom:calc(278px + env(safe-area-inset-bottom))!important;
+      z-index:236!important;
+    }
+    body.cam-tiktok:not(.result-open) .perception-hint{
+      font-size:13px!important;
+      padding:8px 12px!important;
+      box-shadow:0 8px 22px rgba(0,0,0,.2)!important;
+    }
+    body.cam-tiktok:not(.result-open) .capture-job{
+      bottom:calc(200px + env(safe-area-inset-bottom))!important;
+      width:min(92vw,400px)!important;
+      padding:10px 16px!important;
+      border-radius:999px!important;
+      text-align:center!important;
+      background:rgba(12,14,18,.78)!important;
+      border:1px solid rgba(255,255,255,.1)!important;
+      box-shadow:0 4px 22px rgba(0,0,0,.38)!important;
+    }
+    body.cam-tiktok:not(.result-open) .capture-job-ttl{
+      font-size:14px!important;
+      font-weight:800!important;
+      letter-spacing:.03em!important;
+      max-width:none!important;
+    }
+    body.cam-tiktok:not(.result-open) .capture-job-sub{
+      font-size:12px!important;
+      margin-top:3px!important;
+      line-height:1.35!important;
+    }
+    body.cam-tiktok #ld .ce-ritual-caption{
+      font-size:18px!important;
+      font-weight:800!important;
+      color:rgba(255,252,246,.98)!important;
+    }
+    body.cam-tiktok #ld .ld-sub{font-size:14px!important;opacity:.88!important}
     body.cam-tiktok #hazard-banner{
       position:fixed;
       top:calc(56px + env(safe-area-inset-top));
@@ -2547,8 +2634,8 @@
       border-radius:0!important;
       opacity:1!important;
       background:
-        linear-gradient(180deg,rgba(0,0,0,.22) 0%,rgba(0,0,0,.06) 24%,transparent 40%),
-        linear-gradient(0deg,rgba(0,0,0,.34) 0%,rgba(0,0,0,.08) 28%,transparent 46%)!important;
+        linear-gradient(180deg,rgba(0,0,0,.11) 0%,rgba(0,0,0,.03) 26%,transparent 42%),
+        linear-gradient(0deg,rgba(0,0,0,.18) 0%,rgba(0,0,0,.04) 32%,transparent 48%)!important;
     }
     body.cam-tiktok.ce-cam-idle:not(.result-open):not(.ce-ai-thinking) .cam-container::before{
       animation:ceVignetteDrift 2.6s ease-in-out infinite;
@@ -2617,16 +2704,36 @@
       left:0;right:0;
       top:env(safe-area-inset-top,0px);
       height:48px;
-      padding:0 12px;
+      padding:0 10px 0 10px;
       align-items:center;
       justify-content:space-between;
-      gap:12px;
+      gap:8px;
       z-index:400;
-      background:linear-gradient(180deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,0) 100%);
+      background:linear-gradient(180deg,rgba(0,0,0,.42) 0%,rgba(0,0,0,0) 100%);
       pointer-events:none;
     }
     body.cam-tiktok.ce-capture-focus:not(.result-open) .cam-top-bar{display:flex!important}
     body.result-open .cam-top-bar{display:none!important}
+    .cam-top-mid{
+      flex:1;
+      min-width:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      pointer-events:none;
+    }
+    .cam-top-brand{
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.2em;
+      text-transform:uppercase;
+      color:rgba(255,248,240,.88);
+      text-shadow:0 1px 10px rgba(0,0,0,.55);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:48vw;
+    }
     .cam-top-btn{
       min-width:44px;min-height:44px;
       border-radius:12px;
@@ -2652,8 +2759,8 @@
     }
     .cam-dock > *{pointer-events:auto}
     body.cam-tiktok .cam-dock{
-      padding:6px 0 calc(10px + env(safe-area-inset-bottom));
-      background:linear-gradient(180deg,transparent 0%,transparent 55%,rgba(0,0,0,.22) 100%);
+      padding:10px 0 calc(16px + env(safe-area-inset-bottom))!important;
+      background:linear-gradient(180deg,transparent 0%,transparent 35%,rgba(0,0,0,.42) 82%,rgba(0,0,0,.66) 100%)!important;
     }
     .dock-side{display:none!important}
     .dock-mid{
@@ -2856,6 +2963,12 @@
       text-shadow:0 2px 14px rgba(0,0,0,.7);
       margin-top:4px;
     }
+    body.cam-tiktok:not(.result-open):not(.ce-ai-thinking) .cam-dock .slbl{
+      font-size:12px!important;
+      letter-spacing:.42em!important;
+      color:rgba(255,240,210,.98)!important;
+      text-shadow:0 2px 18px rgba(0,0,0,.78)!important;
+    }
     body.cam-tiktok .scan-egg.vibrating{
       animation:eggClickPulse .26s cubic-bezier(.34,1.45,.64,1) forwards, snapEggBounce .32s cubic-bezier(.34,1.55,.64,1)!important;
     }
@@ -2966,10 +3079,10 @@
     body.cam-tiktok #ld .stage1-confirm{display:block!important}
     body.cam-tiktok #ld .ld-eta{color:var(--t2)!important}
     body.cam-tiktok.ce-ai-thinking #ld{
-      background:rgba(0,0,0,.42)!important;
+      background:rgba(10,12,18,.5)!important;
       backdrop-filter:none!important;
       -webkit-backdrop-filter:none!important;
-      animation:ceVeilBreathe 2.4s ease-in-out infinite;
+      animation:none!important;
     }
     @keyframes ceVeilBreathe{
       0%,100%{background:rgba(0,0,0,.38)!important}
@@ -4426,7 +4539,7 @@
 
   <nav class="cam-top-bar" id="cam-top-bar" aria-label="Camera">
     <button type="button" class="cam-top-btn" id="cam-back-btn" aria-label="Back">←</button>
-    <span class="cam-top-spacer"></span>
+    <div class="cam-top-mid"><span class="cam-top-brand">chickenegg</span></div>
     <button type="button" class="cam-top-btn" id="cam-help-btn" aria-label="Help">?</button>
   </nav>
   <div class="ce-scan-soft-hint" id="ce-scan-soft-hint" aria-live="polite"><div id="ce-scan-soft-hint-txt"></div><button type="button" id="ce-scan-soft-hint-btn"></button></div>
@@ -11233,7 +11346,7 @@ if(btnNlFab)btnNlFab.addEventListener('click',function(){setLang('nl');hideLangT
     }
   }catch(_){}
 })();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=16').catch(function(){});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=17').catch(function(){});
 
 function ceLoadTrustStrip(){
   var el=document.getElementById('ce-trust-strip');
