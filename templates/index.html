@@ -9709,17 +9709,25 @@ function renderCamStepOverlay(stepText){
 function openResultScreen(){
   var results=document.getElementById('results');
   if(!results)return;
+  document.body.classList.add('result-open');
   var ld=document.getElementById('ld');
   if(ld){
     try{ceStopRitualDots();}catch(e){}
     ld.style.display='none';
     ld.setAttribute('aria-hidden','true');
+    ld.classList.remove('active');
   }
   var st1=document.getElementById('stage1-confirm');
-  if(st1){st1.classList.remove('show');st1.textContent='';}
+  if(st1){st1.classList.remove('show');st1.textContent='';st1.setAttribute('aria-hidden','true');}
   var ldSubOpen=document.getElementById('ld-sub');
-  if(ldSubOpen){ldSubOpen.textContent='';ldSubOpen.style.display='none';}
+  if(ldSubOpen){
+    ldSubOpen.classList.remove('show');
+    ldSubOpen.textContent='';
+    ldSubOpen.style.display='none';
+  }
   try{document.body.classList.remove('ce-ai-thinking');}catch(e){}
+  ['idle','detecting','locked','scanning','error'].forEach(function(x){document.body.classList.remove('ce-cam-'+x)});
+  if(typeof camOverlay!=='undefined'&&camOverlay){try{camOverlay.classList.remove('scanning');}catch(e){}}
   results.style.display='block';
   /* Same chrome as showScreen keepIds: shell can remain display:none after a prior showScreen pass */
   ['ce-results-shell','ce-compact-safety','ce-low-conf-banner','ce-paywall-teaser','ce-rental-debug-badge','r-confidence','ec','rst-btn'].forEach(function(id){
@@ -9729,9 +9737,7 @@ function openResultScreen(){
   // #region agent log
   try{ceDbgSend({sessionId:'e91706',hypothesisId:'H9',location:'index.html:openResultScreen',message:'chrome reset',data:{},timestamp:Date.now(),runId:'pre'});}catch(_){}
   // #endregion
-  ['idle','detecting','locked','scanning','error'].forEach(function(x){document.body.classList.remove('ce-cam-'+x)});
   document.body.classList.remove('mailbox-open');
-  document.body.classList.add('result-open');
   if(document.body.classList.contains('ce-stable-results')){
     ceSetResultsStagger('run');
   }
