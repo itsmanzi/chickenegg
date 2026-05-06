@@ -3336,128 +3336,113 @@
     .ce-ve-why.off,.ce-ve-stop.off{display:none}
     .ce-ve-why-lbl,.ce-ve-stop-lbl{display:block;font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--t2);margin-bottom:6px}
     .ce-ve-why-txt{margin:0;font-size:13px;color:var(--t2);line-height:1.45;max-width:38ch}
-    body.result-open.cam-tiktok #r-steps{display:none!important}
-    body.result-open.cam-tiktok #steps-card{
-      background:linear-gradient(155deg,rgba(76,175,125,.08),#242424)!important;
-      border-color:rgba(76,175,125,.22)!important;
-    }
-    body.result-open.cam-tiktok .walk-pane{
+    /* TikTok / full-camera: classic sheet — full numbered list + camera peek (not one-step walk pane) */
+    body.result-open.cam-tiktok #r-steps{
       display:block!important;
-      margin-top:8px;
-      border:1px solid var(--border);
-      border-radius:16px;
-      background:linear-gradient(180deg,#2A2A2A,#242424);
-      padding:10px 10px 8px;
+      list-style:decimal;
+      list-style-position:outside;
+      padding-left:1.35em;
+      margin:10px 0 6px;
+      counter-reset:none;
     }
-    body.result-open.cam-tiktok .walk-meta{
-      color:var(--gold);
-      font-size:11px;
-      font-weight:900;
-      letter-spacing:.06em;
-      margin-bottom:6px;
-    }
-    body.result-open.cam-tiktok .walk-text{
-      background:linear-gradient(165deg,#333,#2E2E2E)!important;
-      border:1px solid var(--border)!important;
-      box-shadow:0 6px 20px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.04)!important;
-      color:var(--t1)!important;
-      font-size:16px!important;
-      font-weight:800!important;
-      line-height:1.45!important;
-      text-shadow:none!important;
-      min-height:0;
-      padding:11px 12px!important;
-      border-radius:14px!important;
-    }
-    body.result-open.cam-tiktok .walk-text::before{
-      background:linear-gradient(180deg,var(--gold),#6BCB98)!important;
-    }
-    body.result-open.cam-tiktok .walk-tools{
-      border:1px solid rgba(232,168,71,.28);
-      border-radius:12px;
-      padding:7px 8px;
-      background:rgba(232,168,71,.06);
-      margin-top:8px;
-    }
-    body.result-open.cam-tiktok .walk-tools-ttl{
-      color:var(--gold);
-      margin-bottom:4px;
-      font-size:9px!important;
-    }
-    body.result-open.cam-tiktok .walk-tool{
-      border-bottom:1px solid rgba(251,191,36,.25);
-      padding-bottom:6px;
-      margin-bottom:6px;
-      flex-direction:column;
-      align-items:stretch!important;
-      gap:5px!important;
-    }
-    body.result-open.cam-tiktok .walk-tool:last-child{
-      border-bottom:none;
-      margin-bottom:0;
-      padding-bottom:0;
-    }
-    body.result-open.cam-tiktok .walk-tool-nm{
-      color:var(--t1)!important;
-      font-size:12px!important;
-      line-height:1.3!important;
-    }
-    body.result-open.cam-tiktok .walk-nav{
-      margin-top:8px;
-      display:flex;
-      gap:8px;
-    }
-    body.result-open.cam-tiktok .walk-nav-btn{
-      flex:1;
-      min-height:44px;
-      border-radius:12px;
-      border:1px solid var(--border);
-      background:linear-gradient(180deg,#363636,#2A2A2A);
+    body.result-open.cam-tiktok #r-steps .step-item{
+      display:list-item;
+      margin:0 0 12px;
+      padding:0 0 0 2px;
+      border:none;
+      background:transparent;
+      border-left:none;
+      cursor:default;
       color:var(--t1);
-      font-size:14px;
+    }
+    body.result-open.cam-tiktok #r-steps .step-item.active-step{
+      box-shadow:none;
+      opacity:1;
+    }
+    body.result-open.cam-tiktok #r-steps .step-item .s-txt{
+      color:rgba(240,236,228,.95)!important;
+      font-size:15px!important;
+      font-weight:650;
+      line-height:1.55!important;
+      padding-top:0;
+    }
+    body.result-open.cam-tiktok #steps-card{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      background:transparent!important;
+      border:none!important;
+      box-shadow:none!important;
+    }
+    body.result-open.cam-tiktok #r-steps{order:1}
+    body.result-open.cam-tiktok .walk-pane{
+      order:2;
+      display:flex!important;
+      flex-direction:column;
+      gap:10px;
+      margin-top:0!important;
+      padding:0!important;
+      border:none!important;
+      background:transparent!important;
+    }
+    body.result-open.cam-tiktok .walk-pane .repair-focus,
+    body.result-open.cam-tiktok .walk-pane .walk-meta,
+    body.result-open.cam-tiktok .walk-pane .walk-progress,
+    body.result-open.cam-tiktok .walk-pane .walk-text,
+    body.result-open.cam-tiktok .walk-pane .walk-tip,
+    body.result-open.cam-tiktok .walk-pane .walk-look,
+    body.result-open.cam-tiktok .walk-pane .walk-tools{display:none!important}
+    body.result-open.cam-tiktok .walk-nav{display:flex!important;margin-top:0!important}
+    body.result-open.cam-tiktok .walk-check-btn{display:block!important;width:100%}
+    body.result-open.cam-tiktok .walk-finish-btn.walk-finish--on{display:block!important;width:100%}
+    body.result-open.cam-tiktok .walk-nav-btn{
+      min-height:48px;
+      border-radius:14px;
+      font-size:15px;
       font-weight:900;
-      box-shadow:0 4px 12px rgba(0,0,0,.2);
     }
-    body.result-open.cam-tiktok .walk-nav-btn:disabled{
-      opacity:.45;
-      cursor:not-allowed;
+    body.result-open.cam-tiktok #walk-next:not(:disabled){
+      background:linear-gradient(135deg,var(--green),#34C759)!important;
+      color:#07130C!important;
+      border:none!important;
+      box-shadow:0 8px 22px rgba(52,199,89,.32);
     }
-    body.result-open.cam-tiktok .walk-tool-shops{
-      gap:6px;
-      justify-content:flex-start;
-      width:100%;
-      margin-top:0;
-      flex-wrap:wrap;
+    body.result-open.cam-tiktok #walk-back{
+      background:transparent!important;
+      border:1.5px solid rgba(255,255,255,.35)!important;
+      color:var(--t1)!important;
     }
-    body.result-open.cam-tiktok .walk-tool-shops .shop-lnk.shop-lnk--mini{
-      min-height:28px!important;
-      border-radius:9px;
-      padding:4px 8px!important;
-      display:inline-flex!important;
-      align-items:center;
-      justify-content:center;
-      width:auto!important;height:auto!important;
-      border:1px solid var(--border);
-      box-shadow:0 2px 6px rgba(0,0,0,.2)!important;
-    }
-    body.result-open.cam-tiktok .walk-tool-shops .shop-lnk.shop-lnk--mini .shop-lnk-txt{font-size:9px!important}
-    body.result-open.cam-tiktok .walk-check-btn{
+    body.result-open.cam-tiktok .steps-top,
+    body.result-open.cam-tiktok .prog-track,
+    body.result-open.cam-tiktok .repair-transition-line,
+    body.result-open.cam-tiktok #tts-bar,
+    body.result-open.cam-tiktok .ce-walk-progress-hdr{display:none!important}
+    body.result-open.cam-tiktok #results-flow-track{display:none!important}
+    body.result-open.cam-tiktok .ce-tab-bar{display:none!important}
+    body.result-open.cam-tiktok #ce-panel-outcome,
+    body.result-open.cam-tiktok #ce-panel-steps{
       display:block!important;
-      margin-top:8px!important;
-      padding:9px 10px!important;
-      font-size:11px!important;
-      min-height:0!important;
-      border-radius:11px!important;
     }
-    body.result-open.cam-tiktok .walk-finish-btn{display:none!important}
-    body.result-open.cam-tiktok .walk-finish-btn.walk-finish--on{
+    body.result-open.cam-tiktok #ce-panel-outcome.off,
+    body.result-open.cam-tiktok #ce-panel-steps.off{
       display:block!important;
-      margin-top:8px!important;
-      padding:9px 10px!important;
-      font-size:12px!important;
     }
-
-    /* Fix Mode: remove scrolling by hiding non-step sections */
+    body.result-open.cam-tiktok #ce-panel-details{display:none!important}
+    body.result-open.cam-tiktok #ce-visual-engine{display:none!important}
+    body.result-open.cam-tiktok .ce-outcome-hero{display:none!important}
+    body.result-open.cam-tiktok #ce-ve-severity-out{display:none!important}
+    body.result-open.cam-tiktok .ce-outcome-chips{display:none!important}
+    body.result-open.cam-tiktok #ce-ve-acc-out{display:none!important}
+    body.result-open.cam-tiktok .ce-outcome-actions{display:none!important}
+    body.result-open.cam-tiktok #ce-results-sticky{display:none!important}
+    body.result-open.cam-tiktok #results{
+      transform:translateY(0) scale(1);
+    }
+    body.result-open.cam-tiktok #lang-fab{
+      top:max(8px,env(safe-area-inset-top))!important;
+      right:max(10px,env(safe-area-inset-right))!important;
+      z-index:460!important;
+    }
     #results.fix-mode .r-hdr,
     #results.fix-mode #tts-bar,
     #results.fix-mode #tip-safety,
@@ -8871,6 +8856,26 @@ function ceForceWalkthroughPaint(reason){
 function ceHasChecklistUi(){
   return !!(document.getElementById('prc-ok')||document.getElementById('prc-skip')||document.getElementById('ce-checklist-confirm'));
 }
+/** Full numbered step list in bottom sheet (cam-tiktok) — matches classic mobile layout */
+function ceFillTikTokResultsStepList(){
+  var sl=document.getElementById('r-steps');
+  if(!sl||!document.body.classList.contains('cam-tiktok'))return;
+  if(!curSteps||!curSteps.length){sl.innerHTML='';return;}
+  var idx=Math.max(0,Math.min((UX&&UX.repair&&typeof UX.repair.stepIdx==='number')?UX.repair.stepIdx:0,curSteps.length-1));
+  var colors=['col-teal','col-purple','col-amber','col-rose','col-slate'];
+  sl.innerHTML='';
+  curSteps.forEach(function(stepText,i){
+    var li=document.createElement('li');
+    li.className='step-item '+colors[i%colors.length];
+    if(i<idx)li.classList.add('done');
+    if(i===idx)li.classList.add('active-step');
+    var st=document.createElement('div');
+    st.className='s-txt';
+    st.textContent=String(stepText||'').trim()||((LANG==='nl')?('Stap '+(i+1)):('Step '+(i+1)));
+    li.appendChild(st);
+    sl.appendChild(li);
+  });
+}
 function renderRepairUI(){
   var pane=document.getElementById('walk-pane');
   var checklist=document.getElementById('pre-repair-checklist');
@@ -8976,6 +8981,9 @@ function renderRepairUI(){
   ceSetFrameState('Repair-Walkthrough','Step-detail');
   ceUpdateStepProgressBar();
   ceRenderStickyTools();
+  if(document.body.classList.contains('cam-tiktok')&&document.body.classList.contains('result-open')){
+    try{ceFillTikTokResultsStepList();}catch(_){}
+  }
 }
 function updateWalkCardUI(){
   renderRepairUI();
@@ -10849,10 +10857,10 @@ function renderResults(r){
     setResultVisibility({showSteps:repairNeeded && !landlordBlocksDiy,showTools:repairNeeded,showTts:repairNeeded && !landlordBlocksDiy,showFold:true,showAd:true});
   }
 
-  /* One-step-at-a-time flow on results page */
+  /* One-step-at-a-time flow on results page (full list kept for cam-tiktok sheet) */
   if(allowSteps){
     var sl=document.getElementById('r-steps');
-    if(sl){
+    if(sl && !document.body.classList.contains('cam-tiktok')){
       sl.innerHTML='';
     }
     if(transLine){
