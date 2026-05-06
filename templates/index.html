@@ -406,7 +406,6 @@
     body.ce-capture-focus .hero-sec,
     body.ce-capture-focus .prompt-wrap,
     body.ce-capture-focus .dyn-island,
-    body.ce-capture-focus #lang-fab,
     body.ce-capture-focus .build-flag{display:none!important}
     body.ce-capture-focus .wrap{max-width:none!important;padding:0!important}
     body.ce-capture-focus .ce-landing{min-height:100dvh!important}
@@ -6876,7 +6875,7 @@ scanEgg.addEventListener('click',function(){
     if(typeof clickSnd==='function') clickSnd();
     hap(12);
     if(typeof exitCaptureFocus==='function') exitCaptureFocus();
-    document.body.classList.remove('cam-tiktok','ce-cam-idle','ce-cam-detecting','ce-cam-locked','ce-cam-scanning','ce-cam-error');
+    document.body.classList.remove('ce-cam-idle','ce-cam-detecting','ce-cam-locked','ce-cam-scanning','ce-cam-error');
   });
   if(help) help.addEventListener('click',function(){
     if(typeof clickSnd==='function') clickSnd();
