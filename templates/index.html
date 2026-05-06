@@ -3163,6 +3163,12 @@
       opacity:1!important;
       transform:none!important;
     }
+    body.result-open #ld,
+    body.result-open #ld *{
+      visibility:hidden!important;
+      pointer-events:none!important;
+    }
+    body.result-open #ld{opacity:0!important;display:none!important}
     #walk-pane[data-live-ui]{isolation:isolate}
     #walk-text,#cam-step-txt{opacity:1!important;visibility:visible!important}
     #cam-step-txt{will-change:opacity,transform}
@@ -7720,7 +7726,9 @@ async function startLiveScanSession(viewsTarget, initialBlob){
   }finally{
     if(LI){clearInterval(LI);LI=null;}
     liveActive=false;
-    ceSetUiOwner('camera');
+    /* Successful scan: keep UI owner on results so syncCamPerceptionFromHardware() does not
+       overwrite capture-job / camera phase copy during the ~120ms gap before renderResults(). */
+    ceSetUiOwner(liveScanSucceeded?'results':'camera');
     liveResolveNext=null;
     liveAwaitNext=false;
     if(lp){lp.classList.remove('show');lp.classList.remove('mini')}
@@ -7743,8 +7751,8 @@ async function startLiveScanSession(viewsTarget, initialBlob){
       else if(document.body.classList.contains('ce-can-scan'))
         setCameraUiState('locked',{copy:true});
     }
-    if(camReady) schedulePerception();
-    syncCamPerceptionFromHardware();
+    if(camReady&&!liveScanSucceeded) schedulePerception();
+    if(!liveScanSucceeded) syncCamPerceptionFromHardware();
   }
 }
 
