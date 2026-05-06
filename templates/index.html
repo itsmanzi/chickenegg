@@ -3163,12 +3163,17 @@
       opacity:1!important;
       transform:none!important;
     }
-    body.result-open #ld,
-    body.result-open #ld *{
+    /* In results, loader can NEVER win specificity wars */
+    body.result-open #ld{
+      display:none!important;
+      opacity:0!important;
       visibility:hidden!important;
       pointer-events:none!important;
     }
-    body.result-open #ld{opacity:0!important;display:none!important}
+    body.result-open .stage1-confirm,
+    body.result-open .ce-ai-thinking{
+      display:none!important;
+    }
     #walk-pane[data-live-ui]{isolation:isolate}
     #walk-text,#cam-step-txt{opacity:1!important;visibility:visible!important}
     #cam-step-txt{will-change:opacity,transform}
