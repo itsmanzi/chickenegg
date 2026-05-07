@@ -57,7 +57,14 @@
       "Bash(cygpath -w /tmp/ce_frames/f001.png)",
       "Bash(gh pr *)",
       "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" pr list --head ship/premium-camera-pass --json number,url,state)",
-      "Bash('/c/Program Files/GitHub CLI/gh.exe' pr create --title 'fix\\(results\\): hide dev badge, empty tools card, '\\\\''other'\\\\'' debug pill' --body ' *)"
+      "Bash('/c/Program Files/GitHub CLI/gh.exe' pr create --title 'fix\\(results\\): hide dev badge, empty tools card, '\\\\''other'\\\\'' debug pill' --body ' *)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "WebSearch",
+      "WebFetch(domain:uxpilot.ai)",
+      "WebFetch(domain:blog.tubikstudio.com)",
+      "WebFetch(domain:www.designstudiouiux.com)",
+      "WebFetch(domain:screensdesign.com)",
+      "WebFetch(domain:midrocket.com)"
     ]
   }
 }
