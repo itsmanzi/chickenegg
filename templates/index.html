@@ -4924,6 +4924,113 @@
       border:1px solid var(--ce3-border)!important;
     }
 
+    /* ── v3 HOTFIX: screenshot audit fixes ────────────────── */
+
+    /* FIX 1 — SCAN BUTTON: golden sphere beaten by higher-specificity rule at line 2972.
+       Match exact specificity to win: body.cam-tiktok .snap-shutter-ring .scan-egg */
+    body.cam-tiktok .snap-shutter-ring .scan-egg{
+      background:#FFFFFF!important;
+      border:none!important;
+      box-shadow:0 2px 20px rgba(0,0,0,0.55)!important;
+      min-width:80px!important;min-height:80px!important;
+      width:80px!important;height:80px!important;
+    }
+    body.cam-tiktok .snap-shutter-ring .scan-egg svg{
+      display:none!important;
+      visibility:hidden!important;
+    }
+    /* When AI is thinking — egg turns cyan */
+    body.cam-tiktok.ce-ai-thinking .snap-shutter-ring .scan-egg{
+      background:var(--ce3-accent)!important;
+      opacity:1!important;
+      transform:none!important;
+    }
+    /* Outer ring — clean white border only */
+    body.cam-tiktok .snap-shutter-ring{
+      background:transparent!important;
+      border:3px solid rgba(255,255,255,0.88)!important;
+      box-shadow:none!important;
+    }
+    body.cam-tiktok.ce-can-scan .snap-shutter-ring,
+    body.cam-tiktok.ce-cam-locked .snap-shutter-ring{
+      border-color:var(--ce3-accent)!important;
+      box-shadow:0 0 0 4px var(--ce3-accent-dim)!important;
+    }
+
+    /* FIX 2 — SCAN LABEL: hide "SCAN" / "SNELLE CHECK KLAAR" text below button */
+    .slbl{display:none!important}
+
+    /* FIX 3 — RESULTS VOID: stagger items stay opacity:0 if animation races.
+       Force visible the moment results-open is active */
+    body.result-open .ce-stagger-item{
+      opacity:1!important;
+      transform:none!important;
+    }
+    body.result-open #decision-card{
+      display:block!important;
+    }
+
+    /* FIX 4 — "SCAN RESULTATEN" header: hide the debug-looking title */
+    #results-title{display:none!important}
+
+    /* FIX 5 — STEP STRIKETHROUGH: step 1 looks broken with line-through */
+    #r-steps .step-item .s-txt{text-decoration:none!important}
+    /* Also fix completed step text — use colour, not strikethrough */
+    #r-steps .step-item.ce-step-done .s-txt{
+      text-decoration:none!important;
+      color:rgba(74,222,128,0.8)!important;
+    }
+
+    /* FIX 6 — VIEWFINDER CORNERS: still yellow, force white */
+    .scan-corner{
+      border-color:rgba(255,255,255,0.9)!important;
+      width:20px!important;height:20px!important;
+      border-width:2px!important;
+    }
+
+    /* BONUS — Decision card content: make everything visible regardless */
+    #decision-card{color:var(--ce3-t1)!important}
+    #decision-title{color:var(--ce3-t1)!important;font-size:34px!important;font-weight:900!important;letter-spacing:-0.03em!important;line-height:1.15!important}
+    #decision-wow{color:var(--ce3-t2)!important}
+    .ce-fact-v{color:var(--ce3-t1)!important}
+    .ce-fact-k{color:var(--ce3-t3)!important}
+
+    /* BONUS — PRO strip: better copy visibility */
+    .ce-paywall-teaser{
+      background:linear-gradient(135deg,rgba(34,211,238,0.12),rgba(15,16,25,0.95))!important;
+    }
+
+    /* BONUS — Results back button: cleaner */
+    .results-back{
+      background:var(--ce3-surface)!important;
+      border:1px solid var(--ce3-border)!important;
+      color:var(--ce3-t1)!important;
+      border-radius:12px!important;
+      font-size:14px!important;
+      font-weight:700!important;
+      padding:8px 14px!important;
+    }
+
+    /* BONUS — Camera egg span noise: hide all decorative children */
+    .scan-egg .egg-ripple,.scan-egg .egg-swirl,
+    .scan-egg .egg-grain,.scan-egg .egg-glint,
+    .scan-egg .egg-eye,.scan-egg .egg-laser{
+      display:none!important;
+    }
+
+    /* BONUS — Scan beam: cyan instead of gold */
+    .cam-overlay.scanning .scan-beam{
+      background:linear-gradient(180deg,transparent 0%,rgba(34,211,238,0.35) 50%,transparent 100%)!important;
+    }
+
+    /* BONUS — Fix the step numbered circle — was ::before but body class needed */
+    body.result-open.cam-tiktok #r-steps .step-item::before{
+      content:counter(ce-step)!important;
+      background:var(--ce3-accent-dim)!important;
+      border-color:var(--ce3-accent-glow)!important;
+      color:var(--ce3-accent)!important;
+    }
+
   </style>
 </head>
 <body class="cam-tiktok" data-ce-deploy-sha="{{ ce_deploy_sha|default('', true) }}">
@@ -12127,7 +12234,7 @@ if(btnNlFab)btnNlFab.addEventListener('click',function(){setLang('nl');hideLangT
     }
   }catch(_){}
 })();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=24').catch(function(){});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=25').catch(function(){});
 
 function ceLoadTrustStrip(){
   var el=document.getElementById('ce-trust-strip');
