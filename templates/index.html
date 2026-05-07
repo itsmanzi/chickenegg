@@ -5505,6 +5505,202 @@
       font-size:13px!important;font-weight:900!important;flex-shrink:0!important;
     }
 
+    /* ══════════════════════════════════════════════════════════
+       v3.3 — REAL PREMIUM REDESIGN
+       Hero verdict card · iOS stat grid · refined hierarchy
+       ══════════════════════════════════════════════════════════ */
+
+    /* ── HERO DECISION CARD: glass surface with radial accent ── */
+    body.result-open.cam-tiktok #decision-card{
+      background:
+        radial-gradient(120% 80% at 50% 0%, rgba(34,211,238,0.08) 0%, rgba(34,211,238,0) 60%),
+        linear-gradient(180deg, rgba(22,28,36,0.92), rgba(13,17,23,0.94))!important;
+      border:1px solid rgba(255,255,255,0.08)!important;
+      border-radius:24px!important;
+      padding:20px 18px 18px!important;
+      margin:8px 0 10px!important;
+      box-shadow:
+        0 1px 0 rgba(255,255,255,0.06) inset,
+        0 16px 40px rgba(0,0,0,0.55)!important;
+      position:relative!important;
+    }
+    /* Inner top highlight band */
+    body.result-open.cam-tiktok #decision-card::before{
+      content:''!important;display:block!important;
+      position:absolute!important;top:0!important;left:18px!important;right:18px!important;height:1px!important;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)!important;
+      pointer-events:none!important;
+    }
+
+    /* Hero title — bigger, tighter */
+    body.result-open.cam-tiktok #decision-title{
+      font-size:32px!important;font-weight:900!important;
+      letter-spacing:-0.035em!important;line-height:1.1!important;
+      color:#FFFFFF!important;margin:0 0 6px!important;
+      background:linear-gradient(180deg,#FFFFFF 0%,#D6DBE2 100%)!important;
+      -webkit-background-clip:text!important;background-clip:text!important;
+      -webkit-text-fill-color:transparent!important;
+    }
+
+    /* Confidence pill - cleaner */
+    body.result-open.cam-tiktok #decision-confidence-pill{
+      font-size:10px!important;font-weight:900!important;letter-spacing:0.1em!important;
+      text-transform:uppercase!important;
+      padding:5px 11px!important;border-radius:999px!important;
+      background:rgba(34,211,238,0.12)!important;
+      border:1px solid rgba(34,211,238,0.25)!important;
+      color:#22D3EE!important;
+      margin:0 0 16px!important;display:inline-flex!important;align-items:center!important;gap:6px!important;
+    }
+    body.result-open.cam-tiktok #decision-confidence-pill::before{
+      content:''!important;display:block!important;
+      width:6px!important;height:6px!important;border-radius:50%!important;
+      background:currentColor!important;
+      box-shadow:0 0 8px currentColor!important;
+    }
+
+    /* ── PREMIUM STAT GRID: 3 chips with icons ── */
+    body.result-open.cam-tiktok #decision-facts{
+      display:grid!important;
+      grid-template-columns:repeat(3,minmax(0,1fr))!important;
+      gap:10px!important;margin:0 0 4px!important;
+    }
+    body.result-open.cam-tiktok .ce-fact{
+      display:flex!important;flex-direction:column!important;align-items:flex-start!important;
+      padding:14px 12px!important;
+      background:linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))!important;
+      border:1px solid rgba(255,255,255,0.08)!important;
+      border-radius:16px!important;
+      box-shadow:
+        0 1px 0 rgba(255,255,255,0.05) inset,
+        0 4px 14px rgba(0,0,0,0.25)!important;
+      position:relative!important;
+      min-height:84px!important;
+      flex:none!important;
+      overflow:hidden!important;
+    }
+    /* Icon dot above label */
+    body.result-open.cam-tiktok .ce-fact::before{
+      content:''!important;display:block!important;
+      width:24px!important;height:24px!important;
+      border-radius:8px!important;
+      background:rgba(34,211,238,0.12)!important;
+      border:1px solid rgba(34,211,238,0.22)!important;
+      margin-bottom:8px!important;
+      background-repeat:no-repeat!important;background-position:center!important;background-size:14px!important;
+    }
+    body.result-open.cam-tiktok #decision-facts .ce-fact:nth-child(1)::before{
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2322D3EE' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>")!important;
+    }
+    body.result-open.cam-tiktok #decision-facts .ce-fact:nth-child(2)::before{
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2322D3EE' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><line x1='12' y1='1' x2='12' y2='23'/><path d='M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6'/></svg>")!important;
+    }
+    body.result-open.cam-tiktok #decision-facts .ce-fact:nth-child(3)::before{
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2322D3EE' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M9 12l2 2 4-4'/><circle cx='12' cy='12' r='10'/></svg>")!important;
+    }
+    body.result-open.cam-tiktok .ce-fact-k{
+      font-size:9px!important;font-weight:800!important;letter-spacing:0.12em!important;
+      text-transform:uppercase!important;
+      color:rgba(248,250,252,0.42)!important;
+      display:block!important;margin:0 0 4px!important;
+      white-space:normal!important;overflow:visible!important;text-overflow:clip!important;
+    }
+    body.result-open.cam-tiktok .ce-fact-v{
+      font-size:15px!important;font-weight:900!important;
+      color:#FFFFFF!important;letter-spacing:-0.01em!important;
+      display:block!important;line-height:1.2!important;
+      white-space:normal!important;overflow:visible!important;text-overflow:clip!important;
+      word-wrap:break-word!important;
+    }
+    /* Empty-state hint when value is "-" */
+    body.result-open.cam-tiktok .ce-fact-v:empty::before,
+    body.result-open.cam-tiktok .ce-fact-v:where([data-empty]):before{
+      content:'—'!important;color:rgba(248,250,252,0.3)!important;
+    }
+
+    /* ── BACK BAR: minimal flush ── */
+    body.result-open.cam-tiktok #results-screen-bar{
+      padding:8px 0 4px!important;
+    }
+    body.result-open.cam-tiktok .results-back{
+      background:rgba(255,255,255,0.06)!important;
+      border:1px solid rgba(255,255,255,0.1)!important;
+      border-radius:14px!important;
+      padding:9px 14px!important;
+      font-size:13px!important;font-weight:700!important;
+      color:#F8FAFC!important;
+      backdrop-filter:blur(10px)!important;
+    }
+
+    /* ── STEPS PANEL TITLE LIKE iOS ── */
+    body.result-open.cam-tiktok #steps-card .steps-top .card-lbl{
+      font-size:11px!important;font-weight:900!important;
+      letter-spacing:0.14em!important;text-transform:uppercase!important;
+      color:rgba(248,250,252,0.45)!important;margin:0!important;
+    }
+    body.result-open.cam-tiktok #steps-card .steps-ct{
+      font-size:11px!important;font-weight:800!important;
+      color:rgba(248,250,252,0.5)!important;
+      padding:4px 10px!important;border-radius:999px!important;
+      background:rgba(255,255,255,0.06)!important;
+      border:1px solid rgba(255,255,255,0.08)!important;
+    }
+    body.result-open.cam-tiktok .steps-top{
+      display:flex!important;align-items:center!important;justify-content:space-between!important;
+      margin-bottom:12px!important;
+    }
+
+    /* Progress bar - ios style */
+    body.result-open.cam-tiktok #steps-card .prog-track{
+      height:4px!important;
+      background:rgba(255,255,255,0.06)!important;border-radius:999px!important;
+      overflow:hidden!important;margin-bottom:14px!important;
+    }
+    body.result-open.cam-tiktok #steps-card .prog-fill{
+      background:linear-gradient(90deg,#22D3EE,#0EA5E9)!important;
+      box-shadow:0 0 10px rgba(34,211,238,0.6)!important;border-radius:999px!important;
+    }
+
+    /* ── TOOLS CARD: section header consistent with steps ── */
+    body.result-open.cam-tiktok #tools-card .card-lbl{
+      font-size:11px!important;font-weight:900!important;
+      letter-spacing:0.14em!important;text-transform:uppercase!important;
+      color:rgba(248,250,252,0.45)!important;margin:0 0 12px!important;
+    }
+
+    /* ── PRO TEASER: refined gradient ── */
+    body.result-open.cam-tiktok #ce-paywall-teaser{
+      background:
+        radial-gradient(120% 80% at 50% 0%, rgba(34,211,238,0.18) 0%, rgba(34,211,238,0) 70%),
+        linear-gradient(180deg,rgba(22,28,36,0.96),rgba(13,17,23,0.98))!important;
+      border:1px solid rgba(34,211,238,0.28)!important;
+      border-radius:20px!important;padding:18px!important;
+      box-shadow:0 12px 36px rgba(0,0,0,0.5)!important;
+    }
+
+    /* ── HAZARD HERO: cleaner band ── */
+    body.result-open.cam-tiktok #hazard-hero{
+      border-radius:14px!important;padding:10px 14px!important;
+      font-size:13px!important;font-weight:800!important;
+      margin:6px 0 0!important;border-width:1px!important;
+    }
+
+    /* ── BACKGROUND of the results panel, premium dark ── */
+    body.result-open.cam-tiktok #results{
+      background:
+        radial-gradient(70% 40% at 50% 0%, rgba(34,211,238,0.05) 0%, rgba(34,211,238,0) 60%),
+        linear-gradient(180deg,#0A0F16 0%, #06090E 100%)!important;
+    }
+
+    /* Force decision card and its children visible (kill stagger) */
+    body.result-open #decision-facts,
+    body.result-open #decision-facts > *,
+    body.result-open #decision-facts span,
+    body.result-open #decision-confidence-pill,
+    body.result-open #decision-title{
+      opacity:1!important;transform:none!important;visibility:visible!important;
+    }
+
   </style>
 </head>
 <body class="cam-tiktok" data-ce-deploy-sha="{{ ce_deploy_sha|default('', true) }}">
@@ -11770,13 +11966,13 @@ function renderDecisionCard(r,opts){
   if(factCostK)factCostK.textContent=(LANG==='nl')?'Budget':'Budget';
   if(factConfK)factConfK.textContent=(LANG==='nl')?'Zekerheid':'Confidence';
   if(factTimeV){
-    var etaValue=String(r.time_needed||'').trim();
-    factTimeV.textContent=etaValue||(LANG==='nl'?'Onbekend':'Unknown');
+    var etaValue=String(r.time_needed||r.estimated_time||r.duration||'').trim();
+    factTimeV.textContent=etaValue||(LANG==='nl'?'± 30 min':'~30 min');
   }
   if(factCostV){
-    var estCost=String(r.estimated_cost||'').trim();
+    var estCost=String(r.estimated_cost||r.cost||r.budget||'').trim();
     var looksEuro=/€|eur|euro/i.test(estCost);
-    factCostV.textContent=estCost?(looksEuro?estCost:('€'+estCost)):(LANG==='nl'?'Nog niet bekend':'TBD');
+    factCostV.textContent=estCost?(looksEuro?estCost:('€'+estCost)):(LANG==='nl'?'€ 5–25':'€ 5–25');
   }
   if(factConfV){
     var confLabel;
@@ -12725,7 +12921,7 @@ if(btnNlFab)btnNlFab.addEventListener('click',function(){setLang('nl');hideLangT
     }
   }catch(_){}
 })();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=27').catch(function(){});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=28').catch(function(){});
 
 function ceLoadTrustStrip(){
   var el=document.getElementById('ce-trust-strip');
