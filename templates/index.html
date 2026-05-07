@@ -12123,7 +12123,7 @@ if(btnNlFab)btnNlFab.addEventListener('click',function(){setLang('nl');hideLangT
     }
   }catch(_){}
 })();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=22').catch(function(){});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=23').catch(function(){});
 
 function ceLoadTrustStrip(){
   var el=document.getElementById('ce-trust-strip');
@@ -12317,7 +12317,11 @@ async function ceVerifyProEmail(email){
   var em=String(email||'').trim().toLowerCase();
   if(!em||em.indexOf('@')===-1)return {success:false,pro:false,error:'invalid email'};
   try{
-    var resp=await fetch('/api/license/verify?email='+encodeURIComponent(em));
+    var fp='';
+    try{if(typeof ceEnsureDeviceFingerprint==='function')fp=await ceEnsureDeviceFingerprint();}catch(_){}
+    var url='/api/license/verify?email='+encodeURIComponent(em);
+    if(fp)url+='&device_fingerprint='+encodeURIComponent(fp);
+    var resp=await fetch(url);
     var data=await resp.json();
     if(data&&data.success&&data.pro){
       ceSetProActive(em,data.plan||'');
