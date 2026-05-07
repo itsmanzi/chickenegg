@@ -232,6 +232,7 @@ def _is_scan_meter_exempt(fingerprint):
     - CE_DISABLE_SCAN_LIMIT=1  → bypass meter for every client on this deployment
     - CE_DEV_FINGERPRINT_ALLOWLIST=fp1,fp2  → bypass for matching device_fingerprint values
     - CE_DEV_BYPASS_SECRET=<long random>  → bypass when request header X-CE-Dev-Bypass matches
+    - CE_PRO_EMAILS=email1,email2  → bypass when request body contains a matching pro_email field
     """
     if _truthy_env("CE_DISABLE_SCAN_LIMIT"):
         return True
@@ -244,6 +245,28 @@ def _is_scan_meter_exempt(fingerprint):
     secret = (os.environ.get("CE_DEV_BYPASS_SECRET") or "").strip()
     if secret and request.headers.get("X-CE-Dev-Bypass", "").strip() == secret:
         return True
+    # CE_PRO_EMAILS: check if the request carries a pro_email that matches
+    pro_emails_env = (os.environ.get("CE_PRO_EMAILS") or "").strip().lower()
+    if pro_emails_env:
+        allowed_emails = {e.strip() for e in pro_emails_env.split(",") if e.strip()}
+        # Check JSON body, form, and query args
+        candidate = None
+        try:
+            if request.is_json:
+                body = request.get_json(silent=True) or {}
+                candidate = (body.get("pro_email") or body.get("email") or "").strip().lower()
+            if not candidate:
+                candidate = (
+                    request.form.get("pro_email")
+                    or request.form.get("email")
+                    or request.args.get("pro_email")
+                    or request.args.get("email")
+                    or ""
+                ).strip().lower()
+        except Exception:
+            pass
+        if candidate and candidate in allowed_emails:
+            return True
     return False
 
 
@@ -2449,21 +2472,96 @@ def api_license_verify():
         email = _clean_small_str(request.args.get("email"), 200).lower()
         if not email:
             return jsonify({"success": False, "error": "email is required"}), 400
+
+        # Check CE_PRO_EMAILS env var (comma-separated owner/tester bypass)
+        pro_env = (os.environ.get("CE_PRO_EMAILS") or "").strip().lower()
+        env_pro = email in {e.strip() for e in pro_env.split(",") if e.strip()} if pro_env else False
+
+        is_pro = env_pro
+        plan = "lifetime" if env_pro else ""
+
+        if not is_pro:
+            with _db() as conn:
+                row = conn.execute(
+                    """
+                    SELECT product
+                    FROM pro_licenses
+                    WHERE email = ? AND active = 1
+                    ORDER BY created_at DESC
+                    LIMIT 1
+                    """,
+                    (email,),
+                ).fetchone()
+            if row:
+                is_pro = True
+                plan = _plan_from_product(row["product"])
+
+        if is_pro:
+            # Upgrade the calling device's scan session to pro so the scan gate passes
+            # GET request — fingerprint comes via query param
+            fp = _clean_small_str(
+                request.args.get("device_fingerprint")
+                or request.args.get("fingerprint")
+                or request.args.get("session_id"),
+                160,
+            ) or _extract_scan_fingerprint()
+            if fp:
+                now = _utc_now_iso()
+                with _db() as conn:
+                    exists = conn.execute(
+                        "SELECT 1 FROM scan_sessions WHERE fingerprint = ?", (fp,)
+                    ).fetchone()
+                    if exists:
+                        conn.execute(
+                            "UPDATE scan_sessions SET pro = 1, updated_at = ? WHERE fingerprint = ?",
+                            (now, fp),
+                        )
+                    else:
+                        conn.execute(
+                            """INSERT INTO scan_sessions (fingerprint, scans_used, pro, created_at, updated_at)
+                               VALUES (?, 0, 1, ?, ?)""",
+                            (fp, now, now),
+                        )
+                    conn.commit()
+            return jsonify({"success": True, "pro": True, "plan": plan})
+
+        return jsonify({"success": True, "pro": False, "plan": ""})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/admin/grant-pro", methods=["POST"])
+def admin_grant_pro():
+    """Manually grant pro to an email (owner use only, requires DASHBOARD_TOKEN)."""
+    try:
+        token = (os.getenv("DASHBOARD_TOKEN") or "").strip()
+        if not token:
+            return jsonify({"success": False, "error": "not_configured"}), 403
+        auth = (request.headers.get("Authorization") or "").strip()
+        provided = auth.replace("Bearer ", "").replace("bearer ", "").strip()
+        if not hmac.compare_digest(provided, token):
+            return jsonify({"success": False, "error": "unauthorized"}), 401
+        data = request.get_json(silent=True) or {}
+        email = _clean_small_str(data.get("email"), 200).lower()
+        if not email:
+            return jsonify({"success": False, "error": "email required"}), 400
+        now = _utc_now_iso()
         with _db() as conn:
-            row = conn.execute(
-                """
-                SELECT product
-                FROM pro_licenses
-                WHERE email = ? AND active = 1
-                ORDER BY created_at DESC
-                LIMIT 1
-                """,
-                (email,),
+            existing = conn.execute(
+                "SELECT id FROM pro_licenses WHERE email = ? AND sale_id = 'manual'", (email,)
             ).fetchone()
-        if not row:
-            return jsonify({"success": True, "pro": False, "plan": ""})
-        plan = _plan_from_product(row["product"])
-        return jsonify({"success": True, "pro": True, "plan": plan})
+            if existing:
+                conn.execute(
+                    "UPDATE pro_licenses SET active = 1, product = 'manual', updated_at = ? WHERE email = ? AND sale_id = 'manual'",
+                    (now, email),
+                )
+            else:
+                conn.execute(
+                    "INSERT INTO pro_licenses (email, product, sale_id, created_at, active) VALUES (?, 'manual', 'manual', ?, 1)",
+                    (email, now),
+                )
+            conn.commit()
+        return jsonify({"success": True, "email": email, "plan": "lifetime"})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 

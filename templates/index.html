@@ -2560,7 +2560,7 @@
       min-height:28px!important;
       font-size:11px!important;
     }
-    body.cam-tiktok:not(.result-open) .live-build-flag{display:none!important}
+    .live-build-flag{display:none!important}
     body.cam-tiktok:not(.result-open) .ce-scan-soft-hint.show{
       position:fixed!important;
       left:12px!important;
@@ -4285,6 +4285,645 @@
     body.ce-stable-results #ce-screen-diagnosis #steps-card{
       display:block!important;
     }
+
+    /* ═══════════════════════════════════════════════════════
+       CHICKENEGG v3 PREMIUM — 2026 WINNING DESIGN
+       Research: Cal AI + PictureThis + Dribbble top shots
+       ─────────────────────────────────────────────────────
+       Color system: Void Dark + Electric Cyan accent
+       Typography: Massive display text, tight spacing
+       Camera: Minimal — just lens + one clean button
+       Results: Instantly readable, HUGE object name
+    ═══════════════════════════════════════════════════════ */
+
+    /* ── 1. GLOBAL TOKENS ── */
+    :root{
+      --ce3-bg:#060A0F;
+      --ce3-surface:rgba(255,255,255,0.04);
+      --ce3-surface-2:rgba(255,255,255,0.07);
+      --ce3-surface-3:rgba(255,255,255,0.11);
+      --ce3-border:rgba(255,255,255,0.08);
+      --ce3-border-strong:rgba(255,255,255,0.14);
+      --ce3-accent:#22D3EE;
+      --ce3-accent-dim:rgba(34,211,238,0.15);
+      --ce3-accent-glow:rgba(34,211,238,0.25);
+      --ce3-green:#4ADE80;
+      --ce3-green-dim:rgba(74,222,128,0.12);
+      --ce3-amber:#FBBF24;
+      --ce3-red:#F87171;
+      --ce3-t1:#F8FAFC;
+      --ce3-t2:rgba(248,250,252,0.6);
+      --ce3-t3:rgba(248,250,252,0.38);
+      --ce3-r:20px;
+      --ce3-r-lg:24px;
+      --ce3-r-xl:28px;
+    }
+
+    /* ── 2. BODY + BACKGROUND ── */
+    body{
+      background:#060A0F!important;
+      font-family:"Inter",-apple-system,BlinkMacSystemFont,sans-serif!important;
+    }
+    body::before{
+      background:radial-gradient(ellipse 70% 40% at 50% 0%, rgba(34,211,238,0.06) 0%, transparent 60%)!important;
+    }
+    body::after{
+      background-image:radial-gradient(rgba(255,255,255,0.025) 0.5px, transparent 0.5px)!important;
+      background-size:24px 24px!important;
+      opacity:0.5!important;
+    }
+
+    /* ── 3. HEADER ── */
+    .hdr{
+      background:rgba(6,10,15,0.88)!important;
+      backdrop-filter:blur(24px)!important;
+      -webkit-backdrop-filter:blur(24px)!important;
+      border-bottom:0.5px solid var(--ce3-border)!important;
+      box-shadow:none!important;
+    }
+    .brand-word, .lname .w, .lname .g{
+      color:var(--ce3-accent)!important;
+      text-shadow:0 0 20px var(--ce3-accent-glow)!important;
+    }
+    .lmark{
+      filter:drop-shadow(0 0 8px var(--ce3-accent-glow))!important;
+    }
+
+    /* ── 4. CAMERA SCREEN — CLEAN MINIMAL ── */
+    body.cam-tiktok .cam-container{
+      background:#000!important;
+    }
+    /* Prompt pill — smaller, tighter */
+    body.cam-tiktok .prompt-wrap{
+      background:rgba(6,10,15,0.72)!important;
+      border:1px solid var(--ce3-border)!important;
+      backdrop-filter:blur(20px)!important;
+      -webkit-backdrop-filter:blur(20px)!important;
+      border-radius:16px!important;
+    }
+    body.cam-tiktok .prompt-box{
+      color:var(--ce3-t1)!important;
+      font-size:14px!important;
+      font-weight:500!important;
+    }
+    body.cam-tiktok .prompt-box::placeholder{
+      color:var(--ce3-t3)!important;
+    }
+
+    /* ── 4b. SCAN BUTTON — Apple Camera Style ── */
+    /* Replace egg/gold-ring with clean white circle */
+    .snap-shutter-ring{
+      background:transparent!important;
+      box-shadow:none!important;
+      animation:none!important;
+      border:3px solid rgba(255,255,255,0.85)!important;
+      padding:5px!important;
+      width:78px!important;
+      height:78px!important;
+      border-radius:50%!important;
+      display:flex!important;
+      align-items:center!important;
+      justify-content:center!important;
+      transition:transform 0.12s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.15s ease!important;
+    }
+    .snap-shutter-ring::before,.snap-shutter-ring::after{display:none!important}
+    @keyframes shutterPulse{
+      0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,0.3)}
+      50%{box-shadow:0 0 0 6px rgba(255,255,255,0.08)}
+    }
+    .snap-shutter-ring{animation:shutterPulse 2.4s ease-in-out infinite!important;}
+    body.cam-tiktok .snap-shutter-ring{
+      border-color:rgba(255,255,255,0.9)!important;
+      box-shadow:none!important;
+    }
+    body.cam-tiktok.ce-ai-thinking .snap-shutter-ring{
+      border-color:var(--ce3-accent)!important;
+      box-shadow:0 0 0 3px var(--ce3-accent-dim), 0 0 20px var(--ce3-accent-glow)!important;
+      animation:ceAccentPulse 1s ease-in-out infinite!important;
+    }
+    @keyframes ceAccentPulse{
+      0%,100%{box-shadow:0 0 0 3px var(--ce3-accent-dim),0 0 16px var(--ce3-accent-glow)}
+      50%{box-shadow:0 0 0 8px rgba(34,211,238,0.06),0 0 32px var(--ce3-accent-glow)}
+    }
+    body.cam-tiktok.ce-can-scan .snap-shutter-ring,
+    body.cam-tiktok.ce-cam-locked .snap-shutter-ring{
+      border-color:var(--ce3-accent)!important;
+      box-shadow:0 0 0 4px var(--ce3-accent-dim)!important;
+    }
+    /* The egg SVG inside — make it a clean white filled circle */
+    .scan-egg{
+      width:58px!important;
+      height:58px!important;
+      border-radius:50%!important;
+      background:#FFFFFF!important;
+      box-shadow:0 2px 12px rgba(0,0,0,0.4)!important;
+      display:flex!important;
+      align-items:center!important;
+      justify-content:center!important;
+      overflow:hidden!important;
+      transition:transform 0.1s cubic-bezier(0.34,1.56,0.64,1), background 0.2s!important;
+    }
+    .scan-egg svg{display:none!important}
+    .scan-egg::after{
+      content:'';
+      display:block;
+      width:22px;height:22px;
+      border-radius:50%;
+      border:2.5px solid rgba(6,10,15,0.6);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,0.5);
+    }
+    body.cam-tiktok.ce-ai-thinking .scan-egg{
+      background:var(--ce3-accent)!important;
+    }
+    body.cam-tiktok.ce-ai-thinking .scan-egg::after{
+      border-color:rgba(6,10,15,0.5)!important;
+    }
+    .scan-egg:active,.scan-egg.pressed{
+      transform:scale(0.91)!important;
+    }
+    /* Hide egg visual noise elements */
+    .egg-ripple,.egg-swirl,.egg-grain,.egg-glint,.egg-eye,.egg-laser{display:none!important}
+
+    /* ── 4c. SCAN CORNERS — cleaner ── */
+    .scan-corner{
+      border-color:rgba(255,255,255,0.9)!important;
+      border-width:2px!important;
+      width:22px!important;height:22px!important;
+    }
+
+    /* ── 5. RESULTS PANEL ── */
+    body.cam-tiktok #results{
+      background:linear-gradient(180deg,#0D1117 0%,#0A0E14 100%)!important;
+      border-radius:26px 26px 0 0!important;
+      box-shadow:0 -1px 0 var(--ce3-border),0 -24px 80px rgba(0,0,0,0.6)!important;
+      top:12vh!important;
+    }
+    /* Drag handle */
+    body.cam-tiktok #results::before{
+      background:rgba(255,255,255,0.2)!important;
+      width:36px!important;height:4px!important;
+      margin:0 auto 14px!important;
+      border-radius:999px!important;
+    }
+
+    /* ── 5a. DECISION CARD — the main result ── */
+    #decision-card{
+      background:transparent!important;
+      border:none!important;
+      box-shadow:none!important;
+      padding:4px 0 0!important;
+    }
+    /* Confidence pill — small, top-right inline */
+    #decision-confidence-pill{
+      display:inline-flex!important;
+      font-size:11px!important;
+      font-weight:700!important;
+      letter-spacing:0.04em!important;
+      text-transform:uppercase!important;
+      padding:4px 10px!important;
+      border-radius:999px!important;
+      background:var(--ce3-surface-2)!important;
+      border:1px solid var(--ce3-border)!important;
+      color:var(--ce3-t3)!important;
+      margin-bottom:12px!important;
+    }
+    /* OBJECT NAME — massive, the hero element */
+    #decision-title{
+      font-size:38px!important;
+      font-weight:900!important;
+      letter-spacing:-0.03em!important;
+      line-height:1.1!important;
+      color:var(--ce3-t1)!important;
+      margin:0 0 16px!important;
+      text-shadow:none!important;
+    }
+    /* Quick facts chips row */
+    .ce-quick-facts{
+      display:flex!important;
+      gap:8px!important;
+      flex-wrap:wrap!important;
+      margin:0 0 20px!important;
+    }
+    .ce-fact{
+      display:flex!important;
+      flex-direction:column!important;
+      align-items:center!important;
+      padding:10px 16px!important;
+      border-radius:14px!important;
+      background:var(--ce3-surface)!important;
+      border:1px solid var(--ce3-border)!important;
+      flex:1!important;
+      min-width:0!important;
+    }
+    .ce-fact-k{
+      font-size:10px!important;
+      font-weight:700!important;
+      letter-spacing:0.08em!important;
+      text-transform:uppercase!important;
+      color:var(--ce3-t3)!important;
+      margin-bottom:4px!important;
+    }
+    .ce-fact-v{
+      font-size:16px!important;
+      font-weight:800!important;
+      color:var(--ce3-t1)!important;
+      letter-spacing:-0.02em!important;
+    }
+    /* Safety lights → hide, replace with hazard banner below */
+    #decision-safety-lights{display:none!important}
+    /* Wow line */
+    #decision-wow{
+      font-size:15px!important;
+      font-weight:600!important;
+      color:var(--ce3-t2)!important;
+      line-height:1.55!important;
+      margin-bottom:16px!important;
+      padding:14px 16px!important;
+      background:var(--ce3-surface)!important;
+      border:1px solid var(--ce3-border)!important;
+      border-radius:16px!important;
+    }
+    /* Primary CTA button — electric, full-width */
+    #decision-cta{
+      width:100%!important;
+      padding:16px 20px!important;
+      border-radius:18px!important;
+      background:var(--ce3-accent)!important;
+      color:#060A0F!important;
+      font-size:17px!important;
+      font-weight:900!important;
+      letter-spacing:-0.02em!important;
+      border:none!important;
+      box-shadow:0 4px 24px var(--ce3-accent-glow)!important;
+      transition:transform 0.1s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.15s!important;
+      margin-bottom:8px!important;
+    }
+    #decision-cta:active{
+      transform:scale(0.97)!important;
+      box-shadow:0 2px 12px var(--ce3-accent-glow)!important;
+    }
+    #decision-cta-sub{
+      font-size:12px!important;
+      color:var(--ce3-t3)!important;
+      text-align:center!important;
+      margin-bottom:20px!important;
+    }
+
+    /* ── 5b. STEPS — numbered cards ── */
+    body.result-open.cam-tiktok #steps-card{
+      border:none!important;
+      background:transparent!important;
+    }
+    /* Section header above steps */
+    body.result-open.cam-tiktok .card-lbl{
+      font-size:11px!important;
+      font-weight:800!important;
+      letter-spacing:0.1em!important;
+      text-transform:uppercase!important;
+      color:var(--ce3-t3)!important;
+      margin-bottom:12px!important;
+    }
+    /* Step items — clean numbered design */
+    body.result-open.cam-tiktok #r-steps{
+      list-style:none!important;
+      padding-left:0!important;
+      counter-reset:ce-step!important;
+      display:flex!important;
+      flex-direction:column!important;
+      gap:10px!important;
+    }
+    body.result-open.cam-tiktok #r-steps .step-item{
+      display:flex!important;
+      align-items:flex-start!important;
+      gap:14px!important;
+      padding:14px 16px!important;
+      background:var(--ce3-surface)!important;
+      border:1px solid var(--ce3-border)!important;
+      border-radius:18px!important;
+      counter-increment:ce-step!important;
+      list-style:none!important;
+      margin:0!important;
+      transition:background 0.2s, border-color 0.2s!important;
+    }
+    body.result-open.cam-tiktok #r-steps .step-item::before{
+      content:counter(ce-step)!important;
+      display:flex!important;
+      align-items:center!important;
+      justify-content:center!important;
+      min-width:30px!important;
+      height:30px!important;
+      border-radius:50%!important;
+      background:var(--ce3-accent-dim)!important;
+      border:1px solid var(--ce3-accent-glow)!important;
+      color:var(--ce3-accent)!important;
+      font-size:13px!important;
+      font-weight:900!important;
+      flex-shrink:0!important;
+      margin-top:1px!important;
+    }
+    body.result-open.cam-tiktok #r-steps .step-item .s-txt{
+      font-size:15px!important;
+      font-weight:550!important;
+      line-height:1.6!important;
+      color:var(--ce3-t1)!important;
+      padding-top:4px!important;
+    }
+    /* Completed step */
+    body.result-open.cam-tiktok #r-steps .step-item.ce-step-done{
+      background:var(--ce3-green-dim)!important;
+      border-color:rgba(74,222,128,0.2)!important;
+    }
+    body.result-open.cam-tiktok #r-steps .step-item.ce-step-done::before{
+      content:'✓'!important;
+      background:rgba(74,222,128,0.2)!important;
+      border-color:rgba(74,222,128,0.4)!important;
+      color:var(--ce3-green)!important;
+    }
+    /* Locked/paywall steps */
+    body.result-open.cam-tiktok #r-steps .step-item.step-locked{
+      filter:blur(3.5px)!important;
+      pointer-events:none!important;
+      user-select:none!important;
+      opacity:0.5!important;
+    }
+
+    /* ── 5c. PAYWALL inline CTA ── */
+    .paywall-inline{
+      display:flex!important;
+      flex-direction:column!important;
+      align-items:center!important;
+      gap:12px!important;
+      padding:24px 20px!important;
+      background:linear-gradient(145deg,rgba(34,211,238,0.08),rgba(6,10,15,0.95))!important;
+      border:1px solid var(--ce3-accent-glow)!important;
+      border-radius:22px!important;
+      margin-top:4px!important;
+    }
+    .paywall-inline-ico{font-size:28px;line-height:1}
+    .paywall-inline-ttl{
+      font-size:20px!important;
+      font-weight:900!important;
+      letter-spacing:-0.02em!important;
+      color:var(--ce3-t1)!important;
+      text-align:center!important;
+    }
+    .paywall-inline-sub{
+      font-size:14px!important;
+      font-weight:500!important;
+      color:var(--ce3-t2)!important;
+      text-align:center!important;
+      line-height:1.5!important;
+    }
+    .paywall-inline-cta{
+      width:100%!important;
+      padding:15px!important;
+      border-radius:16px!important;
+      background:var(--ce3-accent)!important;
+      color:#060A0F!important;
+      font-size:16px!important;
+      font-weight:900!important;
+      letter-spacing:-0.02em!important;
+      border:none!important;
+      box-shadow:0 4px 20px var(--ce3-accent-glow)!important;
+      cursor:pointer!important;
+      transition:transform 0.1s cubic-bezier(0.34,1.56,0.64,1)!important;
+      font-family:inherit!important;
+    }
+    .paywall-inline-cta:active{transform:scale(0.97)!important}
+    .paywall-inline-price{font-size:12px;color:var(--ce3-t3);text-align:center}
+
+    /* ── 5d. TOOLS CARD ── */
+    body.result-open.cam-tiktok #tools-card{
+      background:var(--ce3-surface)!important;
+      border:1px solid var(--ce3-border)!important;
+      border-radius:20px!important;
+      padding:16px!important;
+    }
+    body.result-open.cam-tiktok .tool-entry{
+      background:var(--ce3-surface-2)!important;
+      border:1px solid var(--ce3-border)!important;
+      border-radius:12px!important;
+    }
+    body.result-open.cam-tiktok .tool-nm{
+      font-size:14px!important;
+      font-weight:650!important;
+      color:var(--ce3-t1)!important;
+    }
+    body.result-open.cam-tiktok .shop-lnk{
+      font-size:11px!important;
+      font-weight:700!important;
+      padding:4px 10px!important;
+      border-radius:999px!important;
+      border:1px solid var(--ce3-border)!important;
+      background:var(--ce3-surface-3)!important;
+      color:var(--ce3-accent)!important;
+      text-decoration:none!important;
+    }
+
+    /* ── 5e. CONFIDENCE BAND ── */
+    .ce-conf-band{
+      border-radius:12px!important;
+      font-size:13px!important;
+      font-weight:700!important;
+      padding:10px 14px!important;
+      margin-bottom:12px!important;
+      border:1px solid var(--ce3-border)!important;
+      background:var(--ce3-surface)!important;
+    }
+    .conf-tier.safe{
+      border-color:rgba(74,222,128,0.25)!important;
+      color:var(--ce3-green)!important;
+      background:var(--ce3-green-dim)!important;
+    }
+
+    /* ── 5f. RESET BUTTON ── */
+    .rst-btn{
+      background:var(--ce3-surface)!important;
+      border:1px solid var(--ce3-border)!important;
+      color:var(--ce3-t2)!important;
+      border-radius:14px!important;
+      font-size:14px!important;
+      font-weight:700!important;
+      padding:12px 20px!important;
+      width:100%!important;
+      margin-top:12px!important;
+      transition:background 0.15s!important;
+    }
+    .rst-btn:active{background:var(--ce3-surface-3)!important}
+
+    /* ── 6. META CHIPS ── */
+    .meta-row .chip{
+      background:var(--ce3-surface)!important;
+      border:1px solid var(--ce3-border)!important;
+      color:var(--ce3-t2)!important;
+      border-radius:10px!important;
+      font-size:13px!important;
+      font-weight:650!important;
+      padding:7px 12px!important;
+    }
+
+    /* ── 7. VE CARDS (non-tiktok screens) ── */
+    .ce-ve-card{
+      background:rgba(255,255,255,0.03)!important;
+      border:1px solid var(--ce3-border)!important;
+      border-radius:20px!important;
+    }
+    .ce-ve-dec-pill.ce-dec-safe{
+      background:var(--ce3-green-dim)!important;
+      border-color:rgba(74,222,128,0.3)!important;
+      color:var(--ce3-green)!important;
+    }
+
+    /* ── 8. HAZARD BANNER — prominent ── */
+    .hazard-banner:not(:empty){
+      border-radius:14px!important;
+      font-weight:800!important;
+      font-size:14px!important;
+      margin:0 0 12px!important;
+    }
+
+    /* ── 9. PAYWALL STRIP ── */
+    .ce-paywall-teaser{
+      background:linear-gradient(135deg,rgba(34,211,238,0.1),rgba(6,10,15,0.9))!important;
+      border:1px solid var(--ce3-accent-glow)!important;
+      border-radius:16px!important;
+      margin-bottom:12px!important;
+    }
+    .ce-paywall-pro{
+      background:var(--ce3-accent)!important;
+      color:#060A0F!important;
+      border-radius:8px!important;
+      font-weight:900!important;
+      font-size:11px!important;
+    }
+    .ce-paywall-arr{color:var(--ce3-accent)!important}
+
+    /* ── 10. DOCK ── */
+    body.cam-tiktok .cam-dock{
+      background:rgba(6,10,15,0.75)!important;
+      backdrop-filter:blur(24px)!important;
+      -webkit-backdrop-filter:blur(24px)!important;
+      border-top:0.5px solid var(--ce3-border)!important;
+    }
+
+    /* ── 11. SCAN BEAM — subtler, cyan ── */
+    .scan-beam{
+      background:linear-gradient(180deg,transparent,rgba(34,211,238,0.4),transparent)!important;
+    }
+
+    /* ── 12. TTS BAR ── */
+    .tts-btn{
+      background:var(--ce3-surface)!important;
+      border:1px solid var(--ce3-border)!important;
+      color:var(--ce3-t2)!important;
+      border-radius:12px!important;
+    }
+
+    /* ── 13. EMAIL COLLECT / EC CARD ── */
+    .ec{
+      background:linear-gradient(160deg,rgba(34,211,238,0.06),rgba(255,255,255,0.03))!important;
+      border:1px solid var(--ce3-accent-glow)!important;
+      border-radius:22px!important;
+    }
+    .ec-sub{
+      background:var(--ce3-accent)!important;
+      color:#060A0F!important;
+      border:none!important;
+      border-radius:12px!important;
+      font-weight:800!important;
+    }
+    .ec-inp{
+      background:var(--ce3-surface)!important;
+      border:1px solid var(--ce3-border)!important;
+      color:var(--ce3-t1)!important;
+      border-radius:12px!important;
+    }
+
+    /* ── 14. SCAN LABEL ── */
+    .scan-lbl{
+      color:rgba(255,255,255,0.9)!important;
+      font-size:12px!important;
+      font-weight:700!important;
+      letter-spacing:0.08em!important;
+      text-transform:uppercase!important;
+      background:rgba(6,10,15,0.65)!important;
+      backdrop-filter:blur(8px)!important;
+      padding:6px 14px!important;
+      border-radius:999px!important;
+      border:1px solid rgba(255,255,255,0.12)!important;
+    }
+
+    /* ── 15. LANG FAB ── */
+    .lang-fab-btn{
+      background:var(--ce3-surface-2)!important;
+      border:1px solid var(--ce3-border)!important;
+      color:var(--ce3-t1)!important;
+      border-radius:12px!important;
+    }
+
+    /* ── 16. PERCEPTION HINT ── */
+    .perception-hint{
+      background:rgba(6,10,15,0.72)!important;
+      border:1px solid var(--ce3-border)!important;
+      color:var(--ce3-t2)!important;
+      backdrop-filter:blur(16px)!important;
+      -webkit-backdrop-filter:blur(16px)!important;
+      border-radius:14px!important;
+      font-size:13px!important;
+      font-weight:600!important;
+    }
+
+    /* ── 17. OUTCOME CHIPS ROW ── */
+    .ce-oc{
+      background:var(--ce3-surface)!important;
+      border:1px solid var(--ce3-border)!important;
+      border-radius:14px!important;
+    }
+    .ce-oc-l{color:var(--ce3-t3)!important;font-size:10px!important;font-weight:800!important;letter-spacing:0.06em!important;text-transform:uppercase!important}
+    .ce-oc-v{color:var(--ce3-t1)!important;font-size:15px!important;font-weight:800!important;letter-spacing:-0.02em!important}
+
+    /* ── 18. OUTCOME CTA BUTTONS ── */
+    .ce-outcome-cta-primary{
+      background:var(--ce3-accent)!important;
+      color:#060A0F!important;
+      border:none!important;
+      font-weight:900!important;
+      border-radius:16px!important;
+      box-shadow:0 4px 20px var(--ce3-accent-glow)!important;
+    }
+    .ce-outcome-cta-secondary{
+      background:var(--ce3-surface)!important;
+      border:1px solid var(--ce3-border)!important;
+      color:var(--ce3-t1)!important;
+      border-radius:16px!important;
+    }
+
+    /* ── 19. FM (PRO) CTA STRIP ── */
+    #fm-cta{
+      background:rgba(6,10,15,0.95)!important;
+      border-top:0.5px solid var(--ce3-border)!important;
+      backdrop-filter:blur(24px)!important;
+    }
+    .fm-plan-pill{
+      background:var(--ce3-surface-2)!important;
+      border:1px solid var(--ce3-border)!important;
+      color:var(--ce3-t1)!important;
+      border-radius:14px!important;
+      font-weight:800!important;
+    }
+    .fm-plan-pill.fm-best{
+      background:var(--ce3-accent)!important;
+      border-color:var(--ce3-accent)!important;
+      color:#060A0F!important;
+      box-shadow:0 4px 16px var(--ce3-accent-glow)!important;
+    }
+
+    /* ── 20. SCAN GUIDE / MODALS ── */
+    .ce-scan-guide-sheet,.ce-modal,.ce-sheet{
+      background:#0D1117!important;
+      border:1px solid var(--ce3-border)!important;
+    }
+
   </style>
 </head>
 <body class="cam-tiktok" data-ce-deploy-sha="{{ ce_deploy_sha|default('', true) }}">
@@ -7579,6 +8218,9 @@ async function startLiveScanSession(viewsTarget, initialBlob){
     if(fp){
       fd.append('device_fingerprint',fp);
     }
+    // Send pro_email so server can validate CE_PRO_EMAILS without DB (Vercel ephemeral SQLite)
+    var _proEmail=(localStorage.getItem('ce_pro_email')||'').trim().toLowerCase();
+    if(_proEmail)fd.append('pro_email',_proEmail);
     // #region agent log
     ceDbgD78afc('H3','index.html:startLiveScanSession:before_analyze','calling /analyze',{sz0:blobs[0]&&blobs[0].size?blobs[0].size:0,hasFp:!!fp});
     // #endregion
@@ -7588,6 +8230,7 @@ async function startLiveScanSession(viewsTarget, initialBlob){
     fdStage1.append('question',qInput);
     fdStage1.append('language',LANG);
     if(fp)fdStage1.append('device_fingerprint',fp);
+    if(_proEmail)fdStage1.append('pro_email',_proEmail);
     var _ceAb=new AbortController();
     var _ceAbT=setTimeout(function(){try{_ceAb.abort();}catch(_){}},120000);
     var deepPromise=ceRunAnalyzeFetch(fd,_ceAb.signal)
@@ -10798,7 +11441,8 @@ function renderResults(r){
   var catChip=document.getElementById('r-cat-chip');
   var catRaw=(r.job_category||'').trim();
   if(catChip){
-    if(catRaw){
+    var catNorm=catRaw.toLowerCase();
+    if(catRaw && catNorm!=='other' && catNorm!=='overig'){
       catChip.classList.remove('off');
       var rcat=document.getElementById('r-cat');if(rcat)rcat.textContent=catRaw.replace(/_/g,' ');
     }else catChip.classList.add('off');
@@ -10928,8 +11572,9 @@ function renderResults(r){
   var allTools=ceUniqueTextList((r.tools_needed||[]).concat(r.materials_needed||[]));
   setAdForTool(allTools[0]||'');
   if(!allTools.length){
-    te.innerHTML='<div class="tool-empty">'+T[LANG].toolEmpty+'</div>';
+    var _tc=document.getElementById('tools-card');if(_tc)_tc.style.display='none';
   }else{
+    var _tc2=document.getElementById('tools-card');if(_tc2)_tc2.style.display='';
     allTools.forEach(function(tool){
       var e=document.createElement('div');e.className='tool-entry';
       var nr=document.createElement('div');nr.className='tool-nm-row';
@@ -11067,6 +11712,12 @@ function renderResults(r){
   ceUpdateLowConfBanner(r);
   ceMaybeCoachOnResult();
   UX.resultRendered=true;
+  /* Scroll results panel to top AFTER content is in the DOM */
+  requestAnimationFrame(function(){
+    var _rp=document.getElementById('results');
+    if(_rp){_rp.scrollTop=0;}
+    window.scrollTo(0,0);
+  });
   return hz;
   }finally{
     UX.resultRendering=false;
@@ -11476,7 +12127,7 @@ if(btnNlFab)btnNlFab.addEventListener('click',function(){setLang('nl');hideLangT
     }
   }catch(_){}
 })();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=19').catch(function(){});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=24').catch(function(){});
 
 function ceLoadTrustStrip(){
   var el=document.getElementById('ce-trust-strip');
@@ -11670,7 +12321,11 @@ async function ceVerifyProEmail(email){
   var em=String(email||'').trim().toLowerCase();
   if(!em||em.indexOf('@')===-1)return {success:false,pro:false,error:'invalid email'};
   try{
-    var resp=await fetch('/api/license/verify?email='+encodeURIComponent(em));
+    var fp='';
+    try{if(typeof ceEnsureDeviceFingerprint==='function')fp=await ceEnsureDeviceFingerprint();}catch(_){}
+    var url='/api/license/verify?email='+encodeURIComponent(em);
+    if(fp)url+='&device_fingerprint='+encodeURIComponent(fp);
+    var resp=await fetch(url);
     var data=await resp.json();
     if(data&&data.success&&data.pro){
       ceSetProActive(em,data.plan||'');
