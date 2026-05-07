@@ -5701,6 +5701,157 @@
       opacity:1!important;transform:none!important;visibility:visible!important;
     }
 
+    /* ══════════════════════════════════════════════════════════
+       v3.4 — KILL CLUTTER · APPLE CAMERA SHUTTER · CLEAN SCAN STATE
+       ══════════════════════════════════════════════════════════ */
+
+    /* ── REMOVE PROMPT BOX entirely in tiktok mode ── */
+    body.cam-tiktok .prompt-wrap,
+    body.cam-tiktok .prompt-box,
+    body.cam-tiktok #q-inp,
+    body.cam-tiktok .mic-btn{display:none!important}
+
+    /* ── KILL OVERLAPPING SCAN TEXTS ── */
+    /* The gold "Analyseren…" floating on the camera image — gone */
+    body.cam-tiktok .cam-overlay .scan-lbl,
+    body.cam-tiktok #scan-lbl{display:none!important}
+    /* Old cam-status pill — gone (we use slbl pill) */
+    body.cam-tiktok #cam-status,body.cam-tiktok .cam-status{display:none!important}
+    /* Soft hint banner above shutter — gone, too noisy */
+    body.cam-tiktok .ce-scan-soft-hint{display:none!important}
+    /* Hazard banner during live scan — gone (only shown after scan) */
+    body.cam-tiktok:not(.result-open) .hazard-banner{display:none!important}
+    /* Perception layer hint — gone */
+    body.cam-tiktok #perception-layer{display:none!important}
+
+    /* ── APPLE CAMERA SHUTTER (definitive design) ── */
+    body.cam-tiktok .cam-dock{
+      padding:0 22px 26px!important;
+      gap:12px!important;
+    }
+    body.cam-tiktok .dock-mid{
+      display:flex!important;flex-direction:column!important;align-items:center!important;
+      position:relative!important;
+    }
+    body.cam-tiktok .snap-shutter-ring{
+      width:84px!important;height:84px!important;
+      padding:0!important;border:none!important;background:transparent!important;
+      box-shadow:none!important;border-radius:50%!important;position:relative!important;
+      display:flex!important;align-items:center!important;justify-content:center!important;
+    }
+    /* Outer ring — thin, crisp, color shifts with state */
+    body.cam-tiktok .snap-shutter-ring::before{
+      content:''!important;display:block!important;
+      position:absolute!important;inset:0!important;
+      border-radius:50%!important;
+      border:3px solid rgba(255,255,255,0.95)!important;
+      box-shadow:0 2px 16px rgba(0,0,0,0.55),inset 0 0 0 1px rgba(0,0,0,0.18)!important;
+      transition:border-color .25s ease,box-shadow .25s ease,inset .25s ease!important;
+      pointer-events:none!important;
+      animation:none!important;
+    }
+    body.cam-tiktok.ce-can-scan .snap-shutter-ring::before,
+    body.cam-tiktok.ce-cam-locked .snap-shutter-ring::before{
+      border-color:#22D3EE!important;
+      box-shadow:0 0 22px rgba(34,211,238,0.55),0 2px 16px rgba(0,0,0,0.55),inset 0 0 0 1px rgba(0,0,0,0.2)!important;
+    }
+    body.cam-tiktok.ce-ai-thinking .snap-shutter-ring::before{
+      border-color:#22D3EE!important;
+      animation:ce34ShutterRing 1.2s ease-in-out infinite!important;
+    }
+    @keyframes ce34ShutterRing{
+      0%,100%{box-shadow:0 0 16px rgba(34,211,238,0.45),0 2px 16px rgba(0,0,0,0.55),inset 0 0 0 1px rgba(0,0,0,0.2)}
+      50%{box-shadow:0 0 36px rgba(34,211,238,0.95),0 2px 16px rgba(0,0,0,0.55),inset 0 0 0 1px rgba(0,0,0,0.2)}
+    }
+    body.cam-tiktok .snap-shutter-ring::after{display:none!important}
+
+    /* Inner pearl — solid white, crisp, with inset shadow for depth */
+    body.cam-tiktok .snap-shutter-ring .scan-egg{
+      width:66px!important;height:66px!important;min-width:66px!important;min-height:66px!important;
+      border-radius:50%!important;
+      border:none!important;
+      background:radial-gradient(circle at 32% 28%, #FFFFFF 0%, #F2F4F7 60%, #E0E4E9 100%)!important;
+      box-shadow:
+        inset 0 -3px 6px rgba(0,0,0,0.08),
+        inset 0 2px 3px rgba(255,255,255,0.95),
+        0 3px 10px rgba(0,0,0,0.4)!important;
+      transition:transform .15s cubic-bezier(.34,1.6,.64,1),background .25s ease!important;
+      position:relative!important;
+    }
+    body.cam-tiktok .snap-shutter-ring .scan-egg svg{display:none!important}
+    body.cam-tiktok .snap-shutter-ring .scan-egg::before,
+    body.cam-tiktok .snap-shutter-ring .scan-egg::after{display:none!important}
+    body.cam-tiktok .snap-shutter-ring .scan-egg:active,
+    body.cam-tiktok .snap-shutter-ring .scan-egg.pressed{
+      transform:scale(0.88)!important;
+      box-shadow:
+        inset 0 -1px 3px rgba(0,0,0,0.18),
+        inset 0 4px 8px rgba(0,0,0,0.16),
+        0 1px 4px rgba(0,0,0,0.5)!important;
+    }
+    body.cam-tiktok.ce-ai-thinking .snap-shutter-ring .scan-egg{
+      background:radial-gradient(circle at 50% 50%,#67E8F9 0%,#22D3EE 55%,#0891B2 100%)!important;
+      box-shadow:
+        inset 0 0 12px rgba(255,255,255,0.45),
+        0 0 22px rgba(34,211,238,0.7)!important;
+      animation:ce34EggThink 1.2s ease-in-out infinite!important;
+    }
+    @keyframes ce34EggThink{0%,100%{transform:scale(0.92)}50%{transform:scale(1.06)}}
+
+    /* ── ONE clean scan label pill above shutter ── */
+    body.cam-tiktok .cam-dock .slbl{
+      position:absolute!important;
+      bottom:calc(100% + 14px)!important;
+      left:50%!important;transform:translateX(-50%)!important;
+      padding:7px 14px!important;
+      border-radius:999px!important;
+      background:rgba(13,17,23,0.78)!important;
+      backdrop-filter:blur(16px) saturate(150%)!important;
+      -webkit-backdrop-filter:blur(16px) saturate(150%)!important;
+      border:1px solid rgba(255,255,255,0.14)!important;
+      box-shadow:0 4px 18px rgba(0,0,0,0.55)!important;
+      font-size:10.5px!important;font-weight:800!important;
+      letter-spacing:0.16em!important;text-transform:uppercase!important;
+      color:#FFFFFF!important;
+      white-space:nowrap!important;
+      opacity:1!important;visibility:visible!important;display:block!important;
+      pointer-events:none!important;z-index:5!important;
+      animation:none!important;
+    }
+    body.cam-tiktok.ce-can-scan .cam-dock .slbl,
+    body.cam-tiktok.ce-cam-locked .cam-dock .slbl{
+      color:#22D3EE!important;
+      border-color:rgba(34,211,238,0.4)!important;
+      box-shadow:0 4px 18px rgba(0,0,0,0.55),0 0 16px rgba(34,211,238,0.3)!important;
+    }
+    body.cam-tiktok.ce-ai-thinking .cam-dock .slbl{
+      color:#67E8F9!important;
+      border-color:rgba(34,211,238,0.5)!important;
+      animation:ce34Pulse 1.2s ease-in-out infinite!important;
+    }
+    @keyframes ce34Pulse{0%,100%{opacity:0.85}50%{opacity:1}}
+    body.cam-tiktok.result-open .cam-dock .slbl{display:none!important}
+
+    /* ── DOCK SIDE PILLS (Back / Next): minimal, premium ── */
+    body.cam-tiktok .dock-pill{
+      background:rgba(13,17,23,0.7)!important;
+      border:1px solid rgba(255,255,255,0.12)!important;
+      backdrop-filter:blur(14px)!important;
+      -webkit-backdrop-filter:blur(14px)!important;
+      color:#F8FAFC!important;
+      border-radius:14px!important;
+      padding:10px 16px!important;
+      font-size:13px!important;font-weight:700!important;
+      box-shadow:0 4px 14px rgba(0,0,0,0.4)!important;
+      transition:all .2s ease!important;
+    }
+    body.cam-tiktok .dock-pill:disabled{
+      opacity:0.35!important;
+    }
+    body.cam-tiktok .dock-pill:not(:disabled):active{
+      transform:scale(0.95)!important;
+    }
+
   </style>
 </head>
 <body class="cam-tiktok" data-ce-deploy-sha="{{ ce_deploy_sha|default('', true) }}">
@@ -12921,7 +13072,7 @@ if(btnNlFab)btnNlFab.addEventListener('click',function(){setLang('nl');hideLangT
     }
   }catch(_){}
 })();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=28').catch(function(){});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=29').catch(function(){});
 
 function ceLoadTrustStrip(){
   var el=document.getElementById('ce-trust-strip');
