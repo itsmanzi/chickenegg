@@ -232,6 +232,7 @@ def _is_scan_meter_exempt(fingerprint):
     - CE_DISABLE_SCAN_LIMIT=1  → bypass meter for every client on this deployment
     - CE_DEV_FINGERPRINT_ALLOWLIST=fp1,fp2  → bypass for matching device_fingerprint values
     - CE_DEV_BYPASS_SECRET=<long random>  → bypass when request header X-CE-Dev-Bypass matches
+    - CE_PRO_EMAILS=email1,email2  → bypass when request body contains a matching pro_email field
     """
     if _truthy_env("CE_DISABLE_SCAN_LIMIT"):
         return True
@@ -244,6 +245,28 @@ def _is_scan_meter_exempt(fingerprint):
     secret = (os.environ.get("CE_DEV_BYPASS_SECRET") or "").strip()
     if secret and request.headers.get("X-CE-Dev-Bypass", "").strip() == secret:
         return True
+    # CE_PRO_EMAILS: check if the request carries a pro_email that matches
+    pro_emails_env = (os.environ.get("CE_PRO_EMAILS") or "").strip().lower()
+    if pro_emails_env:
+        allowed_emails = {e.strip() for e in pro_emails_env.split(",") if e.strip()}
+        # Check JSON body, form, and query args
+        candidate = None
+        try:
+            if request.is_json:
+                body = request.get_json(silent=True) or {}
+                candidate = (body.get("pro_email") or body.get("email") or "").strip().lower()
+            if not candidate:
+                candidate = (
+                    request.form.get("pro_email")
+                    or request.form.get("email")
+                    or request.args.get("pro_email")
+                    or request.args.get("email")
+                    or ""
+                ).strip().lower()
+        except Exception:
+            pass
+        if candidate and candidate in allowed_emails:
+            return True
     return False
 
 

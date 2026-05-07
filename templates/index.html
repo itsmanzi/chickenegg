@@ -8218,6 +8218,9 @@ async function startLiveScanSession(viewsTarget, initialBlob){
     if(fp){
       fd.append('device_fingerprint',fp);
     }
+    // Send pro_email so server can validate CE_PRO_EMAILS without DB (Vercel ephemeral SQLite)
+    var _proEmail=(localStorage.getItem('ce_pro_email')||'').trim().toLowerCase();
+    if(_proEmail)fd.append('pro_email',_proEmail);
     // #region agent log
     ceDbgD78afc('H3','index.html:startLiveScanSession:before_analyze','calling /analyze',{sz0:blobs[0]&&blobs[0].size?blobs[0].size:0,hasFp:!!fp});
     // #endregion
@@ -8227,6 +8230,7 @@ async function startLiveScanSession(viewsTarget, initialBlob){
     fdStage1.append('question',qInput);
     fdStage1.append('language',LANG);
     if(fp)fdStage1.append('device_fingerprint',fp);
+    if(_proEmail)fdStage1.append('pro_email',_proEmail);
     var _ceAb=new AbortController();
     var _ceAbT=setTimeout(function(){try{_ceAb.abort();}catch(_){}},120000);
     var deepPromise=ceRunAnalyzeFetch(fd,_ceAb.signal)
@@ -12123,7 +12127,7 @@ if(btnNlFab)btnNlFab.addEventListener('click',function(){setLang('nl');hideLangT
     }
   }catch(_){}
 })();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=23').catch(function(){});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=24').catch(function(){});
 
 function ceLoadTrustStrip(){
   var el=document.getElementById('ce-trust-strip');
