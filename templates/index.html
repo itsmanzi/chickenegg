@@ -4924,10 +4924,11 @@
       border:1px solid var(--ce3-border)!important;
     }
 
-    /* ── v3 HOTFIX: screenshot audit fixes ────────────────── */
+    /* ══════════════════════════════════════════════════════════
+       v3.1 — FULL POLISH: Steps first, zero clutter, premium feel
+       ══════════════════════════════════════════════════════════ */
 
-    /* FIX 1 — SCAN BUTTON: golden sphere beaten by higher-specificity rule at line 2972.
-       Match exact specificity to win: body.cam-tiktok .snap-shutter-ring .scan-egg */
+    /* ── SCAN BUTTON: match exact specificity (line 2972 has golden !important) ── */
     body.cam-tiktok .snap-shutter-ring .scan-egg{
       background:#FFFFFF!important;
       border:none!important;
@@ -4935,101 +4936,267 @@
       min-width:80px!important;min-height:80px!important;
       width:80px!important;height:80px!important;
     }
-    body.cam-tiktok .snap-shutter-ring .scan-egg svg{
-      display:none!important;
-      visibility:hidden!important;
-    }
-    /* When AI is thinking — egg turns cyan */
+    body.cam-tiktok .snap-shutter-ring .scan-egg svg{display:none!important;visibility:hidden!important}
     body.cam-tiktok.ce-ai-thinking .snap-shutter-ring .scan-egg{
-      background:var(--ce3-accent)!important;
-      opacity:1!important;
-      transform:none!important;
+      background:var(--ce3-accent)!important;opacity:1!important;transform:none!important;
     }
-    /* Outer ring — clean white border only */
     body.cam-tiktok .snap-shutter-ring{
-      background:transparent!important;
-      border:3px solid rgba(255,255,255,0.88)!important;
-      box-shadow:none!important;
+      background:transparent!important;border:3px solid rgba(255,255,255,0.88)!important;box-shadow:none!important;
     }
-    body.cam-tiktok.ce-can-scan .snap-shutter-ring,
-    body.cam-tiktok.ce-cam-locked .snap-shutter-ring{
-      border-color:var(--ce3-accent)!important;
-      box-shadow:0 0 0 4px var(--ce3-accent-dim)!important;
+    body.cam-tiktok.ce-can-scan .snap-shutter-ring,body.cam-tiktok.ce-cam-locked .snap-shutter-ring{
+      border-color:var(--ce3-accent)!important;box-shadow:0 0 0 5px var(--ce3-accent-dim)!important;
     }
+    .scan-egg .egg-ripple,.scan-egg .egg-swirl,.scan-egg .egg-grain,.scan-egg .egg-glint,.scan-egg .egg-eye,.scan-egg .egg-laser{display:none!important}
 
-    /* FIX 2 — SCAN LABEL: hide "SCAN" / "SNELLE CHECK KLAAR" text below button */
+    /* ── SCAN LABELS: hide "SCAN" / "SNELLE CHECK KLAAR" ── */
     .slbl{display:none!important}
 
-    /* FIX 3 — RESULTS VOID: stagger items stay opacity:0 if animation races.
-       Force visible the moment results-open is active */
-    body.result-open .ce-stagger-item{
-      opacity:1!important;
-      transform:none!important;
-    }
-    body.result-open #decision-card{
-      display:block!important;
-    }
+    /* ── CORNERS: white ── */
+    .scan-corner{border-color:rgba(255,255,255,0.9)!important;width:20px!important;height:20px!important;border-width:2px!important}
 
-    /* FIX 4 — "SCAN RESULTATEN" header: hide the debug-looking title */
-    #results-title{display:none!important}
-
-    /* FIX 5 — STEP STRIKETHROUGH: step 1 looks broken with line-through */
-    #r-steps .step-item .s-txt{text-decoration:none!important}
-    /* Also fix completed step text — use colour, not strikethrough */
-    #r-steps .step-item.ce-step-done .s-txt{
-      text-decoration:none!important;
-      color:rgba(74,222,128,0.8)!important;
-    }
-
-    /* FIX 6 — VIEWFINDER CORNERS: still yellow, force white */
-    .scan-corner{
-      border-color:rgba(255,255,255,0.9)!important;
-      width:20px!important;height:20px!important;
-      border-width:2px!important;
-    }
-
-    /* BONUS — Decision card content: make everything visible regardless */
-    #decision-card{color:var(--ce3-t1)!important}
-    #decision-title{color:var(--ce3-t1)!important;font-size:34px!important;font-weight:900!important;letter-spacing:-0.03em!important;line-height:1.15!important}
-    #decision-wow{color:var(--ce3-t2)!important}
-    .ce-fact-v{color:var(--ce3-t1)!important}
-    .ce-fact-k{color:var(--ce3-t3)!important}
-
-    /* BONUS — PRO strip: better copy visibility */
-    .ce-paywall-teaser{
-      background:linear-gradient(135deg,rgba(34,211,238,0.12),rgba(15,16,25,0.95))!important;
-    }
-
-    /* BONUS — Results back button: cleaner */
-    .results-back{
-      background:var(--ce3-surface)!important;
-      border:1px solid var(--ce3-border)!important;
-      color:var(--ce3-t1)!important;
-      border-radius:12px!important;
-      font-size:14px!important;
-      font-weight:700!important;
-      padding:8px 14px!important;
-    }
-
-    /* BONUS — Camera egg span noise: hide all decorative children */
-    .scan-egg .egg-ripple,.scan-egg .egg-swirl,
-    .scan-egg .egg-grain,.scan-egg .egg-glint,
-    .scan-egg .egg-eye,.scan-egg .egg-laser{
-      display:none!important;
-    }
-
-    /* BONUS — Scan beam: cyan instead of gold */
+    /* ── SCAN BEAM: cyan ── */
     .cam-overlay.scanning .scan-beam{
       background:linear-gradient(180deg,transparent 0%,rgba(34,211,238,0.35) 50%,transparent 100%)!important;
     }
 
-    /* BONUS — Fix the step numbered circle — was ::before but body class needed */
+    /* ── RESULTS PANEL: start higher, more screen for steps ── */
+    body.cam-tiktok #results{
+      top:8vh!important;
+      background:linear-gradient(180deg,#0D1117 0%,#0A0E14 100%)!important;
+      border-radius:26px 26px 0 0!important;
+      padding-top:4px!important;
+    }
+
+    /* ── LAYOUT: flex column so we control order ── */
+    body.result-open.cam-tiktok #results{
+      display:flex!important;
+      flex-direction:column!important;
+      overflow-y:auto!important;
+      -webkit-overflow-scrolling:touch!important;
+    }
+
+    /* ── ORDERING: Title → Steps → Paywall → Tools → Reset ── */
+    body.result-open.cam-tiktok #results-screen-bar{order:1!important;display:flex!important}
+    body.result-open.cam-tiktok #decision-card{order:2!important;display:block!important}
+    body.result-open.cam-tiktok #ce-results-shell{order:3!important}
+    body.result-open.cam-tiktok .meta-row{order:4!important}
+    body.result-open.cam-tiktok #r-confidence{order:5!important}
+    body.result-open.cam-tiktok #ce-paywall-teaser{order:6!important}
+    body.result-open.cam-tiktok #ec{order:7!important}
+    body.result-open.cam-tiktok .rst-btn{order:8!important}
+    body.result-open.cam-tiktok #ce-compact-safety{order:9!important}
+    body.result-open.cam-tiktok #hazard-hero{order:0!important}
+    body.result-open.cam-tiktok #all-done,
+    body.result-open.cam-tiktok #task-locked,
+    body.result-open.cam-tiktok #ce-low-conf-banner,
+    body.result-open.cam-tiktok #ce-rental-debug-badge{order:10!important}
+
+    /* ── RESULTS HEADER: back arrow only, no "SCAN RESULTATEN" ── */
+    #results-title{display:none!important}
+    body.result-open.cam-tiktok #results-screen-bar{
+      padding:6px 0 0!important;
+      background:transparent!important;
+      border:none!important;
+      flex-direction:row!important;
+      align-items:center!important;
+      gap:10px!important;
+      min-height:0!important;
+      flex-shrink:0!important;
+    }
+    body.result-open.cam-tiktok .results-back{
+      background:rgba(255,255,255,0.07)!important;
+      border:1px solid rgba(255,255,255,0.1)!important;
+      color:#F8FAFC!important;
+      border-radius:12px!important;
+      font-size:13px!important;font-weight:700!important;
+      padding:7px 12px!important;
+      white-space:nowrap!important;
+      flex-shrink:0!important;
+    }
+    /* Flow track pills — hide, too much clutter */
+    .ce-flow-track{display:none!important}
+    .ce-conf-signal{display:none!important}
+
+    /* ── DECISION CARD: ultra-compact — just title + chips ── */
+    body.result-open.cam-tiktok #decision-card{
+      background:transparent!important;border:none!important;
+      padding:10px 0 0!important;flex-shrink:0!important;
+    }
+    /* Force stagger items visible */
+    body.result-open.cam-tiktok #decision-card .ce-stagger-item{
+      opacity:1!important;transform:none!important;animation:none!important;
+    }
+    /* Object title — the hero, big and bold */
+    body.result-open.cam-tiktok #decision-title{
+      font-size:28px!important;font-weight:900!important;
+      letter-spacing:-0.03em!important;line-height:1.15!important;
+      color:#F8FAFC!important;margin:0 0 10px!important;
+    }
+    /* Confidence pill — small inline badge */
+    body.result-open.cam-tiktok #decision-confidence-pill{
+      font-size:11px!important;font-weight:700!important;
+      padding:4px 10px!important;border-radius:999px!important;
+      background:rgba(255,255,255,0.07)!important;
+      border:1px solid rgba(255,255,255,0.1)!important;
+      color:rgba(248,250,252,0.55)!important;
+      margin-bottom:10px!important;display:inline-flex!important;
+    }
+    /* Quick facts chips — compact horizontal row */
+    body.result-open.cam-tiktok #decision-facts{
+      display:flex!important;gap:8px!important;margin:0 0 12px!important;flex-wrap:wrap!important;
+    }
+    body.result-open.cam-tiktok .ce-fact{
+      flex:1!important;min-width:0!important;
+      padding:8px 12px!important;border-radius:12px!important;
+      background:rgba(255,255,255,0.05)!important;
+      border:1px solid rgba(255,255,255,0.08)!important;
+    }
+    body.result-open.cam-tiktok .ce-fact-k{font-size:9px!important;font-weight:800!important;letter-spacing:0.08em!important;text-transform:uppercase!important;color:rgba(248,250,252,0.38)!important;display:block!important;margin-bottom:3px!important}
+    body.result-open.cam-tiktok .ce-fact-v{font-size:15px!important;font-weight:800!important;color:#F8FAFC!important;letter-spacing:-0.01em!important;display:block!important}
+    /* Hide everything else in decision-card — wow/why/cta/trust */
+    body.result-open.cam-tiktok #decision-safety-lights,
+    body.result-open.cam-tiktok #decision-main,
+    body.result-open.cam-tiktok #decision-wow,
+    body.result-open.cam-tiktok #decision-why,
+    body.result-open.cam-tiktok #decision-cta,
+    body.result-open.cam-tiktok #decision-cta-sub,
+    body.result-open.cam-tiktok #decision-trust-basis,
+    body.result-open.cam-tiktok #decision-details-toggle{display:none!important}
+
+    /* ── OUTCOME PANEL: hide in tiktok — steps panel is enough ── */
+    body.result-open.cam-tiktok #ce-panel-outcome{display:none!important}
+
+    /* ── STEPS PANEL: always show, no tab needed ── */
+    body.result-open.cam-tiktok #ce-panel-steps,
+    body.result-open.cam-tiktok #ce-panel-steps.off{display:block!important}
+
+    /* Steps shell: no card chrome */
+    body.result-open.cam-tiktok #steps-card{
+      background:transparent!important;border:none!important;
+      box-shadow:none!important;padding:0!important;
+      display:flex!important;flex-direction:column!important;gap:8px!important;
+    }
+    /* Steps list: numbered cards */
+    body.result-open.cam-tiktok #r-steps{
+      list-style:none!important;padding:0!important;margin:0!important;
+      display:flex!important;flex-direction:column!important;gap:8px!important;
+      counter-reset:ce-step!important;
+    }
+    body.result-open.cam-tiktok #r-steps .step-item{
+      display:flex!important;align-items:flex-start!important;gap:12px!important;
+      padding:14px!important;
+      background:rgba(255,255,255,0.05)!important;
+      border:1px solid rgba(255,255,255,0.08)!important;
+      border-radius:18px!important;
+      margin:0!important;list-style:none!important;
+      counter-increment:ce-step!important;
+    }
     body.result-open.cam-tiktok #r-steps .step-item::before{
       content:counter(ce-step)!important;
-      background:var(--ce3-accent-dim)!important;
-      border-color:var(--ce3-accent-glow)!important;
-      color:var(--ce3-accent)!important;
+      display:flex!important;align-items:center!important;justify-content:center!important;
+      min-width:28px!important;height:28px!important;border-radius:50%!important;
+      background:rgba(34,211,238,0.15)!important;border:1px solid rgba(34,211,238,0.3)!important;
+      color:#22D3EE!important;font-size:12px!important;font-weight:900!important;
+      flex-shrink:0!important;margin-top:1px!important;
     }
+    body.result-open.cam-tiktok #r-steps .step-item .s-txt{
+      font-size:15px!important;font-weight:500!important;
+      line-height:1.6!important;color:#F0F2F5!important;
+      padding-top:4px!important;text-decoration:none!important;
+    }
+    /* Completed step */
+    body.result-open.cam-tiktok #r-steps .step-item.ce-step-done::before{
+      content:'✓'!important;
+      background:rgba(74,222,128,0.15)!important;border-color:rgba(74,222,128,0.35)!important;color:#4ADE80!important;
+    }
+    body.result-open.cam-tiktok #r-steps .step-item.ce-step-done .s-txt{
+      text-decoration:none!important;color:rgba(74,222,128,0.75)!important;
+    }
+    /* Locked steps */
+    body.result-open.cam-tiktok #r-steps .step-item.step-locked{
+      filter:blur(4px)!important;pointer-events:none!important;opacity:0.45!important;
+    }
+
+    /* TTS bar — minimal */
+    body.result-open.cam-tiktok .tts-bar{
+      background:transparent!important;border:none!important;padding:0 0 8px!important;
+    }
+    body.result-open.cam-tiktok .tts-btn{
+      background:rgba(255,255,255,0.05)!important;border:1px solid rgba(255,255,255,0.08)!important;
+      color:rgba(248,250,252,0.6)!important;border-radius:10px!important;font-size:12px!important;
+    }
+
+    /* ── TOOLS CARD ── */
+    body.result-open.cam-tiktok #tools-card{
+      background:rgba(255,255,255,0.04)!important;
+      border:1px solid rgba(255,255,255,0.08)!important;
+      border-radius:18px!important;padding:14px!important;margin-top:4px!important;
+    }
+    body.result-open.cam-tiktok .card-lbl{
+      font-size:10px!important;font-weight:800!important;
+      letter-spacing:0.1em!important;text-transform:uppercase!important;
+      color:rgba(248,250,252,0.38)!important;margin-bottom:10px!important;
+    }
+    body.result-open.cam-tiktok .tool-entry{
+      background:rgba(255,255,255,0.05)!important;
+      border:1px solid rgba(255,255,255,0.07)!important;border-radius:12px!important;
+    }
+    body.result-open.cam-tiktok .tool-nm{font-size:14px!important;font-weight:650!important;color:#F0F2F5!important}
+    body.result-open.cam-tiktok .shop-lnk{
+      font-size:11px!important;font-weight:700!important;padding:4px 10px!important;
+      border-radius:999px!important;border:1px solid rgba(255,255,255,0.1)!important;
+      background:rgba(255,255,255,0.06)!important;color:#22D3EE!important;text-decoration:none!important;
+    }
+
+    /* ── META CHIPS: hide (already in facts row) ── */
+    body.result-open.cam-tiktok .meta-row{display:none!important}
+
+    /* ── CONFIDENCE BAND: hide (shown in facts) ── */
+    body.result-open.cam-tiktok #r-confidence{display:none!important}
+
+    /* ── PRO STRIP: cleaner ── */
+    body.result-open.cam-tiktok #ce-paywall-teaser{
+      background:linear-gradient(135deg,rgba(34,211,238,0.1),rgba(10,14,20,0.96))!important;
+      border:1px solid rgba(34,211,238,0.22)!important;
+      border-radius:16px!important;margin:8px 0!important;
+    }
+
+    /* ── EMAIL COLLECT: minimal ── */
+    body.result-open.cam-tiktok #ec{
+      background:rgba(255,255,255,0.03)!important;
+      border:1px solid rgba(255,255,255,0.07)!important;
+      border-radius:18px!important;
+    }
+
+    /* ── RESET BUTTON ── */
+    body.result-open.cam-tiktok .rst-btn{
+      background:rgba(255,255,255,0.05)!important;
+      border:1px solid rgba(255,255,255,0.08)!important;
+      color:rgba(248,250,252,0.6)!important;border-radius:14px!important;
+      font-size:14px!important;font-weight:700!important;
+      padding:13px 20px!important;width:100%!important;margin-top:8px!important;
+      flex-shrink:0!important;
+    }
+
+    /* ── STAGGER: force visible globally in result-open ── */
+    body.result-open .ce-stagger-item{opacity:1!important;transform:none!important}
+
+    /* ── PAYWALL inline (step blur CTA) ── */
+    .paywall-inline{
+      background:linear-gradient(145deg,rgba(34,211,238,0.1),rgba(10,14,20,0.97))!important;
+      border:1px solid rgba(34,211,238,0.25)!important;border-radius:20px!important;
+      padding:22px 18px!important;text-align:center!important;margin-top:4px!important;
+    }
+    .paywall-inline-ttl{font-size:18px!important;font-weight:900!important;color:#F8FAFC!important;letter-spacing:-0.02em!important;margin-bottom:6px!important}
+    .paywall-inline-sub{font-size:13px!important;color:rgba(248,250,252,0.6)!important;margin-bottom:14px!important;line-height:1.5!important}
+    .paywall-inline-cta{
+      width:100%!important;padding:14px!important;border-radius:14px!important;
+      background:#22D3EE!important;color:#060A0F!important;
+      font-size:16px!important;font-weight:900!important;border:none!important;
+      box-shadow:0 4px 20px rgba(34,211,238,0.3)!important;
+      cursor:pointer!important;font-family:inherit!important;
+    }
+    .paywall-inline-price{font-size:11px!important;color:rgba(248,250,252,0.38)!important;margin-top:8px!important}
 
   </style>
 </head>
@@ -12234,7 +12401,7 @@ if(btnNlFab)btnNlFab.addEventListener('click',function(){setLang('nl');hideLangT
     }
   }catch(_){}
 })();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=25').catch(function(){});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=26').catch(function(){});
 
 function ceLoadTrustStrip(){
   var el=document.getElementById('ce-trust-strip');
