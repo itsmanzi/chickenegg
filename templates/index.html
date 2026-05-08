@@ -5852,6 +5852,332 @@
       transform:scale(0.95)!important;
     }
 
+    /* ══════════════════════════════════════════════════════════
+       v3.6 — SENIOR DESIGNER PASS
+       Scan button · Camera box · Steps
+       ══════════════════════════════════════════════════════════ */
+
+    /* ── SCAN BUTTON: multi-state premium pearl ── */
+    body.cam-tiktok .snap-shutter-ring{
+      width:90px!important;height:90px!important;
+      filter:drop-shadow(0 6px 18px rgba(0,0,0,0.55))!important;
+    }
+    /* Outer ring redesigned with 4 visual states */
+    body.cam-tiktok .snap-shutter-ring::before{
+      border:3px solid rgba(255,255,255,0.85)!important;
+      box-shadow:
+        inset 0 0 0 1px rgba(0,0,0,0.25),
+        0 0 0 2px rgba(0,0,0,0.18)!important;
+      transition:border-color 280ms cubic-bezier(.4,0,.2,1),
+                 box-shadow 280ms cubic-bezier(.4,0,.2,1),
+                 transform 280ms cubic-bezier(.4,0,.2,1)!important;
+      animation:none!important;
+    }
+    /* DETECTING — breath */
+    body.cam-tiktok.ce-cam-detecting:not(.ce-cam-locked):not(.ce-ai-thinking) .snap-shutter-ring::before{
+      animation:ce6RingBreath 2.6s cubic-bezier(.4,0,.2,1) infinite!important;
+    }
+    @keyframes ce6RingBreath{
+      0%,100%{border-color:rgba(255,255,255,0.78);transform:scale(1)}
+      50%{border-color:rgba(255,255,255,1);transform:scale(1.03)}
+    }
+    /* READY — locked, cyan halo */
+    body.cam-tiktok.ce-can-scan .snap-shutter-ring::before,
+    body.cam-tiktok.ce-cam-locked .snap-shutter-ring::before{
+      border-color:#22D3EE!important;
+      box-shadow:
+        inset 0 0 0 1px rgba(0,0,0,0.25),
+        0 0 0 2px rgba(0,0,0,0.18),
+        0 0 24px rgba(34,211,238,0.55),
+        0 0 48px rgba(34,211,238,0.18)!important;
+      animation:none!important;
+    }
+    /* THINKING — slow rotating glow */
+    body.cam-tiktok.ce-ai-thinking .snap-shutter-ring::before{
+      border-color:rgba(34,211,238,0.9)!important;
+      animation:ce6RingThink 1.8s linear infinite!important;
+    }
+    @keyframes ce6RingThink{
+      0%{
+        box-shadow:
+          inset 0 0 0 1px rgba(0,0,0,0.25),
+          0 0 0 2px rgba(0,0,0,0.18),
+          0 -16px 26px rgba(34,211,238,0.55);
+      }
+      25%{box-shadow:inset 0 0 0 1px rgba(0,0,0,0.25),0 0 0 2px rgba(0,0,0,0.18),16px 0 26px rgba(34,211,238,0.55);}
+      50%{box-shadow:inset 0 0 0 1px rgba(0,0,0,0.25),0 0 0 2px rgba(0,0,0,0.18),0 16px 26px rgba(34,211,238,0.55);}
+      75%{box-shadow:inset 0 0 0 1px rgba(0,0,0,0.25),0 0 0 2px rgba(0,0,0,0.18),-16px 0 26px rgba(34,211,238,0.55);}
+      100%{box-shadow:inset 0 0 0 1px rgba(0,0,0,0.25),0 0 0 2px rgba(0,0,0,0.18),0 -16px 26px rgba(34,211,238,0.55);}
+    }
+
+    /* Inner pearl — multi-stop ChromaShine + dual highlights */
+    body.cam-tiktok .snap-shutter-ring .scan-egg{
+      width:70px!important;height:70px!important;min-width:70px!important;min-height:70px!important;
+      background:
+        radial-gradient(circle at 32% 26%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 32%),
+        radial-gradient(circle at 70% 78%, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0) 50%),
+        radial-gradient(circle at 50% 45%, #FFFFFF 0%, #F4F6F9 38%, #DDE2E8 76%, #C2C8D0 100%)!important;
+      box-shadow:
+        inset 0 -3px 7px rgba(0,0,0,0.10),
+        inset 0 2px 3px rgba(255,255,255,1),
+        0 4px 12px rgba(0,0,0,0.45)!important;
+      transition:transform 200ms cubic-bezier(.34,1.6,.64,1),
+                 background 280ms cubic-bezier(.4,0,.2,1)!important;
+    }
+    /* Specular streak overlay */
+    body.cam-tiktok .snap-shutter-ring .scan-egg::before{
+      content:''!important;display:block!important;
+      position:absolute!important;
+      top:9%!important;left:22%!important;width:42%!important;height:24%!important;
+      border-radius:50%!important;
+      background:linear-gradient(180deg,rgba(255,255,255,0.92) 0%,rgba(255,255,255,0) 100%)!important;
+      filter:blur(0.5px)!important;
+      pointer-events:none!important;
+    }
+    body.cam-tiktok .snap-shutter-ring .scan-egg::after{
+      content:''!important;display:block!important;
+      position:absolute!important;inset:5px!important;
+      border-radius:50%!important;
+      border:1px solid rgba(0,0,0,0.05)!important;
+      pointer-events:none!important;
+      background:none!important;opacity:1!important;
+    }
+    /* Press: dual phase (down + bounce on release) */
+    body.cam-tiktok .snap-shutter-ring .scan-egg:active,
+    body.cam-tiktok .snap-shutter-ring .scan-egg.pressed{
+      transform:scale(0.86)!important;
+      box-shadow:
+        inset 0 -1px 2px rgba(0,0,0,0.20),
+        inset 0 4px 8px rgba(0,0,0,0.18),
+        0 1px 3px rgba(0,0,0,0.5)!important;
+    }
+    body.cam-tiktok.ce-can-scan .snap-shutter-ring .scan-egg{
+      background:
+        radial-gradient(circle at 32% 26%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 32%),
+        radial-gradient(circle at 50% 45%, #FFFFFF 0%, #F0FBFF 40%, #C8EFFA 80%, #A8E3F4 100%)!important;
+    }
+    body.cam-tiktok.ce-ai-thinking .snap-shutter-ring .scan-egg{
+      background:radial-gradient(circle at 50% 50%, #67E8F9 0%, #22D3EE 55%, #0891B2 100%)!important;
+      box-shadow:
+        inset 0 0 14px rgba(255,255,255,0.4),
+        0 0 24px rgba(34,211,238,0.7)!important;
+      animation:ce6EggThink 1.8s ease-in-out infinite!important;
+    }
+    @keyframes ce6EggThink{0%,100%{transform:scale(0.94)}50%{transform:scale(1.06)}}
+    body.cam-tiktok.ce-ai-thinking .snap-shutter-ring .scan-egg::before{display:none!important}
+
+    /* ── CAMERA BOX: cinematic viewfinder ── */
+    /* Top vignette — focuses attention */
+    body.cam-tiktok #cam-container::before{
+      content:''!important;display:block!important;
+      position:absolute!important;top:0!important;left:0!important;right:0!important;height:100px!important;
+      background:linear-gradient(180deg,rgba(0,0,0,0.55) 0%,rgba(0,0,0,0) 100%)!important;
+      pointer-events:none!important;z-index:6!important;
+    }
+    /* Bottom vignette — fades into dock */
+    body.cam-tiktok #cam-container::after{
+      content:''!important;display:block!important;
+      position:absolute!important;bottom:0!important;left:0!important;right:0!important;height:200px!important;
+      background:linear-gradient(0deg,rgba(0,0,0,0.78) 0%,rgba(0,0,0,0.35) 50%,rgba(0,0,0,0) 100%)!important;
+      pointer-events:none!important;z-index:6!important;
+    }
+    /* Hide vignettes when results open */
+    body.result-open #cam-container::before,
+    body.result-open #cam-container::after{display:none!important}
+
+    /* Corner brackets — premium thin white */
+    body.cam-tiktok .scan-corner{
+      width:24px!important;height:24px!important;
+      border-color:rgba(255,255,255,0.85)!important;
+      border-width:0!important;border-style:solid!important;
+      opacity:0!important;
+      transition:opacity 300ms cubic-bezier(.4,0,.2,1),
+                 border-color 300ms cubic-bezier(.4,0,.2,1)!important;
+    }
+    body.cam-tiktok .scan-corner.tl{top:18px!important;left:18px!important;border-width:2.5px 0 0 2.5px!important;border-radius:6px 0 0 0!important}
+    body.cam-tiktok .scan-corner.tr{top:18px!important;right:18px!important;border-width:2.5px 2.5px 0 0!important;border-radius:0 6px 0 0!important}
+    body.cam-tiktok .scan-corner.bl{bottom:18px!important;left:18px!important;border-width:0 0 2.5px 2.5px!important;border-radius:0 0 0 6px!important}
+    body.cam-tiktok .scan-corner.br{bottom:18px!important;right:18px!important;border-width:0 2.5px 2.5px 0!important;border-radius:0 0 6px 0!important}
+    /* Show corners when detecting or locked */
+    body.cam-tiktok.ce-cam-detecting .scan-corner,
+    body.cam-tiktok.ce-can-scan .scan-corner,
+    body.cam-tiktok.ce-cam-locked .scan-corner{opacity:0.7!important}
+    body.cam-tiktok.ce-can-scan .scan-corner,
+    body.cam-tiktok.ce-cam-locked .scan-corner{
+      border-color:#22D3EE!important;opacity:0.95!important;
+    }
+
+    /* Reticle — refined donut with state */
+    body.cam-tiktok .ce-reticle{
+      width:14px!important;height:14px!important;
+      border:2px solid rgba(255,255,255,0.8)!important;
+      background:radial-gradient(circle,rgba(255,255,255,0.95) 0%,rgba(255,255,255,0.95) 30%,transparent 35%)!important;
+      box-shadow:0 0 0 3px rgba(0,0,0,0.18)!important;
+      border-radius:50%!important;
+      opacity:0.9!important;
+      transition:all 250ms cubic-bezier(.4,0,.2,1)!important;
+    }
+    body.cam-tiktok.ce-can-scan .ce-reticle,
+    body.cam-tiktok.ce-cam-locked .ce-reticle{
+      border-color:#22D3EE!important;
+      box-shadow:0 0 14px rgba(34,211,238,0.7),0 0 0 3px rgba(0,0,0,0.18)!important;
+      transform:translate(-50%,-50%) scale(1.15)!important;
+    }
+    /* Hide reticle when thinking */
+    body.cam-tiktok.ce-ai-thinking .ce-reticle{opacity:0!important}
+
+    /* Subtle viewport frame border */
+    body.cam-tiktok #cam-container > video,
+    body.cam-tiktok #cam-container > canvas{
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,0.06)!important;
+    }
+    /* Edge-glow when AI thinking — full viewport haze */
+    body.cam-tiktok.ce-ai-thinking #cam-container::before{
+      background:linear-gradient(180deg,rgba(0,0,0,0.55) 0%,rgba(0,0,0,0) 100%),
+                 linear-gradient(180deg,rgba(34,211,238,0.18) 0%,transparent 30%)!important;
+    }
+
+    /* ── STEPS: iOS-Reminders-style premium timeline ── */
+    /* Wrapper gets a vertical thread line behind step badges */
+    body.result-open.cam-tiktok #r-steps{
+      position:relative!important;
+      padding-left:0!important;
+      gap:6px!important;
+    }
+    body.result-open.cam-tiktok #r-steps::before{
+      content:''!important;display:block!important;
+      position:absolute!important;
+      left:21px!important;top:24px!important;bottom:24px!important;width:1.5px!important;
+      background:linear-gradient(180deg,
+        rgba(34,211,238,0.4) 0%,
+        rgba(255,255,255,0.08) 30%,
+        rgba(255,255,255,0.08) 100%)!important;
+      pointer-events:none!important;z-index:0!important;
+    }
+    body.result-open.cam-tiktok #r-steps .step-item{
+      position:relative!important;z-index:1!important;
+      padding:18px 16px 18px 14px!important;
+      background:rgba(255,255,255,0.025)!important;
+      border:1px solid rgba(255,255,255,0.06)!important;
+      border-radius:18px!important;
+      gap:14px!important;
+      transition:all 300ms cubic-bezier(.4,0,.2,1)!important;
+      box-shadow:0 1px 0 rgba(255,255,255,0.04) inset!important;
+    }
+    /* Step badge: 32px disc with depth */
+    body.result-open.cam-tiktok #r-steps .step-item::before{
+      min-width:32px!important;width:32px!important;height:32px!important;
+      border-radius:50%!important;
+      background:linear-gradient(180deg,rgba(34,211,238,0.18),rgba(34,211,238,0.08))!important;
+      border:1px solid rgba(34,211,238,0.32)!important;
+      color:#22D3EE!important;
+      font-size:13px!important;font-weight:700!important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        0 2px 8px rgba(0,0,0,0.3)!important;
+      transition:all 300ms cubic-bezier(.4,0,.2,1)!important;
+      margin-top:0!important;
+    }
+    /* Active step (current) — elevated, glowing */
+    body.result-open.cam-tiktok #r-steps .step-item.active-step,
+    body.result-open.cam-tiktok #r-steps .step-item.ce-step-active{
+      background:linear-gradient(135deg,rgba(34,211,238,0.08),rgba(34,211,238,0.02))!important;
+      border-color:rgba(34,211,238,0.25)!important;
+      box-shadow:0 8px 24px rgba(0,0,0,0.4),0 0 0 1px rgba(34,211,238,0.15) inset!important;
+      transform:translateZ(0) scale(1.01)!important;
+    }
+    body.result-open.cam-tiktok #r-steps .step-item.active-step::before,
+    body.result-open.cam-tiktok #r-steps .step-item.ce-step-active::before{
+      background:linear-gradient(180deg,#22D3EE,#0EA5E9)!important;
+      color:#060A0F!important;
+      border-color:#22D3EE!important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.4),
+        0 0 18px rgba(34,211,238,0.55),
+        0 4px 12px rgba(0,0,0,0.4)!important;
+      transform:scale(1.08)!important;
+    }
+    /* Done step — green check, faded text */
+    body.result-open.cam-tiktok #r-steps .step-item.ce-step-done{
+      background:rgba(16,185,129,0.04)!important;
+      border-color:rgba(16,185,129,0.12)!important;
+    }
+    body.result-open.cam-tiktok #r-steps .step-item.ce-step-done::before{
+      content:'✓'!important;
+      background:linear-gradient(180deg,rgba(16,185,129,0.22),rgba(16,185,129,0.10))!important;
+      border-color:rgba(16,185,129,0.45)!important;
+      color:#34D399!important;
+      transform:scale(0.92)!important;
+    }
+    body.result-open.cam-tiktok #r-steps .step-item.ce-step-done .s-txt{
+      color:rgba(248,250,252,0.45)!important;
+      text-decoration:line-through!important;
+      text-decoration-color:rgba(248,250,252,0.25)!important;
+    }
+    /* Step text — first sentence is the action (heavier), rest mutes */
+    body.result-open.cam-tiktok #r-steps .step-item .s-txt{
+      font-size:15px!important;
+      font-weight:500!important;
+      line-height:1.5!important;
+      color:#ECEFF4!important;
+      letter-spacing:-0.005em!important;
+      padding-top:5px!important;
+    }
+    /* Step extras (pro tip, watch out, etc.) sit below s-txt — muted */
+    body.result-open.cam-tiktok #r-steps .step-item .step-pro,
+    body.result-open.cam-tiktok #r-steps .step-item .step-watch,
+    body.result-open.cam-tiktok #r-steps .step-item .step-mat-line{
+      font-size:12.5px!important;
+      color:rgba(248,250,252,0.55)!important;
+      line-height:1.5!important;
+      margin-top:2px!important;
+    }
+    /* Locked step blur — subtler */
+    body.result-open.cam-tiktok #r-steps .step-item.step-locked{
+      filter:blur(3px) saturate(0.8)!important;
+      pointer-events:none!important;opacity:0.4!important;
+    }
+    /* Press feedback on tap */
+    body.result-open.cam-tiktok #r-steps .step-item:active{
+      transform:scale(0.99)!important;
+      transition:transform 100ms ease!important;
+    }
+
+    /* Steps section header refined */
+    body.result-open.cam-tiktok #steps-card{
+      padding:18px 0 0!important;
+    }
+    body.result-open.cam-tiktok #steps-card .steps-top{
+      padding:0 4px 14px!important;
+    }
+    body.result-open.cam-tiktok #steps-card .steps-top .card-lbl{
+      font-size:11px!important;font-weight:800!important;
+      letter-spacing:0.16em!important;text-transform:uppercase!important;
+      color:rgba(248,250,252,0.4)!important;
+    }
+    body.result-open.cam-tiktok #steps-card .steps-ct{
+      font-size:11px!important;font-weight:700!important;
+      color:rgba(248,250,252,0.5)!important;
+      padding:5px 11px!important;
+      background:rgba(255,255,255,0.05)!important;
+      border:1px solid rgba(255,255,255,0.07)!important;
+      border-radius:999px!important;
+    }
+    /* Progress bar refined */
+    body.result-open.cam-tiktok #steps-card .prog-track{
+      height:3px!important;
+      background:rgba(255,255,255,0.05)!important;
+      border-radius:999px!important;
+      margin:0 4px 16px!important;
+      overflow:hidden!important;
+    }
+    body.result-open.cam-tiktok #steps-card .prog-fill{
+      background:linear-gradient(90deg,#22D3EE,#0EA5E9)!important;
+      box-shadow:0 0 12px rgba(34,211,238,0.6)!important;
+      border-radius:999px!important;
+      transition:width 400ms cubic-bezier(.4,0,.2,1)!important;
+    }
+
   </style>
 </head>
 <body class="cam-tiktok" data-ce-deploy-sha="{{ ce_deploy_sha|default('', true) }}">
@@ -13072,7 +13398,7 @@ if(btnNlFab)btnNlFab.addEventListener('click',function(){setLang('nl');hideLangT
     }
   }catch(_){}
 })();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=31').catch(function(){});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=32').catch(function(){});
 
 function ceLoadTrustStrip(){
   var el=document.getElementById('ce-trust-strip');
