@@ -6480,6 +6480,176 @@
       text-align:center!important;opacity:0.6!important;
     }
 
+    /* ══════════════════════════════════════════════════════════
+       v3.8 — Hollands Huis: header, brand mark, states
+       ══════════════════════════════════════════════════════════ */
+
+    /* ── HEADER: warm walnut + Oranje accent line ── */
+    .hdr{
+      background:linear-gradient(180deg, rgba(36,26,20,0.92), rgba(27,20,16,0.88))!important;
+      backdrop-filter:blur(20px) saturate(140%)!important;
+      -webkit-backdrop-filter:blur(20px) saturate(140%)!important;
+      border-bottom:1px solid rgba(245,239,227,0.06)!important;
+      box-shadow:0 1px 0 rgba(232,119,34,0.18)!important;
+      position:relative!important;
+    }
+    .hdr::after{
+      content:''!important;display:block!important;
+      position:absolute!important;left:0!important;right:0!important;bottom:-1px!important;height:2px!important;
+      background:linear-gradient(90deg,transparent 0%,var(--nl-oranje) 30%,var(--nl-oranje-light) 50%,var(--nl-oranje) 70%,transparent 100%)!important;
+      opacity:0.45!important;pointer-events:none!important;
+    }
+
+    /* Brand word: "chicken" cream / "egg" Oranje */
+    .brand-word{
+      color:var(--nl-text-1)!important;
+      font-weight:800!important;letter-spacing:-0.01em!important;
+    }
+    .brand-word span{color:var(--nl-oranje-light)!important}
+
+    /* Logo egg: warm Oranje rim instead of metallic gold */
+    .lmark{filter:drop-shadow(0 2px 6px rgba(232,119,34,0.35))!important}
+
+    /* Hero hint / pre-scan copy */
+    .hero-h1{
+      color:var(--nl-text-1)!important;
+      text-shadow:0 0 16px rgba(232,119,34,0.18)!important;
+      font-weight:700!important;
+    }
+    .hero-h1 span{color:var(--nl-oranje-light)!important}
+    .hero-p{color:var(--nl-text-2)!important}
+
+    /* ── ALL-DONE CARD: verdigris instead of neon green ── */
+    #all-done{
+      background:linear-gradient(135deg, rgba(74,124,89,0.16), rgba(74,124,89,0.04))!important;
+      border:1px solid rgba(74,124,89,0.32)!important;
+      box-shadow:0 12px 32px rgba(0,0,0,0.45)!important;
+    }
+    #all-done h3{color:#7AB089!important;font-weight:700!important}
+    #all-done p{color:var(--nl-text-2)!important}
+    #all-done .ce-dc-circle,#all-done .ce-dc-check{stroke:#7AB089!important}
+    #all-done .done-xp{
+      color:var(--nl-oranje-light)!important;font-weight:700!important;
+    }
+
+    /* ── TASK LOCKED: oxblood + warm leather ── */
+    #task-locked{
+      background:linear-gradient(135deg, rgba(156,42,42,0.12), rgba(36,26,20,0.96))!important;
+      border:1px solid rgba(156,42,42,0.4)!important;
+      box-shadow:0 12px 32px rgba(0,0,0,0.5)!important;
+    }
+    #task-locked h3{color:#E59999!important;font-weight:700!important}
+    #task-locked p{color:var(--nl-text-2)!important}
+    #task-locked .ec-contacts p{color:var(--nl-text-3)!important}
+    #task-locked .ec-item{
+      background:rgba(245,239,227,0.04)!important;
+      border:1px solid var(--nl-line)!important;
+    }
+    #task-locked .ec-item a{color:var(--nl-oranje-light)!important;font-weight:700!important}
+
+    /* ── HAZARD HERO: warm danger language ── */
+    .hazard-hero--critical,
+    body>.hazard-hero.hazard-hero--critical.show{
+      background:linear-gradient(152deg, rgba(156,42,42,0.18), rgba(36,26,20,0.96))!important;
+      border:1.5px solid rgba(156,42,42,0.5)!important;
+      box-shadow:0 12px 32px rgba(0,0,0,0.5),0 0 0 1px rgba(156,42,42,0.2) inset!important;
+    }
+    .hazard-hero--warn{
+      background:linear-gradient(135deg, rgba(212,162,76,0.12), rgba(36,26,20,0.94))!important;
+      border:1px solid rgba(212,162,76,0.35)!important;
+    }
+    .hazard-hero--caution{
+      background:linear-gradient(135deg, rgba(212,162,76,0.08), rgba(36,26,20,0.92))!important;
+      border:1px solid rgba(212,162,76,0.28)!important;
+    }
+    .hazard-hero--critical .hazard-hero-badge{color:#E59999!important}
+    .hazard-hero--warn .hazard-hero-badge{color:#E2BC6E!important}
+    .hazard-hero--caution .hazard-hero-badge{color:#E2BC6E!important}
+
+    /* ── DOCK PILLS: warm walnut glass ── */
+    body.cam-tiktok .dock-pill{
+      background:rgba(36,26,20,0.7)!important;
+      border:1px solid rgba(245,239,227,0.1)!important;
+      color:var(--nl-text-1)!important;
+    }
+    body.cam-tiktok .dock-pill:not(:disabled){
+      box-shadow:0 4px 14px rgba(0,0,0,0.4),0 0 0 1px rgba(232,119,34,0.06) inset!important;
+    }
+
+    /* ── CONFETTI / FANFARE colors → match palette ── */
+    .ce-confetti{filter:hue-rotate(0deg) saturate(1.1)!important}
+
+    /* ── HAZARD BANNER: warm danger ── */
+    .hazard-banner.danger,.hazard-banner.emergency{
+      background:linear-gradient(135deg, rgba(156,42,42,0.2), rgba(36,26,20,0.96))!important;
+      border:1px solid rgba(156,42,42,0.5)!important;
+      color:#F0D8D2!important;
+    }
+    .hazard-banner.warning,.hazard-banner.caution{
+      background:linear-gradient(135deg, rgba(212,162,76,0.14), rgba(36,26,20,0.94))!important;
+      border:1px solid rgba(212,162,76,0.4)!important;
+      color:#F0E2C8!important;
+    }
+
+    /* ── EMAIL COLLECT card ── */
+    body.result-open.cam-tiktok #ec{
+      background:linear-gradient(180deg, rgba(245,239,227,0.04), rgba(245,239,227,0.015))!important;
+      border:1px solid var(--nl-line)!important;
+      border-radius:18px!important;
+    }
+    .ec-inp{
+      background:rgba(27,20,16,0.6)!important;
+      border:1px solid var(--nl-line)!important;
+      color:var(--nl-text-1)!important;
+    }
+    .ec-inp:focus{outline:2px solid var(--nl-oranje-line)!important;outline-offset:2px!important}
+    .ec-sub{
+      background:var(--nl-oranje)!important;color:#1B1410!important;font-weight:700!important;
+      box-shadow:0 4px 14px rgba(232,119,34,0.35)!important;
+    }
+
+    /* ── AGREEMENT MODAL: warm leather sheet ── */
+    .ag-sheet{
+      background:linear-gradient(180deg, #2E2218, #241A14)!important;
+      border-top:1px solid var(--nl-line-strong)!important;
+      box-shadow:0 -16px 48px rgba(0,0,0,0.6)!important;
+    }
+    .ag-handle{background:rgba(245,239,227,0.18)!important}
+    .ag-lname .p1{color:var(--nl-text-1)!important}
+    .ag-lname .p2{color:var(--nl-oranje-light)!important}
+
+    /* ── SCAN GUIDE / FAQ sheets ── */
+    .ce-scan-guide-sheet{
+      background:linear-gradient(180deg, #2E2218, #241A14)!important;
+      border:1px solid var(--nl-line)!important;
+      color:var(--nl-text-1)!important;
+    }
+    .ce-scan-guide-close{
+      background:var(--nl-oranje)!important;color:#1B1410!important;font-weight:700!important;
+    }
+
+    /* ── LOW CONFIDENCE BANNER ── */
+    body.result-open.cam-tiktok #ce-low-conf-banner{
+      background:linear-gradient(135deg, rgba(212,162,76,0.10), rgba(36,26,20,0.94))!important;
+      border:1px solid rgba(212,162,76,0.3)!important;
+      color:var(--nl-text-1)!important;
+    }
+
+    /* ── CHECK PROGRESS button on each step ── */
+    .step-check-btn,.ce-progress-check-btn{
+      background:rgba(232,119,34,0.10)!important;
+      border:1px solid var(--nl-oranje-line)!important;
+      color:var(--nl-oranje-light)!important;
+      font-weight:600!important;
+    }
+
+    /* ── PIN screen (if rendered) ── */
+    .pin-pad-btn{
+      background:rgba(245,239,227,0.05)!important;
+      border:1px solid var(--nl-line)!important;
+      color:var(--nl-text-1)!important;
+    }
+
   </style>
 </head>
 <body class="cam-tiktok" data-ce-deploy-sha="{{ ce_deploy_sha|default('', true) }}">
@@ -13700,7 +13870,7 @@ if(btnNlFab)btnNlFab.addEventListener('click',function(){setLang('nl');hideLangT
     }
   }catch(_){}
 })();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=33').catch(function(){});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=34').catch(function(){});
 
 function ceLoadTrustStrip(){
   var el=document.getElementById('ce-trust-strip');
