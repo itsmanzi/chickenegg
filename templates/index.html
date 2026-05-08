@@ -6178,6 +6178,308 @@
       transition:width 400ms cubic-bezier(.4,0,.2,1)!important;
     }
 
+    /* ══════════════════════════════════════════════════════════
+       v3.7 — "HOLLANDS HUIS" BRAND IDENTITY
+       Dutch heritage palette · warm walnut + Oranje + Delft Blue
+       Paper grain texture · gezellig but premium
+       ══════════════════════════════════════════════════════════ */
+    :root{
+      /* Dutch heritage palette */
+      --nl-bg-base:#1B1410;         /* warm walnut-charcoal */
+      --nl-bg-surface:#241A14;       /* soft wood */
+      --nl-bg-elevated:#2E2218;      /* warm leather */
+      --nl-bg-paper:#F5EFE3;         /* linen cream */
+      --nl-text-1:#F5EFE3;           /* linen cream */
+      --nl-text-2:#C9BFA8;           /* warm sand */
+      --nl-text-3:#8B8270;           /* faded khaki */
+      --nl-line:rgba(245,239,227,0.08);
+      --nl-line-strong:rgba(245,239,227,0.16);
+      --nl-oranje:#E87722;           /* Dutch orange — primary action */
+      --nl-oranje-light:#F39247;     /* warm lighter */
+      --nl-oranje-deep:#B85A14;      /* burnished */
+      --nl-oranje-soft:rgba(232,119,34,0.12);
+      --nl-oranje-line:rgba(232,119,34,0.32);
+      --nl-delft:#1E3A5F;            /* Delft Blue */
+      --nl-delft-soft:rgba(30,58,95,0.18);
+      --nl-success:#4A7C59;          /* verdigris */
+      --nl-warning:#D4A24C;          /* burnished gold */
+      --nl-danger:#9C2A2A;           /* oxblood */
+    }
+
+    /* Paper grain texture — applied via SVG data URL noise */
+    body.cam-tiktok::before,
+    body.result-open.cam-tiktok #results::before{
+      content:''!important;display:block!important;
+      position:fixed!important;inset:0!important;
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.96 0 0 0 0 0.94 0 0 0 0 0.89 0 0 0 0.04 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")!important;
+      pointer-events:none!important;z-index:1!important;
+      opacity:0.55!important;
+      mix-blend-mode:overlay!important;
+    }
+
+    /* ── BODY: warm walnut base ── */
+    body.cam-tiktok{
+      background:radial-gradient(120% 80% at 50% -10%, #2E2218 0%, #1B1410 70%) !important;
+    }
+
+    /* ── RESULTS PANEL: warm leather gradient ── */
+    body.result-open.cam-tiktok #results{
+      background:
+        radial-gradient(80% 50% at 50% 0%, rgba(232,119,34,0.05) 0%, rgba(232,119,34,0) 60%),
+        linear-gradient(180deg, #261C16 0%, #1B1410 100%)!important;
+    }
+    body.result-open.cam-tiktok #results::before{
+      position:absolute!important;
+      opacity:0.35!important;
+    }
+
+    /* ── HERO CARD: leather + warm wash ── */
+    body.result-open.cam-tiktok #decision-card{
+      background:
+        radial-gradient(120% 80% at 50% 0%, rgba(232,119,34,0.10) 0%, rgba(232,119,34,0) 60%),
+        linear-gradient(180deg, #2E2218, #241A14)!important;
+      border:1px solid var(--nl-line-strong)!important;
+      border-radius:18px!important;
+      box-shadow:
+        inset 0 1px 0 rgba(245,239,227,0.06),
+        0 12px 36px rgba(0,0,0,0.5)!important;
+    }
+    body.result-open.cam-tiktok #decision-card::before{
+      background:linear-gradient(90deg,transparent,rgba(232,119,34,0.4),transparent)!important;
+    }
+    body.result-open.cam-tiktok #decision-title{
+      color:var(--nl-text-1)!important;
+      background:none!important;-webkit-text-fill-color:initial!important;
+    }
+    body.result-open.cam-tiktok #decision-confidence-pill{
+      background:var(--nl-oranje-soft)!important;
+      border:1px solid var(--nl-oranje-line)!important;
+      color:var(--nl-oranje-light)!important;
+    }
+    body.result-open.cam-tiktok #decision-confidence-pill::before{
+      background:var(--nl-oranje)!important;box-shadow:0 0 8px var(--nl-oranje)!important;
+    }
+
+    /* ── STAT CHIPS: warm wood with Oranje icons ── */
+    body.result-open.cam-tiktok .ce-fact{
+      background:linear-gradient(180deg, rgba(245,239,227,0.04), rgba(245,239,227,0.015))!important;
+      border:1px solid var(--nl-line)!important;
+      box-shadow:inset 0 1px 0 rgba(245,239,227,0.04)!important;
+    }
+    body.result-open.cam-tiktok .ce-fact::before{
+      background-color:var(--nl-oranje-soft)!important;
+      border:1px solid var(--nl-oranje-line)!important;
+    }
+    body.result-open.cam-tiktok #decision-facts .ce-fact:nth-child(1)::before{
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23F39247' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>")!important;
+    }
+    body.result-open.cam-tiktok #decision-facts .ce-fact:nth-child(2)::before{
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23F39247' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><line x1='12' y1='1' x2='12' y2='23'/><path d='M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6'/></svg>")!important;
+    }
+    body.result-open.cam-tiktok #decision-facts .ce-fact:nth-child(3)::before{
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23F39247' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M9 12l2 2 4-4'/><circle cx='12' cy='12' r='10'/></svg>")!important;
+    }
+    body.result-open.cam-tiktok .ce-fact-k{color:var(--nl-text-3)!important;font-weight:600!important}
+    body.result-open.cam-tiktok .ce-fact-v{color:var(--nl-text-1)!important;font-weight:700!important}
+
+    /* ── STEPS: Oranje thread + badges ── */
+    body.result-open.cam-tiktok #r-steps::before{
+      background:linear-gradient(180deg,
+        var(--nl-oranje) 0%,
+        rgba(232,119,34,0.3) 30%,
+        rgba(245,239,227,0.08) 100%)!important;
+    }
+    body.result-open.cam-tiktok #r-steps .step-item{
+      background:linear-gradient(180deg, rgba(245,239,227,0.04), rgba(245,239,227,0.02))!important;
+      border:1px solid var(--nl-line)!important;
+      box-shadow:inset 0 1px 0 rgba(245,239,227,0.04)!important;
+    }
+    body.result-open.cam-tiktok #r-steps .step-item::before{
+      background:linear-gradient(180deg,rgba(232,119,34,0.22),rgba(232,119,34,0.08))!important;
+      border:1px solid var(--nl-oranje-line)!important;
+      color:var(--nl-oranje-light)!important;
+      box-shadow:
+        inset 0 1px 0 rgba(245,239,227,0.18),
+        0 2px 8px rgba(0,0,0,0.3)!important;
+    }
+    body.result-open.cam-tiktok #r-steps .step-item.active-step::before,
+    body.result-open.cam-tiktok #r-steps .step-item.ce-step-active::before{
+      background:linear-gradient(180deg,var(--nl-oranje-light),var(--nl-oranje))!important;
+      color:#1B1410!important;
+      border-color:var(--nl-oranje-light)!important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.4),
+        0 0 18px rgba(232,119,34,0.55),
+        0 4px 12px rgba(0,0,0,0.4)!important;
+    }
+    body.result-open.cam-tiktok #r-steps .step-item.active-step,
+    body.result-open.cam-tiktok #r-steps .step-item.ce-step-active{
+      background:linear-gradient(135deg,rgba(232,119,34,0.07),rgba(232,119,34,0.015))!important;
+      border-color:rgba(232,119,34,0.22)!important;
+      box-shadow:0 8px 24px rgba(0,0,0,0.45),inset 0 0 0 1px rgba(232,119,34,0.12)!important;
+    }
+    body.result-open.cam-tiktok #r-steps .step-item.ce-step-done{
+      background:rgba(74,124,89,0.04)!important;
+      border-color:rgba(74,124,89,0.15)!important;
+    }
+    body.result-open.cam-tiktok #r-steps .step-item.ce-step-done::before{
+      background:linear-gradient(180deg,rgba(74,124,89,0.25),rgba(74,124,89,0.10))!important;
+      border-color:rgba(74,124,89,0.45)!important;
+      color:#7AB089!important;
+    }
+    body.result-open.cam-tiktok #r-steps .step-item .s-txt{
+      color:var(--nl-text-1)!important;
+    }
+    body.result-open.cam-tiktok #steps-card .prog-fill{
+      background:linear-gradient(90deg,var(--nl-oranje),var(--nl-oranje-light))!important;
+      box-shadow:0 0 12px rgba(232,119,34,0.6)!important;
+    }
+
+    /* ── TOOLS: warm leather ── */
+    body.result-open.cam-tiktok #tools-card{
+      background:linear-gradient(180deg, rgba(245,239,227,0.04), rgba(245,239,227,0.015))!important;
+      border:1px solid var(--nl-line)!important;
+    }
+    body.result-open.cam-tiktok #tools-card .card-lbl,
+    body.result-open.cam-tiktok #steps-card .steps-top .card-lbl{
+      color:var(--nl-text-3)!important;
+    }
+
+    /* ── RENTAL CARD: Delft Blue for landlord, warm for tenant ── */
+    body.result-open.cam-tiktok #ce-rental-card.ce-rental--landlord{
+      background:linear-gradient(145deg, rgba(30,58,95,0.18), rgba(36,26,20,0.96))!important;
+      border:1px solid rgba(30,58,95,0.35)!important;
+      box-shadow:0 4px 20px rgba(0,0,0,0.4)!important;
+    }
+    body.result-open.cam-tiktok .ce-rental-card.ce-rental--landlord .ce-rental-icon{
+      color:#7FA8D4!important;
+      background:rgba(30,58,95,0.18)!important;
+      border-color:rgba(30,58,95,0.4)!important;
+    }
+    body.result-open.cam-tiktok .ce-rental-card.ce-rental--landlord .ce-rental-cta{
+      background:#3A5C8A!important;color:var(--nl-text-1)!important;
+      box-shadow:0 4px 14px rgba(30,58,95,0.4)!important;
+    }
+    body.result-open.cam-tiktok .ce-rental-card.ce-rental--tenant{
+      background:linear-gradient(145deg, rgba(74,124,89,0.10), rgba(36,26,20,0.96))!important;
+      border:1px solid rgba(74,124,89,0.28)!important;
+    }
+    body.result-open.cam-tiktok .ce-rental-card.ce-rental--tenant .ce-rental-icon{
+      color:#7AB089!important;
+      background:rgba(74,124,89,0.12)!important;
+      border-color:rgba(74,124,89,0.35)!important;
+    }
+    body.result-open.cam-tiktok .ce-rental-cta{
+      background:var(--nl-oranje)!important;color:#1B1410!important;font-weight:700!important;
+      box-shadow:0 4px 14px rgba(232,119,34,0.35)!important;
+    }
+    body.result-open.cam-tiktok .ce-rental-headline{color:var(--nl-text-1)!important}
+    body.result-open.cam-tiktok .ce-rental-sub{color:var(--nl-text-2)!important}
+
+    /* ── PRO TEASER: Oranje + warm ── */
+    body.result-open.cam-tiktok #ce-paywall-teaser{
+      background:
+        radial-gradient(120% 80% at 50% 0%, rgba(232,119,34,0.18) 0%, rgba(232,119,34,0) 70%),
+        linear-gradient(180deg, #2E2218, #241A14)!important;
+      border:1px solid var(--nl-oranje-line)!important;
+      box-shadow:0 12px 36px rgba(0,0,0,0.5)!important;
+    }
+    .paywall-inline{
+      background:
+        radial-gradient(120% 80% at 50% 0%, rgba(232,119,34,0.18) 0%, rgba(232,119,34,0) 70%),
+        linear-gradient(180deg, #2E2218, #241A14)!important;
+      border:1px solid var(--nl-oranje-line)!important;
+    }
+    .paywall-inline-cta{
+      background:var(--nl-oranje)!important;color:#1B1410!important;
+      box-shadow:0 4px 20px rgba(232,119,34,0.35)!important;
+    }
+
+    /* ── SHOP STRIP: Oranje accent ── */
+    body.result-open.cam-tiktok .ad-banner{
+      background:linear-gradient(135deg, rgba(232,119,34,0.08), rgba(36,26,20,0.96))!important;
+      border:1px solid var(--nl-oranje-line)!important;
+    }
+    body.result-open.cam-tiktok .ad-banner .ad-cta{
+      background:var(--nl-oranje)!important;color:#1B1410!important;font-weight:700!important;
+    }
+
+    /* ── BACK BAR + RESET ── */
+    body.result-open.cam-tiktok .results-back,
+    body.result-open.cam-tiktok .rst-btn{
+      background:rgba(245,239,227,0.04)!important;
+      border:1px solid var(--nl-line)!important;
+      color:var(--nl-text-2)!important;
+    }
+
+    /* ── CAMERA: Oranje for ready/locked instead of cyan ── */
+    body.cam-tiktok.ce-can-scan .snap-shutter-ring::before,
+    body.cam-tiktok.ce-cam-locked .snap-shutter-ring::before{
+      border-color:var(--nl-oranje)!important;
+      box-shadow:
+        inset 0 0 0 1px rgba(0,0,0,0.25),
+        0 0 0 2px rgba(0,0,0,0.18),
+        0 0 24px rgba(232,119,34,0.55),
+        0 0 48px rgba(232,119,34,0.18)!important;
+    }
+    body.cam-tiktok.ce-ai-thinking .snap-shutter-ring::before{
+      border-color:var(--nl-oranje)!important;
+      animation:ce7RingThink 1.8s linear infinite!important;
+    }
+    @keyframes ce7RingThink{
+      0%{box-shadow:inset 0 0 0 1px rgba(0,0,0,0.25),0 0 0 2px rgba(0,0,0,0.18),0 -16px 26px rgba(232,119,34,0.55);}
+      25%{box-shadow:inset 0 0 0 1px rgba(0,0,0,0.25),0 0 0 2px rgba(0,0,0,0.18),16px 0 26px rgba(232,119,34,0.55);}
+      50%{box-shadow:inset 0 0 0 1px rgba(0,0,0,0.25),0 0 0 2px rgba(0,0,0,0.18),0 16px 26px rgba(232,119,34,0.55);}
+      75%{box-shadow:inset 0 0 0 1px rgba(0,0,0,0.25),0 0 0 2px rgba(0,0,0,0.18),-16px 0 26px rgba(232,119,34,0.55);}
+      100%{box-shadow:inset 0 0 0 1px rgba(0,0,0,0.25),0 0 0 2px rgba(0,0,0,0.18),0 -16px 26px rgba(232,119,34,0.55);}
+    }
+    body.cam-tiktok.ce-can-scan .snap-shutter-ring .scan-egg{
+      background:
+        radial-gradient(circle at 32% 26%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 32%),
+        radial-gradient(circle at 50% 45%, #FFFFFF 0%, #FFF6EE 40%, #FFE0C2 80%, #FFCB95 100%)!important;
+    }
+    body.cam-tiktok.ce-ai-thinking .snap-shutter-ring .scan-egg{
+      background:radial-gradient(circle at 50% 50%, #F39247 0%, #E87722 55%, #B85A14 100%)!important;
+      box-shadow:
+        inset 0 0 14px rgba(255,255,255,0.4),
+        0 0 24px rgba(232,119,34,0.7)!important;
+    }
+    /* Camera corners + reticle: Oranje when locked */
+    body.cam-tiktok.ce-can-scan .scan-corner,
+    body.cam-tiktok.ce-cam-locked .scan-corner{
+      border-color:var(--nl-oranje)!important;
+    }
+    body.cam-tiktok.ce-can-scan .ce-reticle,
+    body.cam-tiktok.ce-cam-locked .ce-reticle{
+      border-color:var(--nl-oranje)!important;
+      box-shadow:0 0 14px rgba(232,119,34,0.7),0 0 0 3px rgba(0,0,0,0.18)!important;
+    }
+    /* Edge-glow during AI thinking — Oranje */
+    body.cam-tiktok.ce-ai-thinking #cam-container::before{
+      background:linear-gradient(180deg,rgba(0,0,0,0.55) 0%,rgba(0,0,0,0) 100%),
+                 linear-gradient(180deg,rgba(232,119,34,0.18) 0%,transparent 30%)!important;
+    }
+    /* Scan label pill — Oranje when ready/thinking */
+    body.cam-tiktok.ce-can-scan .cam-dock .slbl,
+    body.cam-tiktok.ce-cam-locked .cam-dock .slbl{
+      color:var(--nl-oranje-light)!important;
+      border-color:var(--nl-oranje-line)!important;
+      box-shadow:0 4px 18px rgba(0,0,0,0.55),0 0 14px rgba(232,119,34,0.3)!important;
+    }
+    body.cam-tiktok.ce-ai-thinking .cam-dock .slbl{
+      color:var(--nl-oranje-light)!important;
+      border-color:var(--nl-oranje-line)!important;
+    }
+
+    /* ── HERITAGE STAMP: tiny "Made in NL" footer signature ── */
+    body.result-open.cam-tiktok .rst-btn::after{
+      content:'🇳🇱  Gemaakt in Nederland'!important;
+      display:block!important;
+      font-size:10px!important;font-weight:600!important;letter-spacing:0.08em!important;
+      color:var(--nl-text-3)!important;margin-top:14px!important;
+      text-align:center!important;opacity:0.6!important;
+    }
+
   </style>
 </head>
 <body class="cam-tiktok" data-ce-deploy-sha="{{ ce_deploy_sha|default('', true) }}">
@@ -13398,7 +13700,7 @@ if(btnNlFab)btnNlFab.addEventListener('click',function(){setLang('nl');hideLangT
     }
   }catch(_){}
 })();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=32').catch(function(){});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=33').catch(function(){});
 
 function ceLoadTrustStrip(){
   var el=document.getElementById('ce-trust-strip');
