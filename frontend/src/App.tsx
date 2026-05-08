@@ -1,4 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import Button from "./design-system/Button";
+import Card from "./design-system/Card";
+import AnalyzingState from "./design-system/AnalyzingState";
+import "./design-system/global-styles.css";
 import "./App.css";
 
 type Danger = "low" | "medium" | "high";
@@ -255,9 +259,9 @@ export default function App() {
             ) : (
               <div className="cam-fallback">
                 <p>{camError}</p>
-                <button type="button" className="btn-snap-primary" onClick={() => fileRef.current?.click()}>
+                <Button variant="primary" onClick={() => fileRef.current?.click()}>
                   Open Memories
-                </button>
+                </Button>
               </div>
             )}
             <div className="cam-fade-top" />
@@ -274,17 +278,9 @@ export default function App() {
             </div>
           </header>
 
-          <div className={`scan-fx ${phase === "loading" ? "" : "off"}`}>
-            <div className="wave wave--snap" />
-            <div className="wave wave--snap" />
-            <div className="wave wave--snap" />
-          </div>
-
           {phase === "loading" && (
-            <div className="thinking thinking--snap">
-              <span className="thinking-dot" />
-              Scanning
-              <span className="thinking-dots">...</span>
+            <div className="analyzing-overlay">
+              <AnalyzingState message="Analyzing" />
             </div>
           )}
 
@@ -339,7 +335,7 @@ export default function App() {
       {phase === "celebrate" && data ? (
         <div className="mvp-celebrate" role="dialog" aria-labelledby="mvp-celebrate-ttl" aria-modal="true">
           <div className="mvp-celebrate-burst" aria-hidden />
-          <div className="mvp-celebrate-card">
+          <Card variant="premium" className="mvp-celebrate-card">
             <div className="mvp-celebrate-ico" aria-hidden>
               🏆
             </div>
@@ -347,17 +343,17 @@ export default function App() {
               You did it!
             </h2>
             <p className="mvp-celebrate-sub">That fix is yours. One more tap to lock in early access.</p>
-            <button type="button" className="btn-snap-primary mvp-celebrate-btn" onClick={continueFromCelebrate}>
+            <Button variant="primary" onClick={continueFromCelebrate} className="mvp-celebrate-btn">
               Continue
-            </button>
-          </div>
+            </Button>
+          </Card>
         </div>
       ) : null}
 
       {phase === "signup" && data ? (
         <div className="mvp-signup-root" role="dialog" aria-labelledby="mvp-signup-ttl" aria-modal="true">
           <button type="button" className="mvp-signup-scrim" aria-label="Close" onClick={skipSignup} />
-          <div className="mvp-signup-sheet">
+          <Card variant="premium" className="mvp-signup-sheet">
             <div className="sheet-handle" aria-hidden />
             <h2 id="mvp-signup-ttl" className="mvp-signup-ttl">
               Get the good stuff first
@@ -379,13 +375,13 @@ export default function App() {
               }}
             />
             {signupErr ? <p className="mvp-signup-err">{signupErr}</p> : null}
-            <button type="button" className="btn-snap-primary mvp-signup-submit" onClick={() => void submitSignup()}>
+            <Button variant="primary" onClick={() => void submitSignup()} className="mvp-signup-submit">
               Count me in
-            </button>
-            <button type="button" className="mvp-signup-skip" onClick={skipSignup}>
+            </Button>
+            <Button variant="ghost" onClick={skipSignup} className="mvp-signup-skip">
               Not now
-            </button>
-          </div>
+            </Button>
+          </Card>
         </div>
       ) : null}
 
@@ -412,9 +408,9 @@ export default function App() {
                   </ul>
                 </div>
                 <div className="cta-row">
-                  <button type="button" className="btn-primary" onClick={() => setPhase("steps")}>
+                  <Button variant="primary" onClick={() => setPhase("steps")}>
                     Continue to steps
-                  </button>
+                  </Button>
                 </div>
               </>
             ) : null}
@@ -431,7 +427,7 @@ export default function App() {
                   </div>
                 ) : null}
 
-                <div className="step-card">
+                <Card variant="minimal" className="step-card">
                   <div className="step-meta">
                     Step {stepIdx + 1} / {steps.length}
                   </div>
@@ -443,12 +439,11 @@ export default function App() {
                       <span key={i} className={`dot ${i === stepIdx ? "on" : ""}`} />
                     ))}
                   </div>
-                </div>
+                </Card>
 
                 <div className="cta-row">
-                  <button
-                    type="button"
-                    className="btn-primary"
+                  <Button
+                    variant="primary"
                     onClick={() => {
                       if (lastStep) {
                         playSuccess();
@@ -457,10 +452,9 @@ export default function App() {
                     }}
                   >
                     {lastStep ? "Finish" : "Next step"}
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-ghost"
+                  </Button>
+                  <Button
+                    variant="ghost"
                     onClick={() => {
                       setPhase("camera");
                       setData(null);
@@ -468,7 +462,7 @@ export default function App() {
                     }}
                   >
                     New scan
-                  </button>
+                  </Button>
                 </div>
               </>
             ) : null}
@@ -486,9 +480,8 @@ export default function App() {
                   </div>
                 ) : null}
                 <div className="cta-row">
-                  <button
-                    type="button"
-                    className="btn-primary"
+                  <Button
+                    variant="primary"
                     onClick={() => {
                       setPhase("camera");
                       setData(null);
@@ -497,7 +490,7 @@ export default function App() {
                     }}
                   >
                     Scan something else
-                  </button>
+                  </Button>
                 </div>
               </>
             ) : null}
