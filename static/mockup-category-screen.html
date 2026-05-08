@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>Mockup — Category Screen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  :root{
+    --bg:#0F1115;
+    --surface-1:#181A1F;
+    --surface-2:#22252B;
+    --surface-3:#2A2E35;
+    --border:rgba(255,255,255,0.10);
+    --border-strong:rgba(255,255,255,0.20);
+    --t1:#F0F2F5;
+    --t2:#B8BEC9;
+    --t3:#9CA3AF;
+    --accent:#60A5FA;
+    --accent-glow:rgba(96,165,250,0.22);
+    --gold:#F59E0B;
+    --gold-dim:rgba(245,158,11,0.12);
+    --safe-top:env(safe-area-inset-top,0px);
+    --safe-bottom:env(safe-area-inset-bottom,0px);
+  }
+  html,body{
+    height:100%;min-height:100dvh;
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+    background:var(--bg);
+    color:var(--t1);
+    overflow-x:hidden;
+  }
+  body::before{
+    content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse 90% 50% at 50% -5%,rgba(96,165,250,.07) 0%,transparent 58%);
+    pointer-events:none;z-index:0;
+  }
+  body::after{
+    content:'';position:fixed;inset:0;
+    background-image:radial-gradient(rgba(240,237,232,.035) .5px,transparent .5px);
+    background-size:4px 4px;opacity:.4;pointer-events:none;z-index:0;
+  }
+
+  /* ── Header ── */
+  .ce-header{
+    position:sticky;top:0;z-index:100;
+    padding:calc(var(--safe-top) + 12px) 20px 12px;
+    background:rgba(15,17,21,0.85);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    border-bottom:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between;
+    gap:12px;
+  }
+  .ce-logo{
+    display:flex;align-items:center;gap:9px;
+  }
+  .ce-logo-egg{
+    width:32px;height:36px;flex-shrink:0;
+  }
+  .ce-logo-text{
+    font-size:18px;font-weight:800;
+    background:linear-gradient(135deg,#F0F2F5 0%,#B8BEC9 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    letter-spacing:-.4px;
+  }
+  .ce-logo-text span{color:var(--gold);-webkit-text-fill-color:var(--gold)}
+
+  /* ── Hero ── */
+  .ce-hero{
+    position:relative;z-index:1;
+    padding:32px 20px 8px;
+    text-align:center;
+  }
+  .ce-hero-kop{
+    font-size:26px;font-weight:900;line-height:1.18;
+    letter-spacing:-.6px;
+    margin-bottom:8px;
+  }
+  .ce-hero-kop .hi{
+    background:linear-gradient(135deg,var(--accent) 0%,#a78bfa 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  }
+  .ce-hero-sub{
+    font-size:13.5px;font-weight:500;
+    color:var(--t3);line-height:1.5;
+    max-width:280px;margin:0 auto;
+  }
+
+  /* ── Search pill ── */
+  .ce-search{
+    position:relative;z-index:1;
+    margin:20px 20px 0;
+  }
+  .ce-search input{
+    width:100%;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:13px 18px 13px 44px;
+    font-size:15px;font-weight:500;
+    color:var(--t1);
+    font-family:inherit;
+    outline:none;
+    -webkit-appearance:none;
+  }
+  .ce-search input::placeholder{color:var(--t3)}
+  .ce-search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+  .ce-search-icon{
+    position:absolute;left:15px;top:50%;transform:translateY(-50%);
+    color:var(--t3);font-size:18px;pointer-events:none;
+  }
+
+  /* ── Grid label ── */
+  .ce-section-label{
+    position:relative;z-index:1;
+    padding:20px 20px 10px;
+    font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+    color:var(--t3);
+  }
+
+  /* ── Category grid ── */
+  .ce-grid{
+    position:relative;z-index:1;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+    padding:0 16px;
+  }
+
+  .ce-cat{
+    background:var(--surface-1);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:20px 16px 18px;
+    display:flex;flex-direction:column;align-items:flex-start;gap:10px;
+    cursor:pointer;
+    position:relative;
+    overflow:hidden;
+    transition:transform .15s cubic-bezier(.34,1.56,.64,1),border-color .15s ease,box-shadow .15s ease;
+    -webkit-user-select:none;user-select:none;
+  }
+  .ce-cat::before{
+    content:'';
+    position:absolute;inset:0;
+    background:var(--cat-tint,rgba(96,165,250,.06));
+    opacity:0;transition:opacity .15s ease;
+    border-radius:inherit;
+  }
+  .ce-cat:active{transform:scale(.96);border-color:var(--cat-accent,var(--accent));box-shadow:0 0 0 3px var(--cat-glow,var(--accent-glow))}
+  .ce-cat:active::before{opacity:1}
+
+  .ce-cat-icon{
+    width:48px;height:48px;
+    border-radius:14px;
+    background:var(--cat-bg,rgba(96,165,250,.12));
+    display:flex;align-items:center;justify-content:center;
+    font-size:24px;line-height:1;
+    flex-shrink:0;
+    transition:transform .15s ease;
+  }
+  .ce-cat:active .ce-cat-icon{transform:scale(.9)}
+
+  .ce-cat-body{display:flex;flex-direction:column;gap:3px}
+  .ce-cat-name{
+    font-size:14.5px;font-weight:700;
+    color:var(--t1);line-height:1.2;
+    letter-spacing:-.2px;
+  }
+  .ce-cat-sub{
+    font-size:11.5px;font-weight:500;
+    color:var(--t3);line-height:1.3;
+  }
+
+  /* accent per category */
+  .ce-cat--meubels{--cat-accent:#60A5FA;--cat-glow:rgba(96,165,250,.22);--cat-bg:rgba(96,165,250,.12);--cat-tint:rgba(96,165,250,.06)}
+  .ce-cat--loodgieten{--cat-accent:#38BDF8;--cat-glow:rgba(56,189,248,.22);--cat-bg:rgba(56,189,248,.12);--cat-tint:rgba(56,189,248,.06)}
+  .ce-cat--elektronica{--cat-accent:#A78BFA;--cat-glow:rgba(167,139,250,.22);--cat-bg:rgba(167,139,250,.12);--cat-tint:rgba(167,139,250,.06)}
+  .ce-cat--installatie{--cat-accent:#F59E0B;--cat-glow:rgba(245,158,11,.22);--cat-bg:rgba(245,158,11,.12);--cat-tint:rgba(245,158,11,.06)}
+  .ce-cat--muren{--cat-accent:#F97316;--cat-glow:rgba(249,115,22,.22);--cat-bg:rgba(249,115,22,.12);--cat-tint:rgba(249,115,22,.06)}
+  .ce-cat--schoonmaken{--cat-accent:#34D399;--cat-glow:rgba(52,211,153,.22);--cat-bg:rgba(52,211,153,.12);--cat-tint:rgba(52,211,153,.06)}
+  .ce-cat--tuin{--cat-accent:#4ADE80;--cat-glow:rgba(74,222,128,.22);--cat-bg:rgba(74,222,128,.12);--cat-tint:rgba(74,222,128,.06)}
+  .ce-cat--verwarming{--cat-accent:#FB923C;--cat-glow:rgba(251,146,60,.22);--cat-bg:rgba(251,146,60,.12);--cat-tint:rgba(251,146,60,.06)}
+  .ce-cat--keuken{--cat-accent:#E879F9;--cat-glow:rgba(232,121,249,.22);--cat-bg:rgba(232,121,249,.12);--cat-tint:rgba(232,121,249,.06)}
+  .ce-cat--auto{--cat-accent:#94A3B8;--cat-glow:rgba(148,163,184,.22);--cat-bg:rgba(148,163,184,.12);--cat-tint:rgba(148,163,184,.06)}
+
+  /* Badge — popular */
+  .ce-cat-badge{
+    position:absolute;top:10px;right:10px;
+    font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+    padding:3px 7px;border-radius:6px;
+    background:var(--cat-bg,rgba(96,165,250,.12));
+    color:var(--cat-accent,var(--accent));
+    border:1px solid rgba(255,255,255,.08);
+  }
+
+  /* ── CTA bottom ── */
+  .ce-cta-wrap{
+    position:relative;z-index:1;
+    padding:20px 16px calc(var(--safe-bottom) + 24px);
+    text-align:center;
+  }
+  .ce-cta-hint{
+    font-size:12.5px;font-weight:500;color:var(--t3);
+    display:flex;align-items:center;justify-content:center;gap:6px;
+  }
+  .ce-cta-hint::before,.ce-cta-hint::after{
+    content:'';flex:1;height:1px;background:var(--border);
+  }
+
+  /* ── Selected state indicator ── */
+  .ce-cat.selected{
+    border-color:var(--cat-accent,var(--accent));
+    box-shadow:0 0 0 3px var(--cat-glow,var(--accent-glow));
+  }
+  .ce-cat.selected::before{opacity:1}
+
+  /* ── Scan CTA that appears after selection ── */
+  .ce-scan-cta{
+    position:fixed;
+    bottom:calc(var(--safe-bottom) + 20px);
+    left:20px;right:20px;
+    z-index:200;
+    background:var(--accent);
+    color:#0F1115;
+    font-size:16px;font-weight:800;
+    letter-spacing:-.2px;
+    border:none;border-radius:18px;
+    padding:17px 24px;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    cursor:pointer;
+    box-shadow:0 4px 24px rgba(96,165,250,.45),0 2px 8px rgba(0,0,0,.4);
+    transform:translateY(110px);
+    transition:transform .4s cubic-bezier(.34,1.56,.64,1),opacity .3s ease;
+    opacity:0;
+  }
+  .ce-scan-cta.show{transform:translateY(0);opacity:1}
+  .ce-scan-cta-icon{font-size:20px}
+
+  /* ── Mock label ── */
+  .mockup-banner{
+    position:fixed;top:0;left:0;right:0;z-index:999;
+    background:rgba(245,158,11,.18);
+    border-bottom:1px solid rgba(245,158,11,.35);
+    backdrop-filter:blur(8px);
+    padding:6px 16px;
+    text-align:center;
+    font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+    color:var(--gold);
+  }
+</style>
+</head>
+<body>
+
+<div class="mockup-banner">📐 MOCKUP — Nog niet live</div>
+
+<!-- Header -->
+<header class="ce-header" style="margin-top:28px">
+  <div class="ce-logo">
+    <!-- Egg SVG -->
+    <svg class="ce-logo-egg" viewBox="0 0 32 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="16" cy="20" rx="13" ry="15" fill="url(#eggGrad)"/>
+      <ellipse cx="16" cy="20" rx="13" ry="15" fill="url(#eggShine)" opacity=".4"/>
+      <ellipse cx="12" cy="13" rx="4" ry="6" fill="white" opacity=".12"/>
+      <defs>
+        <radialGradient id="eggGrad" cx="38%" cy="30%" r="70%">
+          <stop offset="0%" stop-color="#3A3A3A"/>
+          <stop offset="55%" stop-color="#1C1C1C"/>
+          <stop offset="100%" stop-color="#0A0A0A"/>
+        </radialGradient>
+        <radialGradient id="eggShine" cx="30%" cy="20%" r="55%">
+          <stop offset="0%" stop-color="white" stop-opacity=".3"/>
+          <stop offset="100%" stop-color="white" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+    </svg>
+    <div class="ce-logo-text">chicken<span>egg</span></div>
+  </div>
+  <div style="width:32px;height:32px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:16px">👤</div>
+</header>
+
+<!-- Hero -->
+<section class="ce-hero">
+  <h1 class="ce-hero-kop">Wat wil je <span class="hi">aanpakken?</span></h1>
+  <p class="ce-hero-sub">Kies een categorie — de AI weet dan precies wat hij moet scannen.</p>
+</section>
+
+<!-- Search -->
+<div class="ce-search">
+  <span class="ce-search-icon">🔍</span>
+  <input type="text" placeholder="Zoek een categorie..." readonly/>
+</div>
+
+<div class="ce-section-label">Populaire categorieën</div>
+
+<!-- Category Grid -->
+<div class="ce-grid">
+
+  <div class="ce-cat ce-cat--meubels" onclick="selectCat(this,'meubels','Meubels')">
+    <span class="ce-cat-badge">Top</span>
+    <div class="ce-cat-icon">🪑</div>
+    <div class="ce-cat-body">
+      <div class="ce-cat-name">Meubels</div>
+      <div class="ce-cat-sub">IKEA, planken, stoelen</div>
+    </div>
+  </div>
+
+  <div class="ce-cat ce-cat--loodgieten" onclick="selectCat(this,'loodgieten','Loodgieten')">
+    <div class="ce-cat-icon">🚿</div>
+    <div class="ce-cat-body">
+      <div class="ce-cat-name">Loodgieten</div>
+      <div class="ce-cat-sub">Kranen, leidingen, wc</div>
+    </div>
+  </div>
+
+  <div class="ce-cat ce-cat--elektronica" onclick="selectCat(this,'elektronica','Elektronica')">
+    <div class="ce-cat-icon">💡</div>
+    <div class="ce-cat-body">
+      <div class="ce-cat-name">Elektronica</div>
+      <div class="ce-cat-sub">Schakelaars, stopcontacten</div>
+    </div>
+  </div>
+
+  <div class="ce-cat ce-cat--installatie" onclick="selectCat(this,'installatie','Installatie')">
+    <span class="ce-cat-badge">Nieuw</span>
+    <div class="ce-cat-icon">🔧</div>
+    <div class="ce-cat-body">
+      <div class="ce-cat-name">Installatie</div>
+      <div class="ce-cat-sub">Ophangen, monteren</div>
+    </div>
+  </div>
+
+  <div class="ce-cat ce-cat--muren" onclick="selectCat(this,'muren','Muren & Vloeren')">
+    <div class="ce-cat-icon">🧱</div>
+    <div class="ce-cat-body">
+      <div class="ce-cat-name">Muren & Vloeren</div>
+      <div class="ce-cat-sub">Tegels, plinten, schilderen</div>
+    </div>
+  </div>
+
+  <div class="ce-cat ce-cat--schoonmaken" onclick="selectCat(this,'schoonmaken','Schoonmaken')">
+    <div class="ce-cat-icon">🧹</div>
+    <div class="ce-cat-body">
+      <div class="ce-cat-name">Schoonmaken</div>
+      <div class="ce-cat-sub">Vlekken, kalk, schimmel</div>
+    </div>
+  </div>
+
+  <div class="ce-cat ce-cat--tuin" onclick="selectCat(this,'tuin','Tuin')">
+    <div class="ce-cat-icon">🌿</div>
+    <div class="ce-cat-body">
+      <div class="ce-cat-name">Tuin</div>
+      <div class="ce-cat-sub">Planten, schuttingen, drain</div>
+    </div>
+  </div>
+
+  <div class="ce-cat ce-cat--verwarming" onclick="selectCat(this,'verwarming','Verwarming')">
+    <div class="ce-cat-icon">🌡️</div>
+    <div class="ce-cat-body">
+      <div class="ce-cat-name">Verwarming</div>
+      <div class="ce-cat-sub">CV-ketel, radiator, thermostat</div>
+    </div>
+  </div>
+
+  <div class="ce-cat ce-cat--keuken" onclick="selectCat(this,'keuken','Keuken')">
+    <div class="ce-cat-icon">🍳</div>
+    <div class="ce-cat-body">
+      <div class="ce-cat-name">Keuken</div>
+      <div class="ce-cat-sub">Apparaten, kasten, spoelbak</div>
+    </div>
+  </div>
+
+  <div class="ce-cat ce-cat--auto" onclick="selectCat(this,'auto','Auto')">
+    <div class="ce-cat-icon">🚗</div>
+    <div class="ce-cat-body">
+      <div class="ce-cat-name">Auto</div>
+      <div class="ce-cat-sub">Banden, accu, carrosserie</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- CTA hint -->
+<div class="ce-cta-wrap">
+  <div class="ce-cta-hint">Of scan meteen zonder categorie</div>
+</div>
+
+<!-- Floating Scan CTA — appears after category selection -->
+<button class="ce-scan-cta" id="scanCta">
+  <span class="ce-scan-cta-icon">📷</span>
+  <span id="scanCtaLabel">Camera openen</span>
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+
+<script>
+let selectedCat = null;
+
+function selectCat(el, key, label) {
+  // Deselect previous
+  if (selectedCat) selectedCat.classList.remove('selected');
+  el.classList.add('selected');
+  selectedCat = el;
+
+  // Update CTA
+  const cta = document.getElementById('scanCta');
+  const ctaLabel = document.getElementById('scanCtaLabel');
+  ctaLabel.textContent = label + ' scannen';
+  cta.classList.add('show');
+
+  // Light haptic
+  if (navigator.vibrate) navigator.vibrate(8);
+}
+</script>
+</body>
+</html>
