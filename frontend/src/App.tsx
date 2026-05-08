@@ -1,8 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import Button from "./design-system/Button";
-import Card from "./design-system/Card";
-import AnalyzingState from "./design-system/AnalyzingState";
-import "./design-system/global-styles.css";
 import "./App.css";
 
 type Danger = "low" | "medium" | "high";
@@ -74,6 +70,7 @@ export default function App() {
   const [stepIdx, setStepIdx] = useState(0);
   const [signupEmail, setSignupEmail] = useState("");
   const [signupErr, setSignupErr] = useState("");
+  const [signupSubmitting, setSignupSubmitting] = useState(false);
 
   const startCamera = useCallback(async () => {
     setCamError(null);
@@ -91,7 +88,7 @@ export default function App() {
         await v.play();
       }
     } catch {
-      setCamError("Camera off — tap Memories to pick a photo.");
+      setCamError("Camera blocked — allow camera access in your browser, or tap Memories to pick a photo.");
     }
   }, [camFacing]);
 
@@ -219,12 +216,14 @@ export default function App() {
   };
 
   const submitSignup = async () => {
+    if (signupSubmitting) return;
     const em = signupEmail.trim();
-    if (!em || !em.includes("@")) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) {
       setSignupErr("Enter a valid email");
       return;
     }
     setSignupErr("");
+    setSignupSubmitting(true);
     try {
       await fetch(collectEmailUrl, {
         method: "POST",
@@ -239,6 +238,7 @@ export default function App() {
     } catch {
       /* ignore */
     }
+    setSignupSubmitting(false);
     setPhase("wrap");
   };
 
@@ -259,9 +259,9 @@ export default function App() {
             ) : (
               <div className="cam-fallback">
                 <p>{camError}</p>
-                <Button variant="primary" onClick={() => fileRef.current?.click()}>
+                <button type="button" className="btn-snap-primary" onClick={() => fileRef.current?.click()}>
                   Open Memories
-                </Button>
+                </button>
               </div>
             )}
             <div className="cam-fade-top" />
@@ -278,9 +278,17 @@ export default function App() {
             </div>
           </header>
 
+          <div className={`scan-fx ${phase === "loading" ? "" : "off"}`}>
+            <div className="wave wave--snap" />
+            <div className="wave wave--snap" />
+            <div className="wave wave--snap" />
+          </div>
+
           {phase === "loading" && (
-            <div className="analyzing-overlay">
-              <AnalyzingState message="Analyzing" />
+            <div className="thinking thinking--snap">
+              <span className="thinking-dot" />
+              Scanning
+              <span className="thinking-dots">...</span>
             </div>
           )}
 
@@ -335,7 +343,7 @@ export default function App() {
       {phase === "celebrate" && data ? (
         <div className="mvp-celebrate" role="dialog" aria-labelledby="mvp-celebrate-ttl" aria-modal="true">
           <div className="mvp-celebrate-burst" aria-hidden />
-          <Card variant="premium" className="mvp-celebrate-card">
+          <div className="mvp-celebrate-card">
             <div className="mvp-celebrate-ico" aria-hidden>
               🏆
             </div>
@@ -343,17 +351,17 @@ export default function App() {
               You did it!
             </h2>
             <p className="mvp-celebrate-sub">That fix is yours. One more tap to lock in early access.</p>
-            <Button variant="primary" onClick={continueFromCelebrate} className="mvp-celebrate-btn">
+            <button type="button" className="btn-snap-primary mvp-celebrate-btn" onClick={continueFromCelebrate}>
               Continue
-            </Button>
-          </Card>
+            </button>
+          </div>
         </div>
       ) : null}
 
       {phase === "signup" && data ? (
         <div className="mvp-signup-root" role="dialog" aria-labelledby="mvp-signup-ttl" aria-modal="true">
           <button type="button" className="mvp-signup-scrim" aria-label="Close" onClick={skipSignup} />
-          <Card variant="premium" className="mvp-signup-sheet">
+          <div className="mvp-signup-sheet">
             <div className="sheet-handle" aria-hidden />
             <h2 id="mvp-signup-ttl" className="mvp-signup-ttl">
               Get the good stuff first
@@ -375,13 +383,13 @@ export default function App() {
               }}
             />
             {signupErr ? <p className="mvp-signup-err">{signupErr}</p> : null}
-            <Button variant="primary" onClick={() => void submitSignup()} className="mvp-signup-submit">
-              Count me in
-            </Button>
-            <Button variant="ghost" onClick={skipSignup} className="mvp-signup-skip">
+            <button type="button" className="btn-snap-primary mvp-signup-submit" onClick={() => void submitSignup()} disabled={signupSubmitting}>
+              {signupSubmitting ? "Saving…" : "Count me in"}
+            </button>
+            <button type="button" className="mvp-signup-skip" onClick={skipSignup}>
               Not now
-            </Button>
-          </Card>
+            </button>
+          </div>
         </div>
       ) : null}
 
@@ -408,9 +416,9 @@ export default function App() {
                   </ul>
                 </div>
                 <div className="cta-row">
-                  <Button variant="primary" onClick={() => setPhase("steps")}>
+                  <button type="button" className="btn-primary" onClick={() => setPhase("steps")}>
                     Continue to steps
-                  </Button>
+                  </button>
                 </div>
               </>
             ) : null}
@@ -427,7 +435,7 @@ export default function App() {
                   </div>
                 ) : null}
 
-                <Card variant="minimal" className="step-card">
+                <div className="step-card">
                   <div className="step-meta">
                     Step {stepIdx + 1} / {steps.length}
                   </div>
@@ -439,11 +447,12 @@ export default function App() {
                       <span key={i} className={`dot ${i === stepIdx ? "on" : ""}`} />
                     ))}
                   </div>
-                </Card>
+                </div>
 
                 <div className="cta-row">
-                  <Button
-                    variant="primary"
+                  <button
+                    type="button"
+                    className="btn-primary"
                     onClick={() => {
                       if (lastStep) {
                         playSuccess();
@@ -452,9 +461,10 @@ export default function App() {
                     }}
                   >
                     {lastStep ? "Finish" : "Next step"}
-                  </Button>
-                  <Button
-                    variant="ghost"
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-ghost"
                     onClick={() => {
                       setPhase("camera");
                       setData(null);
@@ -462,7 +472,7 @@ export default function App() {
                     }}
                   >
                     New scan
-                  </Button>
+                  </button>
                 </div>
               </>
             ) : null}
@@ -480,8 +490,9 @@ export default function App() {
                   </div>
                 ) : null}
                 <div className="cta-row">
-                  <Button
-                    variant="primary"
+                  <button
+                    type="button"
+                    className="btn-primary"
                     onClick={() => {
                       setPhase("camera");
                       setData(null);
@@ -490,7 +501,7 @@ export default function App() {
                     }}
                   >
                     Scan something else
-                  </Button>
+                  </button>
                 </div>
               </>
             ) : null}
