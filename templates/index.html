@@ -6650,6 +6650,238 @@
       color:var(--nl-text-1)!important;
     }
 
+    /* ══════════════════════════════════════════════════════════
+       v3.9 — EGG-SHAPED LENS SCAN BUTTON · TOOLS SECTION FIX ·
+       REMOVE STEPS THREAD
+       ══════════════════════════════════════════════════════════ */
+
+    /* ── 1. REMOVE the vertical thread line on step cards ── */
+    body.result-open.cam-tiktok #r-steps::before{display:none!important}
+
+    /* ── 2. TOOLS SECTION — visible, prominent, NL stores ── */
+    /* Make sure the tools card itself is unmissable */
+    body.result-open.cam-tiktok #tools-card{
+      display:block!important;
+      background:linear-gradient(180deg, rgba(245,239,227,0.05), rgba(245,239,227,0.02))!important;
+      border:1px solid var(--nl-line-strong)!important;
+      border-radius:18px!important;
+      padding:18px 16px!important;
+      margin:14px 0 8px!important;
+      box-shadow:0 6px 22px rgba(0,0,0,0.35),inset 0 1px 0 rgba(245,239,227,0.05)!important;
+    }
+    body.result-open.cam-tiktok #tools-card .card-lbl{
+      color:var(--nl-text-3)!important;
+      font-size:11px!important;font-weight:800!important;
+      letter-spacing:0.16em!important;text-transform:uppercase!important;
+      margin-bottom:14px!important;
+    }
+    body.result-open.cam-tiktok #tools-card .card-lbl::before{
+      content:'🛠  '!important;color:var(--nl-oranje-light)!important;
+    }
+    body.result-open.cam-tiktok #r-tools{
+      display:flex!important;flex-direction:column!important;gap:8px!important;
+    }
+    body.result-open.cam-tiktok .tool-entry{
+      display:flex!important;align-items:center!important;justify-content:space-between!important;
+      gap:12px!important;flex-direction:row!important;flex-wrap:wrap!important;
+      padding:12px 14px!important;
+      background:rgba(245,239,227,0.03)!important;
+      border:1px solid var(--nl-line)!important;
+      border-radius:12px!important;margin:0!important;
+    }
+    body.result-open.cam-tiktok .tool-entry .tool-nm-row{
+      display:flex!important;align-items:center!important;gap:9px!important;
+      flex:1!important;min-width:0!important;
+    }
+    body.result-open.cam-tiktok .tool-entry .tool-dot{
+      display:block!important;width:6px!important;height:6px!important;border-radius:50%!important;
+      background:var(--nl-oranje)!important;flex-shrink:0!important;
+      box-shadow:0 0 8px rgba(232,119,34,0.5)!important;
+    }
+    body.result-open.cam-tiktok .tool-entry .tool-nm{
+      font-size:14px!important;font-weight:600!important;color:var(--nl-text-1)!important;
+      flex:1!important;min-width:0!important;
+    }
+    body.result-open.cam-tiktok .tool-entry .tool-shops{
+      display:flex!important;flex-wrap:wrap!important;gap:6px!important;
+      padding:0!important;justify-content:flex-end!important;
+    }
+    body.result-open.cam-tiktok .tool-entry .shop-lnk{
+      display:inline-flex!important;align-items:center!important;justify-content:center!important;
+      padding:7px 12px!important;border-radius:10px!important;
+      font-size:11px!important;font-weight:800!important;letter-spacing:0.02em!important;
+      text-decoration:none!important;color:#FFFFFF!important;
+      box-shadow:0 2px 6px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.18)!important;
+      border:none!important;
+      min-height:auto!important;width:auto!important;height:auto!important;
+    }
+    body.result-open.cam-tiktok .tool-entry .shop-lnk--gamma{background:linear-gradient(180deg,#E63333,#B41E1E)!important}
+    body.result-open.cam-tiktok .tool-entry .shop-lnk--praxis{background:linear-gradient(180deg,#2E5C3E,#1A3A24)!important}
+    body.result-open.cam-tiktok .tool-entry .shop-lnk--bol{background:linear-gradient(180deg,#0096FA,#0066B3)!important}
+    body.result-open.cam-tiktok .tool-entry .shop-lnk-txt{font-size:11px!important;font-weight:800!important}
+    body.result-open.cam-tiktok .tool-entry .shop-lnk::after{content:' →'!important}
+    /* Hide duplicate shop links elsewhere (in step walk panes) */
+    body.result-open.cam-tiktok .walk-tool-shops,
+    body.result-open.cam-tiktok .cam-step-tools,
+    body.result-open.cam-tiktok .step-mat-line .shop-lnk{display:none!important}
+
+    /* ── 3. EGG-SHAPED SCAN BUTTON WITH LENS ── */
+    /* Egg silhouette: asymmetric border-radius (wider at bottom) */
+    body.cam-tiktok .snap-shutter-ring{
+      width:84px!important;height:100px!important;
+      border-radius:50% 50% 50% 50% / 60% 60% 40% 40%!important;
+      background:transparent!important;border:none!important;
+      box-shadow:none!important;padding:0!important;
+      filter:drop-shadow(0 8px 22px rgba(0,0,0,0.6))!important;
+      display:flex!important;align-items:center!important;justify-content:center!important;
+      position:relative!important;
+    }
+    /* Egg outer shell ring */
+    body.cam-tiktok .snap-shutter-ring::before{
+      content:''!important;display:block!important;
+      position:absolute!important;inset:0!important;
+      border-radius:50% 50% 50% 50% / 60% 60% 40% 40%!important;
+      border:3px solid rgba(255,255,255,0.85)!important;
+      box-shadow:
+        inset 0 0 0 1px rgba(0,0,0,0.18),
+        0 0 0 2px rgba(0,0,0,0.15)!important;
+      transition:border-color 280ms cubic-bezier(.4,0,.2,1),box-shadow 280ms cubic-bezier(.4,0,.2,1)!important;
+      animation:none!important;
+    }
+    body.cam-tiktok.ce-cam-detecting:not(.ce-cam-locked):not(.ce-ai-thinking) .snap-shutter-ring::before{
+      animation:ce9EggBreath 2.6s cubic-bezier(.4,0,.2,1) infinite!important;
+    }
+    @keyframes ce9EggBreath{
+      0%,100%{border-color:rgba(255,255,255,0.78);box-shadow:inset 0 0 0 1px rgba(0,0,0,0.18),0 0 0 2px rgba(0,0,0,0.15)}
+      50%{border-color:rgba(255,255,255,1);box-shadow:inset 0 0 0 1px rgba(0,0,0,0.18),0 0 0 2px rgba(0,0,0,0.15),0 0 18px rgba(245,239,227,0.18)}
+    }
+    body.cam-tiktok.ce-can-scan .snap-shutter-ring::before,
+    body.cam-tiktok.ce-cam-locked .snap-shutter-ring::before{
+      border-color:var(--nl-oranje)!important;
+      box-shadow:
+        inset 0 0 0 1px rgba(0,0,0,0.18),
+        0 0 0 2px rgba(0,0,0,0.15),
+        0 0 28px rgba(232,119,34,0.55),
+        0 0 58px rgba(232,119,34,0.18)!important;
+    }
+    body.cam-tiktok.ce-ai-thinking .snap-shutter-ring::before{
+      border-color:var(--nl-oranje)!important;
+      animation:ce9EggGlow 1.8s ease-in-out infinite!important;
+    }
+    @keyframes ce9EggGlow{
+      0%,100%{box-shadow:inset 0 0 0 1px rgba(0,0,0,0.18),0 0 0 2px rgba(0,0,0,0.15),0 0 16px rgba(232,119,34,0.4)}
+      50%{box-shadow:inset 0 0 0 1px rgba(0,0,0,0.18),0 0 0 2px rgba(0,0,0,0.15),0 0 38px rgba(232,119,34,0.85)}
+    }
+
+    /* Egg pearl with embedded camera lens */
+    body.cam-tiktok .snap-shutter-ring .scan-egg{
+      width:68px!important;height:84px!important;min-width:68px!important;min-height:84px!important;
+      border-radius:50% 50% 50% 50% / 60% 60% 40% 40%!important;
+      border:none!important;
+      background:
+        /* Highlight: top-left specular */
+        radial-gradient(ellipse 32px 18px at 32% 22%, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0) 60%),
+        /* Lens: outer ring (dark) */
+        radial-gradient(circle 14px at 50% 55%, transparent 11.5px, rgba(20,12,8,0.85) 12px, rgba(20,12,8,0.85) 13px, transparent 14px),
+        /* Lens: glass inner ring */
+        radial-gradient(circle 11px at 50% 55%, transparent 9.5px, rgba(245,239,227,0.55) 10px, rgba(245,239,227,0.55) 10.5px, transparent 11px),
+        /* Lens: iris (Oranje when ready) — base white */
+        radial-gradient(circle 9px at 50% 55%, rgba(40,28,20,0.92) 0%, rgba(20,12,8,0.95) 70%, transparent 100%),
+        /* Lens: pupil reflection dot */
+        radial-gradient(circle 2px at 47% 51%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 100%),
+        /* Egg pearl base */
+        radial-gradient(ellipse at 50% 45%, #FFFFFF 0%, #F4EFE3 38%, #DDD3BD 76%, #BFB39A 100%)!important;
+      box-shadow:
+        inset 0 -4px 10px rgba(0,0,0,0.12),
+        inset 0 3px 5px rgba(255,255,255,1),
+        0 4px 12px rgba(0,0,0,0.45)!important;
+      transition:transform 200ms cubic-bezier(.34,1.6,.64,1),background 280ms cubic-bezier(.4,0,.2,1)!important;
+      position:relative!important;
+    }
+    body.cam-tiktok .snap-shutter-ring .scan-egg svg,
+    body.cam-tiktok .snap-shutter-ring .scan-egg > span{display:none!important}
+    /* Override v3.6 ::before/::after */
+    body.cam-tiktok .snap-shutter-ring .scan-egg::before{
+      content:''!important;display:block!important;
+      position:absolute!important;
+      top:14%!important;left:24%!important;width:34%!important;height:14%!important;
+      border-radius:50%!important;
+      background:linear-gradient(180deg,rgba(255,255,255,0.85),rgba(255,255,255,0))!important;
+      filter:blur(0.6px)!important;
+      pointer-events:none!important;opacity:0.8!important;
+    }
+    /* When READY: lens iris turns Oranje, glowing */
+    body.cam-tiktok.ce-can-scan .snap-shutter-ring .scan-egg,
+    body.cam-tiktok.ce-cam-locked .snap-shutter-ring .scan-egg{
+      background:
+        radial-gradient(ellipse 32px 18px at 32% 22%, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0) 60%),
+        radial-gradient(circle 14px at 50% 55%, transparent 11.5px, rgba(20,12,8,0.9) 12px, rgba(20,12,8,0.9) 13px, transparent 14px),
+        radial-gradient(circle 11px at 50% 55%, transparent 9.5px, rgba(245,239,227,0.65) 10px, rgba(245,239,227,0.65) 10.5px, transparent 11px),
+        radial-gradient(circle 9px at 50% 55%, #F39247 0%, #E87722 60%, #B85A14 100%),
+        radial-gradient(circle 2px at 47% 51%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 100%),
+        radial-gradient(ellipse at 50% 45%, #FFFFFF 0%, #FFF6EE 40%, #FFE8D2 80%, #F5D2A8 100%)!important;
+    }
+    /* When THINKING: lens BEAMS — rotating conic gradient overlay */
+    body.cam-tiktok.ce-ai-thinking .snap-shutter-ring .scan-egg{
+      background:
+        radial-gradient(ellipse 32px 18px at 32% 22%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 60%),
+        radial-gradient(circle 14px at 50% 55%, transparent 11.5px, rgba(20,12,8,0.95) 12px, rgba(20,12,8,0.95) 13px, transparent 14px),
+        radial-gradient(circle 11px at 50% 55%, transparent 9.5px, rgba(255,200,140,0.85) 10px, rgba(255,200,140,0.85) 10.5px, transparent 11px),
+        radial-gradient(circle 9px at 50% 55%, #FFE1B8 0%, #F39247 60%, #B85A14 100%),
+        radial-gradient(circle 2px at 47% 51%, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%),
+        radial-gradient(ellipse at 50% 45%, #FFFFFF 0%, #FFF6EE 40%, #FFE0BE 80%, #EFC393 100%)!important;
+      box-shadow:
+        inset 0 -4px 10px rgba(0,0,0,0.18),
+        inset 0 3px 5px rgba(255,255,255,1),
+        0 0 22px rgba(232,119,34,0.55),
+        0 4px 12px rgba(0,0,0,0.5)!important;
+      animation:ce9EggThink 2s ease-in-out infinite!important;
+    }
+    @keyframes ce9EggThink{
+      0%,100%{transform:scale(0.97)}50%{transform:scale(1.03)}
+    }
+    /* Lens beam: rotating conic ring around the lens center */
+    body.cam-tiktok.ce-ai-thinking .snap-shutter-ring .scan-egg::after{
+      content:''!important;display:block!important;
+      position:absolute!important;inset:0!important;
+      border-radius:50% 50% 50% 50% / 60% 60% 40% 40%!important;
+      background:conic-gradient(from 0deg at 50% 55%,
+        rgba(232,119,34,0) 0deg,
+        rgba(232,119,34,0) 30deg,
+        rgba(255,200,140,0.55) 50deg,
+        rgba(232,119,34,0.85) 70deg,
+        rgba(255,200,140,0.55) 90deg,
+        rgba(232,119,34,0) 110deg,
+        rgba(232,119,34,0) 360deg)!important;
+      mix-blend-mode:screen!important;
+      animation:ce9LensBeam 1.4s linear infinite!important;
+      pointer-events:none!important;
+      opacity:0.9!important;
+      background-color:transparent!important;border:none!important;
+      transform:none!important;
+    }
+    @keyframes ce9LensBeam{
+      0%{transform:rotate(0deg)}
+      100%{transform:rotate(360deg)}
+    }
+    /* Press feedback */
+    body.cam-tiktok .snap-shutter-ring .scan-egg:active,
+    body.cam-tiktok .snap-shutter-ring .scan-egg.pressed{
+      transform:scale(0.88)!important;
+      box-shadow:
+        inset 0 -2px 4px rgba(0,0,0,0.22),
+        inset 0 4px 8px rgba(0,0,0,0.15),
+        0 1px 4px rgba(0,0,0,0.55)!important;
+    }
+    /* Camera reticle/corners stay Oranje when locked */
+    body.cam-tiktok.ce-can-scan .snap-shutter-ring .scan-egg{
+      animation:none!important;
+    }
+    /* Scan label pill positioned higher to clear taller egg */
+    body.cam-tiktok .cam-dock .slbl{
+      bottom:calc(100% + 18px)!important;
+    }
+
   </style>
 </head>
 <body class="cam-tiktok" data-ce-deploy-sha="{{ ce_deploy_sha|default('', true) }}">
@@ -13870,7 +14102,7 @@ if(btnNlFab)btnNlFab.addEventListener('click',function(){setLang('nl');hideLangT
     }
   }catch(_){}
 })();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=34').catch(function(){});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=35').catch(function(){});
 
 function ceLoadTrustStrip(){
   var el=document.getElementById('ce-trust-strip');
