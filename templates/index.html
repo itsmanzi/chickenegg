@@ -4535,6 +4535,128 @@
 </head>
 <body class="cam-tiktok" data-ce-deploy-sha="{{ ce_deploy_sha|default('', true) }}">
 
+<!-- v3.12 — EARLY bulletproof category handlers.
+     These run before any other JS so that even if a later script
+     errors out, the category screen STILL dismisses on tap.
+     The IIFE at end-of-body upgrades these into the full flow. -->
+<script>
+(function(){
+  var CAT_KEY='ce_category', CAT_LBL='ce_category_label',
+      CAT_ICON='ce_category_icon', CAT_COLOR='ce_category_color',
+      SKIP='ce_category_skipped';
+  var pending=null;
+
+  function vib(ms){try{if(navigator.vibrate)navigator.vibrate(ms);}catch(_){}}
+  function getScreen(){return document.getElementById('ce-cat-screen');}
+  function getCTA(){return document.getElementById('ce-cat-go');}
+  function getLabel(){return document.getElementById('ce-cat-go-label');}
+
+  function nukeScreen(){
+    document.body.classList.add('ce-cat-done');
+    var s=getScreen();
+    if(s){s.style.cssText='display:none!important;visibility:hidden!important;pointer-events:none!important;opacity:0!important;';}
+    var b=getCTA(); if(b){b.style.cssText='display:none!important;';}
+  }
+
+  function tryStartCamera(){
+    /* Try every known function name in order. */
+    try{
+      try{localStorage.setItem('ce_welcome_seen','1');}catch(_){}
+      var w=document.getElementById('ce-welcome');
+      if(w){w.classList.add('off');w.setAttribute('aria-hidden','true');w.style.display='none';}
+
+      if(typeof window.ceWelcomeGoCamera==='function'){window.ceWelcomeGoCamera();return true;}
+      var did=false;
+      if(typeof window.enterCaptureFocus==='function'){try{window.enterCaptureFocus();did=true;}catch(_){}}
+      if(typeof window.startCamera==='function'){try{window.startCamera();did=true;}catch(_){}}
+      if(typeof window.ceUpdateCamPrimeVisibility==='function'){try{window.ceUpdateCamPrimeVisibility();}catch(_){}}
+      return did;
+    }catch(e){return false;}
+  }
+
+  /* Tile tap → mark selected + reveal CTA. No camera yet. */
+  window.__ceCatPick=function(tile){
+    if(!tile)return;
+    var key=tile.getAttribute('data-cat')||'';
+    var label=tile.getAttribute('data-cat-label')||key;
+    var icon=tile.getAttribute('data-cat-icon')||'';
+    var color='';
+    try{color=getComputedStyle(tile).getPropertyValue('--cat-accent').trim()||'';}catch(_){}
+    pending={key:key,label:label,icon:icon,color:color};
+
+    /* Highlight tapped tile */
+    var grid=document.getElementById('ce-cat-grid');
+    if(grid){
+      var tiles=grid.querySelectorAll('.ce-cat-tile');
+      for(var i=0;i<tiles.length;i++){
+        if(tiles[i]===tile)tiles[i].classList.add('selected');
+        else tiles[i].classList.remove('selected');
+      }
+    }
+    /* Reveal CTA */
+    var lbl=getLabel(); if(lbl)lbl.textContent=label+' scannen';
+    var b=getCTA();
+    if(b){
+      b.style.background='linear-gradient(135deg,'+(color||'#60A5FA')+' 0%, #1E293B 200%)';
+      b.classList.add('show');
+    }
+    vib(8);
+  };
+
+  /* CTA tap → save + hide + open camera in same gesture. */
+  window.__ceCatGo=function(){
+    if(!pending){
+      /* No pending — user somehow hit CTA without picking. Just dismiss. */
+      nukeScreen();
+      tryStartCamera();
+      return;
+    }
+    try{
+      localStorage.setItem(CAT_KEY,pending.key||'');
+      localStorage.setItem(CAT_LBL,pending.label||'');
+      localStorage.setItem(CAT_ICON,pending.icon||'');
+      localStorage.setItem(CAT_COLOR,pending.color||'');
+      localStorage.removeItem(SKIP);
+    }catch(_){}
+    window.CE_CATEGORY=pending.key;
+    nukeScreen();
+    var ok=tryStartCamera();
+    /* Belt-and-braces: if camera function isn't loaded yet (script
+       ordering on slow phones), reload — saved state will skip
+       the cat screen and the normal init will start the camera. */
+    if(!ok){
+      setTimeout(function(){location.reload();},120);
+    }
+    vib(12);
+  };
+
+  window.__ceCatSkip=function(){
+    try{
+      localStorage.setItem(SKIP,'1');
+      localStorage.removeItem(CAT_KEY);
+      localStorage.removeItem(CAT_LBL);
+      localStorage.removeItem(CAT_ICON);
+      localStorage.removeItem(CAT_COLOR);
+    }catch(_){}
+    window.CE_CATEGORY='';
+    nukeScreen();
+    var ok=tryStartCamera();
+    if(!ok){setTimeout(function(){location.reload();},120);}
+  };
+
+  /* Pre-skip on load if user already has a saved category */
+  try{
+    var saved=localStorage.getItem(CAT_KEY)||'';
+    var skipped=localStorage.getItem(SKIP)==='1';
+    if(saved||skipped){
+      document.body.classList.add('ce-cat-done');
+      var s2=getScreen();
+      if(s2){s2.style.display='none';}
+    }
+  }catch(_){}
+})();
+</script>
+
 <!-- v3.10 — Category Landing Screen (shows on app open) -->
 <div id="ce-cat-screen" role="dialog" aria-modal="true" aria-labelledby="ce-cat-kop">
   <div class="ce-cat-head">
@@ -12015,7 +12137,7 @@ if(btnNlFab)btnNlFab.addEventListener('click',function(){setLang('nl');hideLangT
   }catch(_){}
 })();
 if('serviceWorker'in navigator){
-  navigator.serviceWorker.register('/static/sw.js?v=53').catch(function(){});
+  navigator.serviceWorker.register('/static/sw.js?v=54').catch(function(){});
   /* Auto-reload when a new SW takes over so users on stale HTML
      get the latest build without manually clearing Safari data. */
   navigator.serviceWorker.addEventListener('message',function(ev){
@@ -12590,12 +12712,10 @@ initI18n();
     startCamIfNeeded();
   }
 
-  /* Expose globally so the inline onclick attributes on tiles
-     can find the handlers even if other scripts later mutate
-     listener attachment or the body class system. */
-  window.__ceCatPick=selectTile;
-  window.__ceCatGo=commitAndOpen;
-  window.__ceCatSkip=skipCat;
+  /* NOTE: the early bulletproof handlers (top of <body>) already
+     defined window.__ceCatPick / __ceCatGo / __ceCatSkip. We do NOT
+     overwrite them here — they are the proven fallback path. The
+     listeners below are belt-and-braces only. */
 
   /* Belt-and-braces: also attach delegated bubble listener */
   grid.addEventListener('click',function(ev){
