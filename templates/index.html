@@ -4332,20 +4332,52 @@
        to fix → camera opens with category context
        passed to /analyze for sharper AI scanning.
        ─────────────────────────────────────────────── */
+    /* z-index 4700 — must beat welcome (4600), agreement (998),
+       cam-container (240), cam-dock (300). Owns the screen on
+       launch until the user picks a category. */
     #ce-cat-screen{
-      position:fixed;inset:0;z-index:900;
+      position:fixed;inset:0;z-index:4700;
       background:linear-gradient(165deg,#181A1F 0%,#0F1115 42%,#0B0D12 100%);
       overflow-y:auto;-webkit-overflow-scrolling:touch;
       display:flex;flex-direction:column;
       pointer-events:auto;
     }
-    /* Hide instantly so the camera UI underneath is reachable
-       and pixel-visible — no transition that could leave the
-       screen on top while iOS shows the permission popup. */
+    /* Hide instantly — no transition that could leave the screen
+       on top during iOS permission dialog timing. */
     body.ce-cat-done #ce-cat-screen{
       display:none!important;
       visibility:hidden!important;
       pointer-events:none!important;
+    }
+    /* Selected tile state */
+    .ce-cat-tile.selected{
+      border-color:var(--cat-accent,#60A5FA)!important;
+      box-shadow:0 0 0 3px var(--cat-glow,rgba(96,165,250,.22))!important;
+    }
+    .ce-cat-tile.selected::before{opacity:1!important}
+    /* Floating CTA — appears after a tile is selected */
+    #ce-cat-go{
+      position:fixed;
+      bottom:calc(env(safe-area-inset-bottom,0px) + 20px);
+      left:20px;right:20px;
+      z-index:4710;
+      display:flex;align-items:center;justify-content:center;gap:10px;
+      background:linear-gradient(135deg,#60A5FA 0%,#3B82F6 100%);
+      color:#0F1115;
+      font-size:16px;font-weight:800;letter-spacing:-.2px;
+      border:none;border-radius:18px;
+      padding:17px 24px;
+      cursor:pointer;font-family:inherit;
+      box-shadow:0 4px 24px rgba(96,165,250,.45),0 2px 8px rgba(0,0,0,.4);
+      transform:translateY(140px);opacity:0;
+      transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .25s ease;
+      -webkit-user-select:none;user-select:none;
+    }
+    #ce-cat-go.show{transform:translateY(0);opacity:1}
+    body.ce-cat-done #ce-cat-go{display:none!important}
+    #ce-cat-go:active{transform:translateY(2px) scale(.985)}
+    #ce-cat-go .ce-cat-go-arrow{
+      width:20px;height:20px;flex-shrink:0;
     }
     #ce-cat-screen::before{
       content:'';position:absolute;inset:0;
@@ -4520,7 +4552,7 @@
       </svg>
       <div style="font-size:16px;font-weight:800;color:var(--t1);letter-spacing:-.3px">chicken<span style="color:var(--gold)">egg</span></div>
     </div>
-    <button type="button" class="ce-cat-skip" id="ce-cat-skip">Overslaan</button>
+    <button type="button" class="ce-cat-skip" id="ce-cat-skip" onclick="window.__ceCatSkip&&window.__ceCatSkip()">Overslaan</button>
   </div>
 
   <section class="ce-cat-hero">
@@ -4531,59 +4563,71 @@
   <div class="ce-cat-section">Populaire categorieën</div>
 
   <div class="ce-cat-grid" id="ce-cat-grid">
-    <button type="button" class="ce-cat-tile" data-cat="meubels" data-cat-label="Meubels" data-cat-icon="🪑">
+    <button type="button" class="ce-cat-tile" data-cat="meubels" data-cat-label="Meubels" data-cat-icon="🪑" onclick="window.__ceCatPick&&window.__ceCatPick(this)">
       <span class="ce-cat-tile-badge">Top</span>
       <div class="ce-cat-tile-icon">🪑</div>
       <div class="ce-cat-tile-name">Meubels</div>
       <div class="ce-cat-tile-sub">IKEA, planken, stoelen</div>
     </button>
-    <button type="button" class="ce-cat-tile" data-cat="loodgieten" data-cat-label="Loodgieten" data-cat-icon="🚿">
+    <button type="button" class="ce-cat-tile" data-cat="loodgieten" data-cat-label="Loodgieten" data-cat-icon="🚿" onclick="window.__ceCatPick&&window.__ceCatPick(this)">
       <div class="ce-cat-tile-icon">🚿</div>
       <div class="ce-cat-tile-name">Loodgieten</div>
       <div class="ce-cat-tile-sub">Kranen, leidingen, wc</div>
     </button>
-    <button type="button" class="ce-cat-tile" data-cat="elektronica" data-cat-label="Elektronica" data-cat-icon="💡">
+    <button type="button" class="ce-cat-tile" data-cat="elektronica" data-cat-label="Elektronica" data-cat-icon="💡" onclick="window.__ceCatPick&&window.__ceCatPick(this)">
       <div class="ce-cat-tile-icon">💡</div>
       <div class="ce-cat-tile-name">Elektronica</div>
       <div class="ce-cat-tile-sub">Schakelaars, stopcontacten</div>
     </button>
-    <button type="button" class="ce-cat-tile" data-cat="installatie" data-cat-label="Installatie" data-cat-icon="🔧">
+    <button type="button" class="ce-cat-tile" data-cat="installatie" data-cat-label="Installatie" data-cat-icon="🔧" onclick="window.__ceCatPick&&window.__ceCatPick(this)">
       <span class="ce-cat-tile-badge">Nieuw</span>
       <div class="ce-cat-tile-icon">🔧</div>
       <div class="ce-cat-tile-name">Installatie</div>
       <div class="ce-cat-tile-sub">Ophangen, monteren</div>
     </button>
-    <button type="button" class="ce-cat-tile" data-cat="muren" data-cat-label="Muren & Vloeren" data-cat-icon="🧱">
+    <button type="button" class="ce-cat-tile" data-cat="muren" data-cat-label="Muren & Vloeren" data-cat-icon="🧱" onclick="window.__ceCatPick&&window.__ceCatPick(this)">
       <div class="ce-cat-tile-icon">🧱</div>
       <div class="ce-cat-tile-name">Muren & Vloeren</div>
       <div class="ce-cat-tile-sub">Tegels, plinten, schilderen</div>
     </button>
-    <button type="button" class="ce-cat-tile" data-cat="schoonmaken" data-cat-label="Schoonmaken" data-cat-icon="🧹">
+    <button type="button" class="ce-cat-tile" data-cat="schoonmaken" data-cat-label="Schoonmaken" data-cat-icon="🧹" onclick="window.__ceCatPick&&window.__ceCatPick(this)">
       <div class="ce-cat-tile-icon">🧹</div>
       <div class="ce-cat-tile-name">Schoonmaken</div>
       <div class="ce-cat-tile-sub">Vlekken, kalk, schimmel</div>
     </button>
-    <button type="button" class="ce-cat-tile" data-cat="tuin" data-cat-label="Tuin" data-cat-icon="🌿">
+    <button type="button" class="ce-cat-tile" data-cat="tuin" data-cat-label="Tuin" data-cat-icon="🌿" onclick="window.__ceCatPick&&window.__ceCatPick(this)">
       <div class="ce-cat-tile-icon">🌿</div>
       <div class="ce-cat-tile-name">Tuin</div>
       <div class="ce-cat-tile-sub">Planten, schuttingen, drain</div>
     </button>
-    <button type="button" class="ce-cat-tile" data-cat="verwarming" data-cat-label="Verwarming" data-cat-icon="🌡️">
+    <button type="button" class="ce-cat-tile" data-cat="verwarming" data-cat-label="Verwarming" data-cat-icon="🌡️" onclick="window.__ceCatPick&&window.__ceCatPick(this)">
       <div class="ce-cat-tile-icon">🌡️</div>
       <div class="ce-cat-tile-name">Verwarming</div>
       <div class="ce-cat-tile-sub">CV-ketel, radiator, thermostat</div>
     </button>
-    <button type="button" class="ce-cat-tile" data-cat="keuken" data-cat-label="Keuken" data-cat-icon="🍳">
+    <button type="button" class="ce-cat-tile" data-cat="keuken" data-cat-label="Keuken" data-cat-icon="🍳" onclick="window.__ceCatPick&&window.__ceCatPick(this)">
       <div class="ce-cat-tile-icon">🍳</div>
       <div class="ce-cat-tile-name">Keuken</div>
       <div class="ce-cat-tile-sub">Apparaten, kasten, spoelbak</div>
     </button>
-    <button type="button" class="ce-cat-tile" data-cat="auto" data-cat-label="Auto" data-cat-icon="🚗">
+    <button type="button" class="ce-cat-tile" data-cat="auto" data-cat-label="Auto" data-cat-icon="🚗" onclick="window.__ceCatPick&&window.__ceCatPick(this)">
       <div class="ce-cat-tile-icon">🚗</div>
       <div class="ce-cat-tile-name">Auto</div>
       <div class="ce-cat-tile-sub">Banden, accu, carrosserie</div>
     </button>
   </div>
+
+  <!-- spacer so floating CTA never covers the last tile -->
+  <div style="height:120px"></div>
+
+  <!-- Floating "open camera" CTA: appears after a category is selected -->
+  <button type="button" id="ce-cat-go" aria-label="Open camera" onclick="window.__ceCatGo&&window.__ceCatGo()">
+    <span style="font-size:18px;line-height:1">📷</span>
+    <span id="ce-cat-go-label">Camera openen</span>
+    <svg class="ce-cat-go-arrow" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
 </div>
 
 <!-- Active category pill — shown in camera once selected -->
@@ -11970,7 +12014,7 @@ if(btnNlFab)btnNlFab.addEventListener('click',function(){setLang('nl');hideLangT
     }
   }catch(_){}
 })();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=39').catch(function(){});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=40').catch(function(){});
 
 function ceLoadTrustStrip(){
   var el=document.getElementById('ce-trust-strip');
@@ -12381,7 +12425,10 @@ initI18n();
 /* Bol affiliate: partner_id is appended in bolLink(); set BOL_PARTNER_ID in app.py or env. */
 
 /* ─────────────────────────────────────────────
-   v3.10 — Category Landing Screen logic
+   v3.11 — Category Landing Screen logic
+   Two-step flow: tile = select, CTA = open camera.
+   This makes iOS getUserMedia happy because the CTA
+   is an unambiguous user gesture for camera intent.
    ───────────────────────────────────────────── */
 (function(){
   var CAT_KEY='ce_category';
@@ -12390,13 +12437,18 @@ initI18n();
   var CAT_COLOR_KEY='ce_category_color';
   var SKIP_KEY='ce_category_skipped';
 
-  var screen=document.getElementById('ce-cat-screen');
+  var catScreen=document.getElementById('ce-cat-screen');
   var grid=document.getElementById('ce-cat-grid');
   var skipBtn=document.getElementById('ce-cat-skip');
+  var goBtn=document.getElementById('ce-cat-go');
+  var goLabel=document.getElementById('ce-cat-go-label');
   var pill=document.getElementById('ce-cat-active');
   var pillLabel=document.getElementById('ce-cat-active-label');
   var pillIcon=document.getElementById('ce-cat-active-icon');
-  if(!screen||!grid) return;
+  if(!catScreen||!grid) return;
+
+  /* Pending selection before user hits CTA */
+  var pending=null;
 
   function readSavedCat(){
     try{
@@ -12456,18 +12508,45 @@ initI18n();
     }
   }
 
-  function selectCat(key,label,icon,color){
+  /* TILE TAP — just selects + shows the CTA. Does NOT open camera. */
+  function selectTile(tile){
+    if(!tile) return;
+    var key=tile.getAttribute('data-cat')||'';
+    var label=tile.getAttribute('data-cat-label')||key;
+    var icon=tile.getAttribute('data-cat-icon')||'';
+    var color='';
+    try{color=getComputedStyle(tile).getPropertyValue('--cat-accent').trim()||'';}catch(_){}
+    pending={key:key,label:label,icon:icon,color:color};
+
+    /* Visually mark only the tapped tile */
+    var allTiles=grid.querySelectorAll('.ce-cat-tile');
+    for(var i=0;i<allTiles.length;i++){
+      allTiles[i].classList.toggle('selected',allTiles[i]===tile);
+    }
+
+    /* Update + reveal the floating CTA */
+    if(goLabel) goLabel.textContent=label+' scannen';
+    if(goBtn){
+      goBtn.style.background='linear-gradient(135deg,'+(color||'#60A5FA')+' 0%, #1E293B 200%)';
+      goBtn.classList.add('show');
+    }
+    if(navigator.vibrate) try{navigator.vibrate(8);}catch(_){}
+  }
+
+  /* CTA TAP — saves selection, hides screen, opens camera in same gesture */
+  function commitAndOpen(){
+    if(!pending) return;
     try{
-      localStorage.setItem(CAT_KEY,key||'');
-      localStorage.setItem(CAT_LBL_KEY,label||'');
-      localStorage.setItem(CAT_ICON_KEY,icon||'');
-      localStorage.setItem(CAT_COLOR_KEY,color||'');
+      localStorage.setItem(CAT_KEY,pending.key||'');
+      localStorage.setItem(CAT_LBL_KEY,pending.label||'');
+      localStorage.setItem(CAT_ICON_KEY,pending.icon||'');
+      localStorage.setItem(CAT_COLOR_KEY,pending.color||'');
       localStorage.removeItem(SKIP_KEY);
     }catch(_){}
-    applyActiveCat({key:key,label:label,icon:icon,color:color});
+    applyActiveCat(pending);
     hideScreen();
     startCamIfNeeded();
-    if(navigator.vibrate) try{navigator.vibrate(10);}catch(_){}
+    if(navigator.vibrate) try{navigator.vibrate(12);}catch(_){}
   }
 
   function skipCat(){
@@ -12479,46 +12558,53 @@ initI18n();
       localStorage.removeItem(CAT_COLOR_KEY);
     }catch(_){}
     window.CE_CATEGORY='';
-    pill.classList.remove('show');
+    if(pill) pill.classList.remove('show');
     hideScreen();
     startCamIfNeeded();
   }
 
-  /* Wire up tile clicks */
+  /* Expose globally so the inline onclick attributes on tiles
+     can find the handlers even if other scripts later mutate
+     listener attachment or the body class system. */
+  window.__ceCatPick=selectTile;
+  window.__ceCatGo=commitAndOpen;
+  window.__ceCatSkip=skipCat;
+
+  /* Belt-and-braces: also attach delegated bubble listener */
   grid.addEventListener('click',function(ev){
     var tile=ev.target.closest('.ce-cat-tile');
     if(!tile) return;
-    var key=tile.getAttribute('data-cat')||'';
-    var label=tile.getAttribute('data-cat-label')||key;
-    var icon=tile.getAttribute('data-cat-icon')||'';
-    /* read computed accent colour from --cat-accent on the tile */
-    var color='';
-    try{color=getComputedStyle(tile).getPropertyValue('--cat-accent').trim()||'';}catch(_){}
-    selectCat(key,label,icon,color);
+    selectTile(tile);
   });
-
+  if(goBtn) goBtn.addEventListener('click',commitAndOpen);
   if(skipBtn) skipBtn.addEventListener('click',skipCat);
 
   /* Active pill: tap to re-open category screen */
   if(pill){
     pill.addEventListener('click',function(){
       document.body.classList.remove('ce-cat-done');
+      if(pending && goBtn) goBtn.classList.add('show');
     });
   }
+
+  /* Suppress the legacy welcome modal as soon as our screen mounts —
+     prevents two onboarding overlays competing for attention. */
+  try{
+    localStorage.setItem('ce_welcome_seen','1');
+    var w=document.getElementById('ce-welcome');
+    if(w){w.classList.add('off');w.setAttribute('aria-hidden','true');}
+  }catch(_){}
 
   /* Decide whether to show on load */
   var saved=readSavedCat();
   var skipped=false;
   try{skipped=localStorage.getItem(SKIP_KEY)==='1';}catch(_){}
   if(saved.key){
-    /* user has chosen before — keep it, hide screen, show pill */
     applyActiveCat(saved);
     document.body.classList.add('ce-cat-done');
   }else if(skipped){
-    /* user explicitly skipped — don't nag */
     document.body.classList.add('ce-cat-done');
   }
-  /* else: leave screen visible on first load */
 })();
 </script>
 </body>
