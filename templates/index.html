@@ -11968,7 +11968,7 @@ if(btnNlFab)btnNlFab.addEventListener('click',function(){setLang('nl');hideLangT
     }
   }catch(_){}
 })();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=37').catch(function(){});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=38').catch(function(){});
 
 function ceLoadTrustStrip(){
   var el=document.getElementById('ce-trust-strip');
@@ -12427,12 +12427,31 @@ initI18n();
 
   function startCamIfNeeded(){
     /* iOS / Safari: getUserMedia must be invoked from the same user gesture
-       that just triggered selectCat / skipCat, so call it here. */
+       that just triggered selectCat / skipCat, so call it here.
+       Use the existing ceWelcomeGoCamera() flow which handles everything:
+       welcome dismiss, capture focus, startCamera, prime visibility. */
     try{
+      /* Mark welcome as seen so it doesn't pop up after our screen */
+      try{localStorage.setItem('ce_welcome_seen','1');}catch(_){}
+      var w=document.getElementById('ce-welcome');
+      if(w){w.classList.add('off');w.setAttribute('aria-hidden','true');}
+
+      if(typeof window.ceWelcomeGoCamera==='function'){
+        window.ceWelcomeGoCamera();
+        return;
+      }
+      if(typeof window.enterCaptureFocus==='function'){
+        try{window.enterCaptureFocus();}catch(_){}
+      }
       if(typeof window.startCamera==='function'){
         window.startCamera();
       }
-    }catch(_){}
+      if(typeof window.ceUpdateCamPrimeVisibility==='function'){
+        try{window.ceUpdateCamPrimeVisibility();}catch(_){}
+      }
+    }catch(e){
+      try{console.warn('[chickenegg] cat→cam start failed',e);}catch(_){}
+    }
   }
 
   function selectCat(key,label,icon,color){
