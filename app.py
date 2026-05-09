@@ -1564,6 +1564,70 @@ def _analyze_stream_error_payload(exc):
     return {"success": False, "error": (str(exc) or "error")[:500]}
 
 
+CATEGORY_HINTS = {
+    "meubels": (
+        "Furniture / IKEA assembly focus. Look for: assembly hardware, dowels, cam locks, "
+        "missing parts, wobbling joints, IKEA part numbers (KALLAX/BILLY/PAX/MALM/BESTA/METOD). "
+        "Common tools: Allen keys, Phillips driver, rubber mallet, level."
+    ),
+    "loodgieten": (
+        "Plumbing focus. Look for: leaks at couplings, knel/koper/PVC fittings, washer/O-ring wear, "
+        "siphon, kraan internals, toilet flush mechanisms, dichtingsband (PTFE/Teflon), "
+        "limescale vs real damage. Stop and call a pro on gas, mains pressure failures, sewage."
+    ),
+    "elektronica": (
+        "Low-voltage electrical only (NL Schuko 230V — never advise groepenkast / mains rewiring). "
+        "Look for: switches, sockets, lamp fittings, LED replacements, doorbell wiring, smart home modules. "
+        "Always: cut power at the kast, verify dead with tester. Anything that needs aarde/PE bonding = pro."
+    ),
+    "installatie": (
+        "Mounting / installation focus. Look for: wall material (gips/kalkzand/spouw/beton), "
+        "correct plug (Fischer S/SX/UX/HM), screw length, bracket load rating, leveling. "
+        "Stud finder and laser for level alignment."
+    ),
+    "muren": (
+        "Walls and floors focus. Look for: tile cracks, grout (voegen) repair, paint prep, plinten, "
+        "plamuur, schimmel/vocht behind paint, plaster repairs. Mention sanding grit and primer where useful."
+    ),
+    "schoonmaken": (
+        "Cleaning focus. Look for: surface type first (natuursteen vs porselein vs RVS vs hout), "
+        "the right cleaner (HG, Cif, soda, azijn), kalk vs schimmel vs vlek, mechanical vs chemical. "
+        "Never mix bleach + ammonia / vinegar."
+    ),
+    "tuin": (
+        "Garden focus. Look for: plant species clues, soil/drain issues, schutting rot, "
+        "outdoor electrical (must be IP-rated), seasonal context for NL climate."
+    ),
+    "verwarming": (
+        "Heating focus. Look for: CV-ketel brand (Intergas/Nefit/Remeha/Vaillant), error codes, "
+        "radiator bleeding, thermostat wiring (low-voltage only), waterdruk meter (1.5–2.0 bar). "
+        "Anything gas-side or burner-side = call a CV-monteur immediately."
+    ),
+    "keuken": (
+        "Kitchen focus. Look for: appliance brand/model (Miele/Bosch/Siemens/AEG/Beko/Samsung/LG), "
+        "filter/drain/door-seal issues, kraan and spoelbak fixes, kast hinges and dampers, "
+        "afzuigkap filter swap. Disconnect power before anything internal."
+    ),
+    "auto": (
+        "Car / bicycle focus. Look for: tire wear and pressure, accu condition, lights, "
+        "wiper blades, basic exterior damage. Anything brake/airbag/structural = APK garage."
+    ),
+}
+
+
+def _build_category_hint(cat_key):
+    """Return a short focused hint string to prepend to the AI system prompt, or empty."""
+    if not cat_key:
+        return ""
+    cat = (cat_key or "").strip().lower()
+    if not cat or cat == "all":
+        return ""
+    body = CATEGORY_HINTS.get(cat)
+    if not body:
+        return f"USER-SELECTED CATEGORY: {cat}. Tailor identification and steps to that domain."
+    return f"USER-SELECTED CATEGORY: {cat.upper()}.\n{body}\nPrioritise this domain when identifying the object and choosing steps."
+
+
 def _do_analyze(req_files=None, req_form=None):
     try:
         _get_client()
@@ -1578,6 +1642,7 @@ def _do_analyze(req_files=None, req_form=None):
     image_3 = files.get("image_3")
     question = form.get("question", "")
     language = form.get("language", "nl")
+    category = (form.get("category") or "").strip().lower()
 
     if not image_file:
         return None, ("No image provided", 400)
@@ -1620,6 +1685,7 @@ def _do_analyze(req_files=None, req_form=None):
     lang_instruction = "Respond entirely in Dutch (Nederlands). Use Dutch product names (e.g. 'kraan', 'moersleutel', 'Teflon tape')." if language == "nl" else "Respond in English."
     corpus = get_corpus_for_language(language)
     pattern_memory = _build_success_pattern_memory(question, language)
+    category_hint = _build_category_hint(category)
     tri_note = ""
     if n_views >= 3:
         tri_note = (
@@ -1645,6 +1711,8 @@ INTERNAL REFERENCE (use facts; do not paste this block into JSON answers):
 {corpus}
 
 {lang_instruction}
+
+{category_hint}
 
 {tri_note}
 
@@ -1800,6 +1868,7 @@ def _do_stage1_quick_analyze():
     image_file = request.files.get("image")
     question = request.form.get("question", "")
     language = request.form.get("language", "nl")
+    category = (request.form.get("category") or "").strip().lower()
     if not image_file:
         return None, ("No image provided", 400)
 
@@ -1808,8 +1877,10 @@ def _do_stage1_quick_analyze():
         return None, ("Invalid image data", 400)
 
     lang_instruction = "Respond in Dutch." if language == "nl" else "Respond in English."
+    cat_hint_s1 = _build_category_hint(category)
     prompt = f"""You are Stage-1 fast scene triage for a camera-first repair assistant.
 {lang_instruction}
+{cat_hint_s1}
 
 Return ONLY valid JSON:
 {{
