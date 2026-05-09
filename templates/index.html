@@ -11968,7 +11968,7 @@ if(btnNlFab)btnNlFab.addEventListener('click',function(){setLang('nl');hideLangT
     }
   }catch(_){}
 })();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=36').catch(function(){});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=37').catch(function(){});
 
 function ceLoadTrustStrip(){
   var el=document.getElementById('ce-trust-strip');
@@ -12425,6 +12425,16 @@ initI18n();
     /* allow camera UI to take over */
   }
 
+  function startCamIfNeeded(){
+    /* iOS / Safari: getUserMedia must be invoked from the same user gesture
+       that just triggered selectCat / skipCat, so call it here. */
+    try{
+      if(typeof window.startCamera==='function'){
+        window.startCamera();
+      }
+    }catch(_){}
+  }
+
   function selectCat(key,label,icon,color){
     try{
       localStorage.setItem(CAT_KEY,key||'');
@@ -12435,6 +12445,7 @@ initI18n();
     }catch(_){}
     applyActiveCat({key:key,label:label,icon:icon,color:color});
     hideScreen();
+    startCamIfNeeded();
     if(navigator.vibrate) try{navigator.vibrate(10);}catch(_){}
   }
 
@@ -12449,6 +12460,7 @@ initI18n();
     window.CE_CATEGORY='';
     pill.classList.remove('show');
     hideScreen();
+    startCamIfNeeded();
   }
 
   /* Wire up tile clicks */

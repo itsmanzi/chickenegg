@@ -1,5 +1,5 @@
 /* chickenegg PWA service worker (simple + safe) */
-const CACHE_NAME = "chickenegg-static-v47";
+const CACHE_NAME = "chickenegg-static-v48";
 
 const ASSETS = [
   "/",
