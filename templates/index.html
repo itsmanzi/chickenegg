@@ -12014,7 +12014,7 @@ if(btnNlFab)btnNlFab.addEventListener('click',function(){setLang('nl');hideLangT
     }
   }catch(_){}
 })();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=40').catch(function(){});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=52').catch(function(){});
 
 function ceLoadTrustStrip(){
   var el=document.getElementById('ce-trust-strip');
@@ -12476,7 +12476,16 @@ initI18n();
 
   function hideScreen(){
     document.body.classList.add('ce-cat-done');
-    /* allow camera UI to take over */
+    /* Belt-and-braces: also force inline style so old cached CSS
+       or specificity wars can't keep the screen visible. */
+    var scr=document.getElementById('ce-cat-screen');
+    if(scr){
+      scr.style.cssText='display:none!important;visibility:hidden!important;pointer-events:none!important;';
+    }
+    var ctaBtn=document.getElementById('ce-cat-go');
+    if(ctaBtn){
+      ctaBtn.style.cssText='display:none!important;';
+    }
   }
 
   function startCamIfNeeded(){
