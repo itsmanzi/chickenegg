@@ -12014,7 +12014,25 @@ if(btnNlFab)btnNlFab.addEventListener('click',function(){setLang('nl');hideLangT
     }
   }catch(_){}
 })();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=52').catch(function(){});
+if('serviceWorker'in navigator){
+  navigator.serviceWorker.register('/static/sw.js?v=53').catch(function(){});
+  /* Auto-reload when a new SW takes over so users on stale HTML
+     get the latest build without manually clearing Safari data. */
+  navigator.serviceWorker.addEventListener('message',function(ev){
+    try{
+      if(ev && ev.data && ev.data.type==='SW_UPDATED'){
+        if(window.__ceReloadedBySW)return;
+        window.__ceReloadedBySW=true;
+        location.reload();
+      }
+    }catch(_){}
+  });
+  navigator.serviceWorker.addEventListener('controllerchange',function(){
+    if(window.__ceReloadedByCtrl)return;
+    window.__ceReloadedByCtrl=true;
+    location.reload();
+  });
+}
 
 function ceLoadTrustStrip(){
   var el=document.getElementById('ce-trust-strip');

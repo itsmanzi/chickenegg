@@ -1,5 +1,5 @@
 /* chickenegg PWA service worker (simple + safe) */
-const CACHE_NAME = "chickenegg-static-v52";
+const CACHE_NAME = "chickenegg-static-v53";
 
 const ASSETS = [
   "/",
@@ -32,6 +32,15 @@ self.addEventListener("activate", (event) => {
       .keys()
       .then((keys) => Promise.all(keys.map((k) => (k !== CACHE_NAME ? caches.delete(k) : null))))
       .then(() => self.clients.claim())
+      .then(() =>
+        self.clients.matchAll({ type: "window" }).then((clients) => {
+          // Tell every open tab to reload so users on stale HTML
+          // immediately get the new build instead of staying stuck.
+          clients.forEach((client) => {
+            try { client.postMessage({ type: "SW_UPDATED", cache: CACHE_NAME }); } catch (e) {}
+          });
+        })
+      )
   );
 });
 
