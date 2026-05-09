@@ -4337,13 +4337,15 @@
       background:linear-gradient(165deg,#181A1F 0%,#0F1115 42%,#0B0D12 100%);
       overflow-y:auto;-webkit-overflow-scrolling:touch;
       display:flex;flex-direction:column;
-      opacity:1;visibility:visible;
-      transition:opacity .35s ease,visibility 0s linear;
       pointer-events:auto;
     }
+    /* Hide instantly so the camera UI underneath is reachable
+       and pixel-visible — no transition that could leave the
+       screen on top while iOS shows the permission popup. */
     body.ce-cat-done #ce-cat-screen{
-      opacity:0;visibility:hidden;pointer-events:none;
-      transition:opacity .35s ease,visibility 0s linear .35s;
+      display:none!important;
+      visibility:hidden!important;
+      pointer-events:none!important;
     }
     #ce-cat-screen::before{
       content:'';position:absolute;inset:0;
@@ -11968,7 +11970,7 @@ if(btnNlFab)btnNlFab.addEventListener('click',function(){setLang('nl');hideLangT
     }
   }catch(_){}
 })();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=38').catch(function(){});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js?v=39').catch(function(){});
 
 function ceLoadTrustStrip(){
   var el=document.getElementById('ce-trust-strip');
