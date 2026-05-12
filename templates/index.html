@@ -7437,7 +7437,7 @@ function tickLiveLabel(){
     var fd=new FormData();
     fd.append('image',blob,'live.jpg');
     fd.append('language',LANG||'en');
-    return fetch('/live-label',{method:'POST',body:fd});
+    return fetch('/live-label',{method:'POST',body:fd,credentials:'include'});
   }).then(function(r){return r.json()}).then(function(data){
     var aiLabel=((data&&data.label)||'').toString().trim().toLowerCase();
     var aiConf=((data&&data.confidence)||'low').toString().trim().toLowerCase();
@@ -8322,6 +8322,7 @@ function ceRunAnalyzeFetch(fd,signal){
     method:'POST',
     body:fd,
     signal:signal,
+    credentials:'include',
     headers:{'X-CE-Stream':'1','Accept':'text/event-stream'}
   }).then(function(resp){
     var clen=resp.headers.get('content-length');
@@ -8556,7 +8557,7 @@ async function startLiveScanSession(viewsTarget, initialBlob){
     var _ceAbT=setTimeout(function(){try{_ceAb.abort();}catch(_){}},120000);
     var deepPromise=ceRunAnalyzeFetch(fd,_ceAb.signal)
       .finally(function(){clearTimeout(_ceAbT);});
-    var stage1Promise=fetch('/analyze-stage1',{method:'POST',body:fdStage1})
+    var stage1Promise=fetch('/analyze-stage1',{method:'POST',body:fdStage1,credentials:'include'})
       .then(function(resp){
         return resp.text().then(function(txt){
           try{return JSON.parse(txt);}catch(_){return null;}
@@ -8605,8 +8606,9 @@ async function startLiveScanSession(viewsTarget, initialBlob){
     });
     // #endregion
     if(data&&data._http_status===401){
-      /* v3.18: server says auth required — clear local user state and reload
-         so the signin gate (z-index 5000) shows. */
+      /* v3.22: server says auth required. Don't full-reload — just
+         re-show the signin gate so the user can sign in inline.
+         Keeps the camera state alive in the background. */
       try{document.body.classList.remove('ce-signin-done');}catch(_){}
       try{localStorage.removeItem('ce_user_email');localStorage.removeItem('ce_user_name');}catch(_){}
       if(LI){clearInterval(LI);LI=null;}
@@ -8616,7 +8618,11 @@ async function startLiveScanSession(viewsTarget, initialBlob){
       var ld=document.getElementById('ld');if(ld){ld.style.display='none';ld.setAttribute('aria-hidden','true');}
       setAiThinking(false);
       ceUnfreezeCamPreview();
-      setTimeout(function(){location.reload();},120);
+      /* Reset SCAN button so it's tappable again after sign-in */
+      try{
+        var slbl=document.getElementById('scan-lbl-text');
+        if(slbl)slbl.textContent=(T[LANG]&&T[LANG].scanLbl)?T[LANG].scanLbl:'Scan';
+      }catch(_){}
       return;
     }
     if(data&&data._http_status===402){
@@ -12194,7 +12200,7 @@ pmGo.addEventListener('click',async function(){
   if(!pmFile2)return;clickSnd();hap([8,5,8]);pmGo.innerHTML='⏳ ...';pmGo.classList.remove('on');
   var fd=new FormData();fd.append('image',pmFile2);fd.append('step',pmTxtVal);fd.append('task',curTask);fd.append('language',LANG);
   try{
-    var resp=await fetch('/check-progress',{method:'POST',body:fd});
+    var resp=await fetch('/check-progress',{method:'POST',body:fd,credentials:'include'});
     var rawPm=await resp.text();
     var data;
     try{data=JSON.parse(rawPm);}catch(pe){throw new Error((LANG==='nl'?'Serverfoto-check mislukt. ':'Progress check failed.')+' HTTP '+resp.status)}
