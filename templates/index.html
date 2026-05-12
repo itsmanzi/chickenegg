@@ -8734,6 +8734,19 @@ async function startLiveScanSession(viewsTarget, initialBlob){
     setCaptureJob((LANG==='nl')?'Scan mislukt':'Scan failed',(LANG==='nl')?'Beeld bijstellen en opnieuw proberen':'Adjust view and try again',{scanWrites:true,skipClip:true});
     hap(22);
     var em=(err&&err.message)||(typeof err==='string'?err:'')||'Something went wrong. Try again.';
+    /* v3.24 DEBUG: visible toast with the actual error so we can diagnose */
+    try{
+      var dbg=document.getElementById('ce-scan-dbg');
+      if(!dbg){
+        dbg=document.createElement('div');
+        dbg.id='ce-scan-dbg';
+        dbg.style.cssText='position:fixed;top:calc(env(safe-area-inset-top,0px) + 60px);left:8px;right:8px;z-index:9990;background:rgba(220,30,30,.95);color:#fff;padding:10px 12px;border-radius:10px;font-size:12px;font-weight:700;font-family:ui-monospace,monospace;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.4);word-break:break-word;';
+        dbg.addEventListener('click',function(){dbg.remove();});
+        document.body.appendChild(dbg);
+      }
+      dbg.textContent='SCAN FAIL: '+String(em).slice(0,400)+' (tap to dismiss)';
+      setTimeout(function(){if(dbg&&dbg.parentNode)dbg.remove();},15000);
+    }catch(_){}
     if(!navigator.onLine||/network|fetch|timeout/i.test(em)){
       showUxError('network');
     }else if(/no image|blurry|unclear|retake/i.test(em)){
