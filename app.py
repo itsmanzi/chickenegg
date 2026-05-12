@@ -2988,6 +2988,12 @@ def api_license_verify():
         email = _clean_small_str(request.args.get("email"), 200).lower()
         if not email:
             return jsonify({"success": False, "error": "email is required"}), 400
+        # v3.26: Owner allow-list (CE_OWNER_EMAILS env) wins before DB
+        # check, so admin/founder emails get instant Pro from the paywall
+        # email-recovery flow without needing a Gumroad row.
+        owners = (os.environ.get("CE_OWNER_EMAILS") or "").strip().lower()
+        if owners and email in {p.strip() for p in owners.split(",") if p.strip()}:
+            return jsonify({"success": True, "pro": True, "plan": "owner"})
         with _db() as conn:
             row = conn.execute(
                 """
