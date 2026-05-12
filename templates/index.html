@@ -10816,26 +10816,25 @@ function openResultScreen(){
   updatePaywallStrip(ceCurrentScreen||'ce-screen-diagnosis',ceCurrentPaywallState());
   if(typeof ceSyncOutcomePanelVeReady==='function')ceSyncOutcomePanelVeReady();
   if(typeof ceRefreshScanSoftHint==='function')ceRefreshScanSoftHint();
-  /* v3.20: auto-scroll to the top of the results so users always
-     start reading from the diagnosis header — not stranded mid-page
-     where the analyze loader was. Triple-rAF dance ensures the
-     scroll runs AFTER all the result cards have been laid out. */
+  /* v3.27: scroll WINDOW to top — earlier version targeted
+     #ce-results-shell which sits BELOW the diagnosis content
+     (results-screen-bar, compact safety, hazard hero), so
+     scrollIntoView to the shell pushed the diagnosis offscreen.
+     Just scroll the window. */
   try{
     var prefersReduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var doScroll=function(){
-      try{window.scrollTo({top:0,left:0,behavior:prefersReduced?'auto':'smooth'});}catch(_){window.scrollTo(0,0);}
-      var top=document.getElementById('ce-results-shell')||results;
-      if(top&&top.scrollIntoView){
-        try{top.scrollIntoView({block:'start',behavior:prefersReduced?'auto':'smooth'});}catch(_){}
-      }
+      try{window.scrollTo({top:0,left:0,behavior:'auto'});}catch(_){window.scrollTo(0,0);}
+      try{document.documentElement.scrollTop=0;}catch(_){}
+      try{document.body.scrollTop=0;}catch(_){}
     };
     requestAnimationFrame(function(){
       requestAnimationFrame(function(){
         requestAnimationFrame(doScroll);
       });
     });
-    /* Belt-and-braces: re-fire after the staggered card animations land. */
-    setTimeout(doScroll,260);
+    setTimeout(doScroll,180);
+    setTimeout(doScroll,420);
   }catch(_){}
 }
 
@@ -11733,6 +11732,10 @@ function renderResults(r){
   UX.repair.totalSteps=curSteps.length;
   UX.repair.checklistDone=false;
   UX.checklistDone=false;
+  /* v3.27: populate the #r-steps list NOW so the Steps tab has
+     content even if the user never enters the repair walkthrough.
+     Was previously only filled inside renderRepairUI(). */
+  try{if(typeof ceFillTikTokResultsStepList==='function')ceFillTikTokResultsStepList();}catch(_){}
   if(curVisualTips.length<curSteps.length){
     curVisualTips=curVisualTips.concat(Array(curSteps.length-curVisualTips.length).fill(''));
   }else if(curVisualTips.length>curSteps.length){
