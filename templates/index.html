@@ -10744,6 +10744,27 @@ function openResultScreen(){
   updatePaywallStrip(ceCurrentScreen||'ce-screen-diagnosis',ceCurrentPaywallState());
   if(typeof ceSyncOutcomePanelVeReady==='function')ceSyncOutcomePanelVeReady();
   if(typeof ceRefreshScanSoftHint==='function')ceRefreshScanSoftHint();
+  /* v3.20: auto-scroll to the top of the results so users always
+     start reading from the diagnosis header — not stranded mid-page
+     where the analyze loader was. Triple-rAF dance ensures the
+     scroll runs AFTER all the result cards have been laid out. */
+  try{
+    var prefersReduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var doScroll=function(){
+      try{window.scrollTo({top:0,left:0,behavior:prefersReduced?'auto':'smooth'});}catch(_){window.scrollTo(0,0);}
+      var top=document.getElementById('ce-results-shell')||results;
+      if(top&&top.scrollIntoView){
+        try{top.scrollIntoView({block:'start',behavior:prefersReduced?'auto':'smooth'});}catch(_){}
+      }
+    };
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        requestAnimationFrame(doScroll);
+      });
+    });
+    /* Belt-and-braces: re-fire after the staggered card animations land. */
+    setTimeout(doScroll,260);
+  }catch(_){}
 }
 
 function closeResultScreen(){
