@@ -8280,6 +8280,12 @@ function ceRunAnalyzeFetch(fd,signal){
     headers:{'X-CE-Stream':'1','Accept':'text/event-stream'}
   }).then(function(resp){
     var clen=resp.headers.get('content-length');
+    if(resp.status===401){
+      /* v3.18: auth cookie expired or missing — kick back to sign-in. */
+      return resp.json().then(function(j){j._http_status=401;return j;}).catch(function(){
+        return {success:false,error:'auth_required',_http_status:401};
+      });
+    }
     if(resp.status===402){
       return resp.json().then(function(j){j._http_status=402;return j;}).catch(function(){
         return {success:false,error:'Paywall',_http_status:402};
@@ -8553,6 +8559,21 @@ async function startLiveScanSession(viewsTarget, initialBlob){
       err:(data&&data.error)?String(data.error).slice(0,100):''
     });
     // #endregion
+    if(data&&data._http_status===401){
+      /* v3.18: server says auth required — clear local user state and reload
+         so the signin gate (z-index 5000) shows. */
+      try{document.body.classList.remove('ce-signin-done');}catch(_){}
+      try{localStorage.removeItem('ce_user_email');localStorage.removeItem('ce_user_name');}catch(_){}
+      if(LI){clearInterval(LI);LI=null;}
+      stopHum();
+      camOverlay.classList.remove('scanning');
+      ceStopRitualDots();
+      var ld=document.getElementById('ld');if(ld){ld.style.display='none';ld.setAttribute('aria-hidden','true');}
+      setAiThinking(false);
+      ceUnfreezeCamPreview();
+      setTimeout(function(){location.reload();},120);
+      return;
+    }
     if(data&&data._http_status===402){
       ceServerScanState.scans_used=parseInt(data.scans_used||ceServerScanState.scans_used||0,10)||0;
       ceServerScanState.limit=parseInt(data.limit||ceServerScanState.limit||5,10)||5;

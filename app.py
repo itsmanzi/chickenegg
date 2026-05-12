@@ -746,39 +746,118 @@ def _increment_scan_session(fingerprint):
         return {"scans_used": scans_used, "limit": FREE_SCAN_LIMIT, "pro": pro}
 
 
+def _user_is_pro(email):
+    """Look up active pro license by email."""
+    if not email:
+        return False
+    try:
+        with _db() as conn:
+            row = conn.execute(
+                "SELECT 1 FROM pro_licenses WHERE email = ? AND active = 1 LIMIT 1",
+                (email.strip().lower(),),
+            ).fetchone()
+            return bool(row)
+    except Exception:
+        return False
+
+
+def _get_user_scan_state(user):
+    """Read scans_used + pro status for an authed user."""
+    if not user:
+        return None
+    pro = _user_is_pro(user.get("email"))
+    try:
+        with _db() as conn:
+            row = conn.execute(
+                "SELECT scans_count FROM users WHERE id = ?",
+                (int(user["id"]),),
+            ).fetchone()
+            scans_used = int(row["scans_count"] or 0) if row else 0
+    except Exception:
+        scans_used = 0
+    return {
+        "scans_used": scans_used,
+        "limit": FREE_SCAN_LIMIT,
+        "pro": pro,
+        "user_id": int(user["id"]),
+        "email": user.get("email") or "",
+    }
+
+
+def _increment_user_scans(user_id):
+    """Increment users.scans_count atomically."""
+    if not user_id:
+        return
+    try:
+        with _db() as conn:
+            conn.execute(
+                "UPDATE users SET scans_count = scans_count + 1, last_seen_at = ? WHERE id = ?",
+                (_utc_now_iso(), int(user_id)),
+            )
+            conn.commit()
+    except Exception:
+        pass
+
+
 def _check_scan_limit_or_402():
-    fp = _extract_scan_fingerprint()
-    if not fp:
-        return None, ("device_fingerprint is required", 400)
-    if _is_scan_meter_exempt(fp):
-        # Do not increment DB usage for exempt traffic (keeps prod metrics meaningful).
-        return fp, {"scans_used": 0, "limit": FREE_SCAN_LIMIT, "pro": True}, None
-    state = _get_scan_session(fp)
-    if state["scans_used"] >= state["limit"] and not state["pro"]:
-        return fp, None, (
-            jsonify(
-                {
+    """Returns (key, state, err) — key is user_id when authed, fingerprint otherwise.
+    Auth is REQUIRED per v3.18: unauth callers get 401 (matches frontend signin gate)."""
+    user = _current_user()
+    if user:
+        # PER-USER paywall (preferred path)
+        state = _get_user_scan_state(user)
+        if state["scans_used"] >= state["limit"] and not state["pro"]:
+            return ("user:" + str(user["id"])), None, (
+                jsonify({
                     "success": False,
                     "error": "free_scan_limit_reached",
                     "paywall": True,
                     "scans_used": state["scans_used"],
                     "limit": state["limit"],
                     "pro": state["pro"],
-                }
-            ),
-            402,
-        )
-    return fp, state, None
+                }),
+                402,
+            )
+        return ("user:" + str(user["id"])), state, None
+
+    # NOT signed in — reject. The frontend gate should prevent this from
+    # ever happening, but defense-in-depth: return 401 with a clear error.
+    return None, None, (
+        jsonify({
+            "success": False,
+            "error": "auth_required",
+            "auth": True,
+        }),
+        401,
+    )
 
 
-def _consume_scan_after_success(fingerprint, scan_state):
-    if not fingerprint:
+def _consume_scan_after_success(key, scan_state):
+    """Increment the appropriate counter after a successful scan."""
+    if not key or not scan_state:
         return scan_state or {"scans_used": 0, "limit": FREE_SCAN_LIMIT, "pro": False}
-    if scan_state and scan_state.get("pro"):
+    if scan_state.get("pro"):
         return scan_state
-    if _is_scan_meter_exempt(fingerprint):
+    # User-scoped counter
+    if isinstance(key, str) and key.startswith("user:"):
+        try:
+            uid = int(key.split(":", 1)[1])
+        except Exception:
+            uid = 0
+        if uid:
+            _increment_user_scans(uid)
+            return {
+                "scans_used": int(scan_state.get("scans_used", 0)) + 1,
+                "limit": FREE_SCAN_LIMIT,
+                "pro": False,
+                "user_id": uid,
+                "email": scan_state.get("email", ""),
+            }
+        return scan_state
+    # Fallback: fingerprint-based (legacy callers)
+    if _is_scan_meter_exempt(key):
         return {"scans_used": 0, "limit": FREE_SCAN_LIMIT, "pro": True}
-    return _increment_scan_session(fingerprint)
+    return _increment_scan_session(key)
 
 
 def _verify_gumroad_webhook_auth():
