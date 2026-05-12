@@ -4710,7 +4710,9 @@
     }catch(e){return false;}
   }
 
-  /* Tile tap → mark selected + reveal CTA. No camera yet. */
+  /* v3.23: SINGLE-TAP flow. Tile tap = save category + hide screen
+     + open camera in the SAME user gesture (so iOS getUserMedia is
+     happy). The floating CTA is no longer required. */
   window.__ceCatPick=function(tile){
     if(!tile)return;
     var key=tile.getAttribute('data-cat')||'';
@@ -4720,7 +4722,7 @@
     try{color=getComputedStyle(tile).getPropertyValue('--cat-accent').trim()||'';}catch(_){}
     pending={key:key,label:label,icon:icon,color:color};
 
-    /* Highlight tapped tile */
+    /* Quick visual ack: highlight the tapped tile */
     var grid=document.getElementById('ce-cat-grid');
     if(grid){
       var tiles=grid.querySelectorAll('.ce-cat-tile');
@@ -4729,14 +4731,11 @@
         else tiles[i].classList.remove('selected');
       }
     }
-    /* Reveal CTA */
-    var lbl=getLabel(); if(lbl)lbl.textContent=label+' scannen';
-    var b=getCTA();
-    if(b){
-      b.style.background='linear-gradient(135deg,'+(color||'#60A5FA')+' 0%, #1E293B 200%)';
-      b.classList.add('show');
-    }
     vib(8);
+    /* Persist + camera in same gesture */
+    if(typeof window.__ceCatGo==='function'){
+      window.__ceCatGo();
+    }
   };
 
   /* CTA tap → save + hide + open camera in same gesture. */
@@ -7622,11 +7621,12 @@ function ceUpdateCamPrimeVisibility(){
   el.setAttribute('aria-hidden',show?'false':'true');
 }
 
-// iOS / Safari: live camera needs a clear user gesture — overlay + first touch both call startCamera().
-document.addEventListener('touchstart',function(){
-  if(!camReady)startCamera();
-  if(typeof ceUpdateCamPrimeVisibility==='function')ceUpdateCamPrimeVisibility();
-},{once:true});
+/* v3.23: Removed the global touchstart auto-startCamera handler.
+   It was firing on the FIRST tap anywhere — including category
+   tiles — triggering an unexpected camera permission prompt
+   before the user had even chosen what they wanted to scan.
+   Camera now only starts when the user explicitly picks a
+   category (via __ceCatGo) or taps the cam-prime button. */
 (function(){
   var b=document.getElementById('ce-cam-prime-btn');
   if(!b)return;
