@@ -10816,25 +10816,30 @@ function openResultScreen(){
   updatePaywallStrip(ceCurrentScreen||'ce-screen-diagnosis',ceCurrentPaywallState());
   if(typeof ceSyncOutcomePanelVeReady==='function')ceSyncOutcomePanelVeReady();
   if(typeof ceRefreshScanSoftHint==='function')ceRefreshScanSoftHint();
-  /* v3.27: scroll WINDOW to top — earlier version targeted
-     #ce-results-shell which sits BELOW the diagnosis content
-     (results-screen-bar, compact safety, hazard hero), so
-     scrollIntoView to the shell pushed the diagnosis offscreen.
-     Just scroll the window. */
+  /* v3.28: aggressively scroll EVERYTHING to top — window, scroll
+     containers, results pane. Some layouts have nested scroll
+     containers (overflow:auto) that need their own scrollTop=0.
+     Re-fires multiple times to beat any layout settling. */
   try{
-    var prefersReduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var doScroll=function(){
-      try{window.scrollTo({top:0,left:0,behavior:'auto'});}catch(_){window.scrollTo(0,0);}
+      try{window.scrollTo(0,0);}catch(_){}
       try{document.documentElement.scrollTop=0;}catch(_){}
       try{document.body.scrollTop=0;}catch(_){}
+      try{
+        var rs=document.getElementById('results');
+        if(rs)rs.scrollTop=0;
+        var shell=document.getElementById('ce-results-shell');
+        if(shell)shell.scrollTop=0;
+        document.querySelectorAll('.ce-tab-panel,.ce-screen').forEach(function(el){try{el.scrollTop=0;}catch(_){}});
+      }catch(_){}
     };
-    requestAnimationFrame(function(){
-      requestAnimationFrame(function(){
-        requestAnimationFrame(doScroll);
-      });
-    });
-    setTimeout(doScroll,180);
-    setTimeout(doScroll,420);
+    doScroll();
+    requestAnimationFrame(doScroll);
+    requestAnimationFrame(function(){requestAnimationFrame(doScroll);});
+    setTimeout(doScroll,80);
+    setTimeout(doScroll,200);
+    setTimeout(doScroll,500);
+    setTimeout(doScroll,1000);
   }catch(_){}
 }
 
@@ -11736,6 +11741,10 @@ function renderResults(r){
      content even if the user never enters the repair walkthrough.
      Was previously only filled inside renderRepairUI(). */
   try{if(typeof ceFillTikTokResultsStepList==='function')ceFillTikTokResultsStepList();}catch(_){}
+  /* v3.28: also call renderRepairUI() now so Next/Back buttons get
+     enabled immediately on the diagnosis screen. They previously
+     stayed disabled until the user manually entered the walkthrough. */
+  try{if(typeof renderRepairUI==='function')renderRepairUI();}catch(_){}
   if(curVisualTips.length<curSteps.length){
     curVisualTips=curVisualTips.concat(Array(curSteps.length-curVisualTips.length).fill(''));
   }else if(curVisualTips.length>curSteps.length){
