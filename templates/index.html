@@ -6962,6 +6962,51 @@ function ceShopHref(storeKey, productName){
   if(storeKey==='praxis')return praxisLink(productName);
   return bolLink(productName);
 }
+/* v3.21: NL store search links for the "Where to buy" footer.
+   Concatenates tool names into a single search query per store. */
+function ceKarweiLink(q){
+  return 'https://www.karwei.nl/search?text='+encodeURIComponent(String(q||'').trim());
+}
+function ceActionLink(q){
+  return 'https://www.action.com/nl-nl/search/?text='+encodeURIComponent(String(q||'').trim());
+}
+function ceIkeaLink(q){
+  return 'https://www.ikea.com/nl/nl/search/?q='+encodeURIComponent(String(q||'').trim());
+}
+function ceBuildAllStoresRow(tools){
+  if(!tools||!tools.length)return null;
+  var query=tools.slice(0,4).join(' ').slice(0,120);
+  var stores=[
+    {key:'gamma',  name:'Gamma',  url:gammaLink(query),   color:'#CC0000'},
+    {key:'praxis', name:'Praxis', url:praxisLink(query),  color:'#0066B3'},
+    {key:'karwei', name:'Karwei', url:ceKarweiLink(query),color:'#6E32A0'},
+    {key:'bol',    name:'Bol.com',url:bolLink(query),     color:'#E47911'},
+    {key:'ikea',   name:'IKEA',   url:ceIkeaLink(query),  color:'#0058A3'}
+  ];
+  var wrap=document.createElement('div');
+  wrap.className='ce-all-stores-row';
+  wrap.style.cssText='margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);';
+  var lbl=document.createElement('div');
+  lbl.style.cssText='font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:rgba(240,232,220,.55);margin-bottom:8px;';
+  lbl.textContent=(LANG==='nl')?'Waar koop je dit?':'Where to buy';
+  wrap.appendChild(lbl);
+  var chips=document.createElement('div');
+  chips.style.cssText='display:flex;flex-wrap:wrap;gap:6px;';
+  stores.forEach(function(s){
+    var a=document.createElement('a');
+    a.href=s.url;a.target='_blank';a.rel='noopener';
+    a.textContent=s.name+' →';
+    a.title='Zoek '+s.name+' voor: '+query;
+    a.style.cssText='display:inline-flex;align-items:center;padding:8px 12px;border-radius:11px;background:'+s.color+';color:#fff;font-size:12px;font-weight:800;text-decoration:none;letter-spacing:-.1px;';
+    a.addEventListener('click',function(){
+      try{ceTrackShopClick(s.name,query);}catch(_){}
+      try{ceTrackAppClick('store_chip_clicked','results|'+s.key+'|'+query);}catch(_){}
+    });
+    chips.appendChild(a);
+  });
+  wrap.appendChild(chips);
+  return wrap;
+}
 function ceShopLinkAria(storeName, productName){
   var t=T[LANG]||T.en;
   var s=t.shopLinkAria||'{store} — {product}';
@@ -9385,16 +9430,24 @@ function showScreen(screenId,state){
     else
       resultsBar.style.display=isRepair?'none':'';
   }
-  // Single UX guarantee: diagnosis/completion never show walkthrough cards.
-  if(!isRepair){
+  // v3.21: keep TOOLS card visible on diagnosis (so the user knows
+  // what they need before tapping "Start repair"). Steps card stays
+  // hidden on diagnosis — it belongs to the walkthrough only.
+  var isCompletion=screenId==='ce-screen-completion';
+  if(isRepair){
+    if(toolsCard&&toolsCard.style.display==='none')toolsCard.style.display='';
+    if(typeof ceSetStepsCardVisible==='function')ceSetStepsCardVisible(true);
+    else if(stepsCard&&stepsCard.style.display==='none')stepsCard.style.display='';
+  }else if(isCompletion){
+    // Completion screen: hide both walkthrough cards
     if(toolsCard)toolsCard.style.display='none';
     if(typeof ceSetStepsCardVisible==='function')ceSetStepsCardVisible(false);
     else if(stepsCard)stepsCard.style.display='none';
   }else{
-    // Re-enable cards when entering repair; they can remain stuck hidden otherwise.
+    // Diagnosis: tools visible, steps hidden
     if(toolsCard&&toolsCard.style.display==='none')toolsCard.style.display='';
-    if(typeof ceSetStepsCardVisible==='function')ceSetStepsCardVisible(true);
-    else if(stepsCard&&stepsCard.style.display==='none')stepsCard.style.display='';
+    if(typeof ceSetStepsCardVisible==='function')ceSetStepsCardVisible(false);
+    else if(stepsCard)stepsCard.style.display='none';
   }
   if(sticky)sticky.style.display=isRepair?'block':'none';
   if(prog)prog.style.display=isRepair?'flex':'none';
@@ -11904,6 +11957,14 @@ function renderResults(r){
       }
       e.appendChild(nr);e.appendChild(sr);te.appendChild(e);
     });
+
+    /* v3.21: 'Waar koop je dit?' — search all 5 major NL stores
+       at once for the full tools list. Lets the user pick their
+       preferred store instead of just the auto-picked one. */
+    if(typeof ceBuildAllStoresRow==='function'){
+      var allRow=ceBuildAllStoresRow(allTools);
+      if(allRow)te.appendChild(allRow);
+    }
   }
 
   var allowSteps = repairNeeded && !ceDangerLocked && !ceWarningUnlockRequired && !ceMediumConfirmRequired && !landlordBlocksDiy && !ceDecisionDoNot;
