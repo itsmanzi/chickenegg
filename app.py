@@ -401,6 +401,31 @@ def _init_metrics_db():
                 )
                 """
             )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS scans (
+                    id BIGSERIAL PRIMARY KEY,
+                    created_at TIMESTAMPTZ NOT NULL,
+                    user_id BIGINT,
+                    user_email TEXT,
+                    fingerprint TEXT,
+                    category TEXT,
+                    what_i_see TEXT,
+                    task TEXT,
+                    difficulty TEXT,
+                    hazard_level TEXT,
+                    time_needed TEXT,
+                    tools_count INTEGER,
+                    steps_count INTEGER,
+                    cost_estimate TEXT,
+                    confidence TEXT,
+                    locale TEXT,
+                    source_channel TEXT,
+                    ip TEXT,
+                    user_agent TEXT
+                )
+                """
+            )
         else:
             conn.execute(
                 """
@@ -497,8 +522,36 @@ def _init_metrics_db():
                 )
                 """
             )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS scans (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    created_at TEXT NOT NULL,
+                    user_id INTEGER,
+                    user_email TEXT,
+                    fingerprint TEXT,
+                    category TEXT,
+                    what_i_see TEXT,
+                    task TEXT,
+                    difficulty TEXT,
+                    hazard_level TEXT,
+                    time_needed TEXT,
+                    tools_count INTEGER,
+                    steps_count INTEGER,
+                    cost_estimate TEXT,
+                    confidence TEXT,
+                    locale TEXT,
+                    source_channel TEXT,
+                    ip TEXT,
+                    user_agent TEXT
+                )
+                """
+            )
         conn.execute("CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_users_last_seen ON users(last_seen_at)")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_scans_user ON scans(user_id)")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_scans_created_at ON scans(created_at)")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_scans_category ON scans(category)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_events_created_at ON events(created_at)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_events_event_name ON events(event_name)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_events_session ON events(session_id)")
@@ -2242,6 +2295,17 @@ def analyze():
                 scan_state2 = _consume_scan_after_success(fp, scan_state)
                 payload["scan_session"] = scan_state2
                 _insert_analyze_success_events(payload, snap_form, "analyze")
+                # v3.19: centralized scan log (SSE path)
+                try:
+                    _log_scan_to_user(
+                        _current_user(), fp,
+                        (snap_form.get("category") or "").strip().lower(),
+                        payload.get("result") or {},
+                        _clean_small_str(snap_form.get("language"), 12),
+                        "analyze_sse",
+                    )
+                except Exception:
+                    pass
                 _dbg_d78afc("H2", "app.py:analyze:success", "sse payload", {"ms": int((time.time() - _t0) * 1000)})
                 yield f"data: {json.dumps(payload)}\n\n"
                 yield "data: [DONE]\n\n"
@@ -2267,6 +2331,17 @@ def analyze():
         scan_state = _consume_scan_after_success(fp, scan_state)
         payload["scan_session"] = scan_state
         _insert_analyze_success_events(payload, request.form, "analyze")
+        # v3.19: write to centralized scans table for /api/me/history
+        try:
+            _log_scan_to_user(
+                _current_user(), fp,
+                (request.form.get("category") or "").strip().lower(),
+                payload.get("result") or {},
+                _clean_small_str(request.form.get("language"), 12),
+                "analyze",
+            )
+        except Exception:
+            pass
         _dbg_d78afc("H2", "app.py:analyze:success", "jsonify ok", {"ms": int((time.time() - _t0) * 1000)})
         return jsonify(payload)
     except json.JSONDecodeError as e:
@@ -2322,6 +2397,17 @@ def analyze_live():
         payload["live"] = {"needs_more_views": False, "next_prompt": ""}
         payload["scan_session"] = scan_state
         _insert_analyze_success_events(payload, request.form, "analyze_live")
+        # v3.19: centralized scan log
+        try:
+            _log_scan_to_user(
+                _current_user(), fp,
+                (request.form.get("category") or "").strip().lower(),
+                payload.get("result") or {},
+                _clean_small_str(request.form.get("language"), 12),
+                "analyze_live",
+            )
+        except Exception:
+            pass
         return jsonify(payload)
     except json.JSONDecodeError as e:
         return jsonify({"success": False, "error": f"AI returned invalid JSON: {str(e)}"}), 500
@@ -2714,6 +2800,158 @@ def api_auth_me():
     if not user:
         return jsonify({"success": True, "user": None}), 200
     return jsonify({"success": True, "user": user}), 200
+
+
+def _log_scan_to_user(user, fingerprint, category, result, locale, source_channel):
+    """v3.19: write a single row to the scans table for every successful scan.
+    Centralizes user data so /api/me/history can render personal history."""
+    try:
+        result = result or {}
+        tools = result.get("tools_needed") or result.get("tools") or []
+        steps = result.get("steps") or []
+        with _db() as conn:
+            conn.execute(
+                """
+                INSERT INTO scans (
+                    created_at, user_id, user_email, fingerprint, category,
+                    what_i_see, task, difficulty, hazard_level, time_needed,
+                    tools_count, steps_count, cost_estimate, confidence, locale,
+                    source_channel, ip, user_agent
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    _utc_now_iso(),
+                    int(user["id"]) if user else None,
+                    (user.get("email") if user else "") or "",
+                    _clean_small_str(fingerprint, 80),
+                    _clean_small_str(category, 60),
+                    _clean_small_str(result.get("what_i_see"), 240),
+                    _clean_small_str(result.get("task"), 240),
+                    _clean_small_str(result.get("difficulty"), 40),
+                    _clean_small_str(result.get("hazard_level"), 20).lower(),
+                    _clean_small_str(result.get("time_needed"), 60),
+                    int(len(tools)) if isinstance(tools, list) else 0,
+                    int(len(steps)) if isinstance(steps, list) else 0,
+                    _clean_small_str(result.get("cost_estimate"), 60),
+                    _clean_small_str(result.get("confidence"), 24),
+                    _clean_small_str(locale, 8),
+                    _clean_small_str(source_channel, 40),
+                    _request_ip(),
+                    _clean_small_str(request.headers.get("User-Agent"), 260),
+                ),
+            )
+            conn.commit()
+    except Exception:
+        # Never let logging failures break the user-facing scan response
+        pass
+
+
+@app.route("/api/me", methods=["GET"])
+def api_me():
+    """Authed user dashboard: profile + lifetime stats + recent scans.
+    Fails closed (401) if not signed in — a personal data endpoint."""
+    user = _current_user()
+    if not user:
+        return jsonify({"success": False, "error": "auth_required"}), 401
+    try:
+        with _db() as conn:
+            # profile + counters
+            row = conn.execute(
+                "SELECT email, name, created_at, last_seen_at, scans_count FROM users WHERE id = ?",
+                (int(user["id"]),),
+            ).fetchone()
+            if not row:
+                return jsonify({"success": False, "error": "user_not_found"}), 404
+            pro = _user_is_pro(row["email"])
+            scans_used = int(row["scans_count"] or 0)
+            # category breakdown
+            cat_rows = conn.execute(
+                "SELECT category, COUNT(*) AS n FROM scans WHERE user_id = ? AND category != '' GROUP BY category ORDER BY n DESC LIMIT 10",
+                (int(user["id"]),),
+            ).fetchall()
+            top_cats = [{"category": r["category"], "count": int(r["n"])} for r in cat_rows]
+            # last 10 scans (lightweight)
+            recent_rows = conn.execute(
+                "SELECT created_at, category, what_i_see, task, difficulty, hazard_level, time_needed, tools_count, steps_count FROM scans WHERE user_id = ? ORDER BY created_at DESC LIMIT 10",
+                (int(user["id"]),),
+            ).fetchall()
+            recent = [{
+                "created_at": r["created_at"],
+                "category": r["category"] or "",
+                "what_i_see": r["what_i_see"] or "",
+                "task": r["task"] or "",
+                "difficulty": r["difficulty"] or "",
+                "hazard_level": r["hazard_level"] or "",
+                "time_needed": r["time_needed"] or "",
+                "tools_count": int(r["tools_count"] or 0),
+                "steps_count": int(r["steps_count"] or 0),
+            } for r in recent_rows]
+        return jsonify({
+            "success": True,
+            "user": {
+                "id": int(user["id"]),
+                "email": row["email"],
+                "name": row["name"] or "",
+                "created_at": row["created_at"],
+                "last_seen_at": row["last_seen_at"],
+            },
+            "stats": {
+                "scans_used": scans_used,
+                "scans_remaining": max(0, FREE_SCAN_LIMIT - scans_used) if not pro else None,
+                "limit": FREE_SCAN_LIMIT,
+                "pro": pro,
+                "top_categories": top_cats,
+            },
+            "recent_scans": recent,
+        }), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/me/history", methods=["GET"])
+def api_me_history():
+    """Paginated user scan history. Defense: only returns the caller's own rows."""
+    user = _current_user()
+    if not user:
+        return jsonify({"success": False, "error": "auth_required"}), 401
+    try:
+        limit = max(1, min(int(request.args.get("limit", "25") or 25), 100))
+        offset = max(0, int(request.args.get("offset", "0") or 0))
+    except Exception:
+        limit, offset = 25, 0
+    try:
+        with _db() as conn:
+            total_row = conn.execute(
+                "SELECT COUNT(*) AS n FROM scans WHERE user_id = ?",
+                (int(user["id"]),),
+            ).fetchone()
+            total = int(total_row["n"] or 0)
+            rows = conn.execute(
+                "SELECT id, created_at, category, what_i_see, task, difficulty, hazard_level, time_needed, tools_count, steps_count, cost_estimate FROM scans WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?",
+                (int(user["id"]), limit, offset),
+            ).fetchall()
+            items = [{
+                "id": int(r["id"]),
+                "created_at": r["created_at"],
+                "category": r["category"] or "",
+                "what_i_see": r["what_i_see"] or "",
+                "task": r["task"] or "",
+                "difficulty": r["difficulty"] or "",
+                "hazard_level": r["hazard_level"] or "",
+                "time_needed": r["time_needed"] or "",
+                "tools_count": int(r["tools_count"] or 0),
+                "steps_count": int(r["steps_count"] or 0),
+                "cost_estimate": r["cost_estimate"] or "",
+            } for r in rows]
+        return jsonify({
+            "success": True,
+            "total": total,
+            "limit": limit,
+            "offset": offset,
+            "items": items,
+        }), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @app.route("/api/auth/signout", methods=["POST"])
