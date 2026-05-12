@@ -4644,14 +4644,52 @@
     if(!ok){setTimeout(function(){location.reload();},120);}
   };
 
-  /* Pre-skip on load if user already has a saved category */
+  /* Re-open the category screen from anywhere (active pill, settings, etc.) */
+  window.__ceCatShow=function(){
+    /* Clear ANY inline hide styles that nukeScreen() may have left */
+    var s=getScreen();
+    if(s){s.style.cssText='';}
+    var b=getCTA();
+    if(b){b.style.cssText='';b.classList.remove('show');}
+    document.body.classList.remove('ce-cat-done');
+    pending=null;
+    /* Restore tile visual state */
+    var grid=document.getElementById('ce-cat-grid');
+    if(grid){
+      var tiles=grid.querySelectorAll('.ce-cat-tile.selected');
+      for(var i=0;i<tiles.length;i++)tiles[i].classList.remove('selected');
+    }
+    /* Scroll to top of the screen */
+    if(s){try{s.scrollTop=0;}catch(_){}}
+  };
+
+  /* URL escape hatch: /?cat=force clears saved state and forces the
+     screen to appear. Use this to test the flow when state is sticky. */
   try{
-    var saved=localStorage.getItem(CAT_KEY)||'';
-    var skipped=localStorage.getItem(SKIP)==='1';
-    if(saved||skipped){
-      document.body.classList.add('ce-cat-done');
-      var s2=getScreen();
-      if(s2){s2.style.display='none';}
+    var qs=(location.search||'').toLowerCase();
+    if(qs.indexOf('cat=force')!==-1 || qs.indexOf('cat=reset')!==-1){
+      try{
+        localStorage.removeItem(CAT_KEY);
+        localStorage.removeItem(CAT_LBL);
+        localStorage.removeItem(CAT_ICON);
+        localStorage.removeItem(CAT_COLOR);
+        localStorage.removeItem(SKIP);
+      }catch(_){}
+      /* Strip the param from URL so refresh doesn't re-trigger */
+      try{
+        var u=new URL(location.href);
+        u.searchParams.delete('cat');
+        history.replaceState(null,'',u.pathname+u.search+u.hash);
+      }catch(_){}
+      /* Force screen visible */
+      document.body.classList.remove('ce-cat-done');
+    }else{
+      /* Pre-skip on load if user already has a saved category */
+      var saved=localStorage.getItem(CAT_KEY)||'';
+      var skipped=localStorage.getItem(SKIP)==='1';
+      if(saved||skipped){
+        document.body.classList.add('ce-cat-done');
+      }
     }
   }catch(_){}
 })();
@@ -12726,11 +12764,17 @@ initI18n();
   if(goBtn) goBtn.addEventListener('click',commitAndOpen);
   if(skipBtn) skipBtn.addEventListener('click',skipCat);
 
-  /* Active pill: tap to re-open category screen */
+  /* Active pill: tap to re-open category screen.
+     Uses window.__ceCatShow() which clears inline styles (set by
+     nukeScreen) + body class, so the screen is guaranteed to appear. */
   if(pill){
-    pill.addEventListener('click',function(){
-      document.body.classList.remove('ce-cat-done');
-      if(pending && goBtn) goBtn.classList.add('show');
+    pill.addEventListener('click',function(ev){
+      ev&&ev.preventDefault&&ev.preventDefault();
+      if(typeof window.__ceCatShow==='function'){
+        window.__ceCatShow();
+      }else{
+        document.body.classList.remove('ce-cat-done');
+      }
     });
   }
 
