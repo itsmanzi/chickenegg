@@ -4550,6 +4550,127 @@
 </head>
 <body class="cam-tiktok" data-ce-deploy-sha="{{ ce_deploy_sha|default('', true) }}">
 
+<!-- v3.17 — SIGN-IN GATE (always shown until user has valid cookie) -->
+<div id="ce-signin-screen" role="dialog" aria-modal="true" aria-labelledby="ce-signin-h1">
+  <div class="ce-signin-bg"></div>
+  <div class="ce-signin-card">
+    <div class="ce-signin-logo">
+      <svg width="64" height="76" viewBox="0 0 64 76" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <radialGradient id="signinEgg" cx="28%" cy="14%" r="74%">
+            <stop offset="0%" stop-color="#FFFFFF"/>
+            <stop offset="22%" stop-color="#F2EBE0"/>
+            <stop offset="55%" stop-color="#D4C4A8"/>
+            <stop offset="80%" stop-color="#7A6850"/>
+            <stop offset="100%" stop-color="#2A2418"/>
+          </radialGradient>
+          <radialGradient id="signinGlow" cx="76%" cy="82%" r="40%">
+            <stop offset="0%" stop-color="rgba(232,168,71,0.42)"/>
+            <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+          </radialGradient>
+        </defs>
+        <path d="M32 3C18 3 5 24 5 41C5 59 17 72 32 72C47 72 59 59 59 41C59 24 46 3 32 3Z" fill="url(#signinEgg)"/>
+        <path d="M32 3C18 3 5 24 5 41C5 59 17 72 32 72C47 72 59 59 59 41C59 24 46 3 32 3Z" fill="url(#signinGlow)"/>
+        <ellipse cx="20" cy="14" rx="5.6" ry="10" fill="rgba(255,255,255,0.5)" transform="rotate(-22 20 14)"/>
+      </svg>
+    </div>
+    <h1 id="ce-signin-h1">Welkom bij <span class="ce-signin-hi">chickenegg</span></h1>
+    <p class="ce-signin-sub">Maak een gratis account aan om je scans en voortgang te bewaren.</p>
+    <form id="ce-signin-form" autocomplete="on" novalidate>
+      <input class="ce-signin-input" type="text" id="ce-signin-name" placeholder="Je naam (optioneel)" autocomplete="name" maxlength="80">
+      <input class="ce-signin-input" type="email" id="ce-signin-email" placeholder="jouw@email.nl" autocomplete="email" required maxlength="200" inputmode="email">
+      <label class="ce-signin-terms">
+        <input type="checkbox" id="ce-signin-tos" required>
+        <span>Ik ga akkoord met de <a href="/agreement" target="_blank" rel="noopener">voorwaarden</a> en <a href="/privacy" target="_blank" rel="noopener">privacy</a>.</span>
+      </label>
+      <button type="submit" class="ce-signin-cta" id="ce-signin-go">Doorgaan →</button>
+      <p class="ce-signin-err" id="ce-signin-err" role="alert" hidden></p>
+    </form>
+    <p class="ce-signin-foot">Geen wachtwoord nodig. Geen spam. Verwijder je account wanneer je wilt.</p>
+  </div>
+</div>
+
+<style>
+  /* v3.17 sign-in gate */
+  #ce-signin-screen{
+    position:fixed;inset:0;z-index:5000;
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;
+    background:linear-gradient(165deg,#0F1115 0%,#08070D 100%);
+    overflow-y:auto;-webkit-overflow-scrolling:touch;
+  }
+  body.ce-signin-done #ce-signin-screen{display:none!important}
+  #ce-signin-screen .ce-signin-bg{
+    position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(ellipse 70% 40% at 50% 0%,rgba(96,165,250,.10) 0%,transparent 60%),
+               radial-gradient(ellipse 50% 30% at 50% 100%,rgba(245,158,11,.08) 0%,transparent 60%);
+  }
+  #ce-signin-screen .ce-signin-card{
+    position:relative;z-index:1;width:100%;max-width:420px;
+    background:linear-gradient(165deg,rgba(28,30,38,.92),rgba(15,17,21,.96));
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:24px;
+    padding:28px 22px 22px;
+    box-shadow:0 24px 64px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.06);
+    text-align:center;
+    color:#F0E8DC;
+  }
+  #ce-signin-screen .ce-signin-logo{display:flex;justify-content:center;margin-bottom:14px}
+  #ce-signin-screen h1{
+    font-size:24px;font-weight:900;letter-spacing:-.5px;
+    margin:0 0 8px;line-height:1.15;color:#F0E8DC;
+  }
+  #ce-signin-screen .ce-signin-hi{color:#F59E0B}
+  #ce-signin-screen .ce-signin-sub{
+    font-size:14px;color:rgba(240,232,220,.66);
+    line-height:1.45;margin:0 0 22px;
+  }
+  #ce-signin-screen form{display:flex;flex-direction:column;gap:10px}
+  #ce-signin-screen .ce-signin-input{
+    width:100%;box-sizing:border-box;
+    padding:14px 16px;font-size:16px;font-family:inherit;
+    color:#F0E8DC;background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:13px;outline:none;
+    transition:border-color .15s ease,background .15s ease;
+  }
+  #ce-signin-screen .ce-signin-input::placeholder{color:rgba(240,232,220,.38)}
+  #ce-signin-screen .ce-signin-input:focus{
+    border-color:rgba(96,165,250,.55);
+    background:rgba(255,255,255,.07);
+    box-shadow:0 0 0 3px rgba(96,165,250,.12);
+  }
+  #ce-signin-screen .ce-signin-terms{
+    display:flex;align-items:flex-start;gap:9px;
+    text-align:left;font-size:12px;color:rgba(240,232,220,.62);
+    line-height:1.4;padding:4px 2px 6px;cursor:pointer;
+  }
+  #ce-signin-screen .ce-signin-terms input{
+    flex-shrink:0;margin-top:2px;width:16px;height:16px;
+    accent-color:#60A5FA;cursor:pointer;
+  }
+  #ce-signin-screen .ce-signin-terms a{color:#60A5FA;text-decoration:none}
+  #ce-signin-screen .ce-signin-terms a:hover{text-decoration:underline}
+  #ce-signin-screen .ce-signin-cta{
+    width:100%;min-height:54px;border:none;border-radius:14px;
+    background:linear-gradient(135deg,#60A5FA 0%,#3B82F6 100%);
+    color:#0F1115;font-size:16px;font-weight:900;font-family:inherit;
+    cursor:pointer;letter-spacing:-.2px;
+    box-shadow:0 6px 20px rgba(96,165,250,.32);
+    transition:transform .12s ease,box-shadow .15s ease;
+    margin-top:4px;
+  }
+  #ce-signin-screen .ce-signin-cta:active{transform:translateY(1px) scale(.99)}
+  #ce-signin-screen .ce-signin-cta:disabled{opacity:.55;cursor:not-allowed;transform:none}
+  #ce-signin-screen .ce-signin-err{
+    margin:6px 0 0;font-size:13px;color:#F87171;font-weight:600;
+  }
+  #ce-signin-screen .ce-signin-foot{
+    margin:18px 0 0;font-size:11px;color:rgba(240,232,220,.42);
+    line-height:1.5;
+  }
+</style>
+
 <!-- v3.12 — EARLY bulletproof category handlers.
      These run before any other JS so that even if a later script
      errors out, the category screen STILL dismisses on tap.
@@ -4709,6 +4830,95 @@
   }
   /* Also expose so other parts of the code can re-kill it after init */
   window.__ceKillWelcome=killWelcome;
+})();
+</script>
+
+<!-- v3.17 — SIGN-IN bootstrap. Checks /api/auth/me; if user, hides the
+     gate. Wires the signup form. Runs as soon as DOM is parseable. -->
+<script>
+(function(){
+  function $(id){return document.getElementById(id);}
+  function showApp(user){
+    document.body.classList.add('ce-signin-done');
+    if(user){
+      try{window.CE_USER=user;}catch(_){}
+      try{localStorage.setItem('ce_user_email',user.email||'');}catch(_){}
+      try{localStorage.setItem('ce_user_name',user.name||'');}catch(_){}
+    }
+  }
+  function showError(msg){
+    var err=$('ce-signin-err');
+    if(err){err.textContent=msg;err.hidden=false;}
+  }
+  function clearError(){
+    var err=$('ce-signin-err');
+    if(err){err.textContent='';err.hidden=true;}
+  }
+  function setBusy(busy){
+    var btn=$('ce-signin-go');
+    if(btn){btn.disabled=!!busy;btn.textContent=busy?'Bezig…':'Doorgaan →';}
+  }
+
+  /* On load, check if user is already signed in. */
+  function checkAuth(){
+    fetch('/api/auth/me',{credentials:'include',cache:'no-store'})
+      .then(function(r){return r.json();})
+      .then(function(d){
+        if(d&&d.user&&d.user.id){showApp(d.user);}
+      })
+      .catch(function(){/* fail open: signin stays visible */});
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',checkAuth);
+  }else{checkAuth();}
+
+  /* Wire the form. */
+  function wireForm(){
+    var form=$('ce-signin-form');
+    if(!form||form.__ceWired)return;
+    form.__ceWired=true;
+    form.addEventListener('submit',function(ev){
+      ev.preventDefault();
+      clearError();
+      var email=($('ce-signin-email').value||'').trim();
+      var name=($('ce-signin-name').value||'').trim();
+      var tos=$('ce-signin-tos').checked;
+      if(!email||email.indexOf('@')===-1||email.indexOf('.')===-1){
+        showError('Vul een geldig e-mailadres in.');
+        return;
+      }
+      if(!tos){
+        showError('Ga akkoord met de voorwaarden.');
+        return;
+      }
+      setBusy(true);
+      fetch('/api/auth/signup',{
+        method:'POST',
+        credentials:'include',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({email:email,name:name,accepted_terms:true,locale:'nl'}),
+      })
+      .then(function(r){return r.json().then(function(d){return {ok:r.ok,data:d};});})
+      .then(function(res){
+        setBusy(false);
+        if(!res.ok||!res.data||!res.data.success){
+          var err=(res.data&&res.data.error)||'signup_failed';
+          if(err==='invalid_email')showError('Ongeldig e-mailadres.');
+          else if(err==='terms_required')showError('Ga akkoord met de voorwaarden.');
+          else showError('Er ging iets mis. Probeer opnieuw.');
+          return;
+        }
+        showApp(res.data.user);
+      })
+      .catch(function(){
+        setBusy(false);
+        showError('Verbindingsfout. Probeer opnieuw.');
+      });
+    });
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',wireForm);
+  }else{wireForm();}
 })();
 </script>
 

@@ -9,6 +9,7 @@ import hmac
 import hashlib
 from datetime import datetime, timedelta, timezone
 from flask import Flask, request, jsonify, render_template, Response, stream_with_context, make_response
+from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 from nl_corpus import get_corpus_for_language
 from anthropic import (
     Anthropic,
@@ -386,6 +387,20 @@ def _init_metrics_db():
                 )
                 """
             )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS users (
+                    id BIGSERIAL PRIMARY KEY,
+                    email TEXT UNIQUE NOT NULL,
+                    name TEXT,
+                    created_at TIMESTAMPTZ NOT NULL,
+                    last_seen_at TIMESTAMPTZ NOT NULL,
+                    scans_count INTEGER NOT NULL DEFAULT 0,
+                    accepted_terms INTEGER NOT NULL DEFAULT 0,
+                    locale TEXT
+                )
+                """
+            )
         else:
             conn.execute(
                 """
@@ -468,6 +483,22 @@ def _init_metrics_db():
                 )
                 """
             )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    email TEXT UNIQUE NOT NULL,
+                    name TEXT,
+                    created_at TEXT NOT NULL,
+                    last_seen_at TEXT NOT NULL,
+                    scans_count INTEGER NOT NULL DEFAULT 0,
+                    accepted_terms INTEGER NOT NULL DEFAULT 0,
+                    locale TEXT
+                )
+                """
+            )
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_users_last_seen ON users(last_seen_at)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_events_created_at ON events(created_at)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_events_event_name ON events(event_name)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_events_session ON events(session_id)")
@@ -478,6 +509,117 @@ def _init_metrics_db():
         conn.execute("CREATE INDEX IF NOT EXISTS idx_scan_sessions_updated_at ON scan_sessions(updated_at)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_pro_licenses_email ON pro_licenses(email)")
         conn.commit()
+
+
+# ─────────────────────────────────────────────────────────────────
+# AUTH — simple email-based signup + signed cookie session.
+# No passwords (yet). The cookie is HttpOnly + signed with itsdangerous,
+# so users can't forge user_ids client-side. 30-day rolling expiry.
+# Real magic-link email verification can layer on top later (just adds
+# a one-time token table + email send before issuing the cookie).
+# ─────────────────────────────────────────────────────────────────
+
+CE_AUTH_COOKIE = "ce_auth"
+CE_AUTH_MAX_AGE = 60 * 60 * 24 * 30  # 30 days
+_AUTH_SECRET = (
+    os.environ.get("APP_SECRET_KEY")
+    or os.environ.get("FLASK_SECRET_KEY")
+    or "ce-dev-secret-DO-NOT-USE-IN-PROD-please-set-APP_SECRET_KEY"
+)
+_auth_serializer = URLSafeTimedSerializer(_AUTH_SECRET, salt="ce-auth-v1")
+_EMAIL_RX = re.compile(r"^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$")
+
+
+def _norm_email(e):
+    return (e or "").strip().lower()[:200]
+
+
+def _norm_name(n):
+    s = (n or "").strip()
+    return s[:80]
+
+
+def _valid_email(e):
+    return bool(e) and len(e) <= 200 and bool(_EMAIL_RX.match(e))
+
+
+def _get_or_create_user(email, name, locale=None, accepted_terms=False):
+    """Idempotent: returns existing user or creates a new one."""
+    email = _norm_email(email)
+    name = _norm_name(name)
+    if not _valid_email(email):
+        return None
+    now = _utc_now_iso()
+    with _db() as conn:
+        row = conn.execute(
+            "SELECT id, email, name, accepted_terms FROM users WHERE email = ?",
+            (email,),
+        ).fetchone()
+        if row:
+            new_name = name or row["name"] or ""
+            new_terms = 1 if (accepted_terms or row["accepted_terms"]) else 0
+            conn.execute(
+                "UPDATE users SET name = ?, last_seen_at = ?, accepted_terms = ?, locale = COALESCE(?, locale) WHERE id = ?",
+                (new_name, now, new_terms, locale, row["id"]),
+            )
+            conn.commit()
+            return {
+                "id": int(row["id"]),
+                "email": email,
+                "name": new_name,
+                "accepted_terms": bool(new_terms),
+            }
+        cur = conn.execute(
+            "INSERT INTO users (email, name, created_at, last_seen_at, scans_count, accepted_terms, locale) VALUES (?, ?, ?, ?, 0, ?, ?)",
+            (email, name, now, now, 1 if accepted_terms else 0, locale or "nl"),
+        )
+        conn.commit()
+        # Postgres returns no lastrowid via psycopg adapter; re-query.
+        row2 = conn.execute("SELECT id FROM users WHERE email = ?", (email,)).fetchone()
+        new_id = int(row2["id"]) if row2 else 0
+        return {
+            "id": new_id,
+            "email": email,
+            "name": name,
+            "accepted_terms": bool(accepted_terms),
+        }
+
+
+def _issue_auth_cookie(resp, user):
+    """Sign + attach the auth cookie to a Flask response."""
+    payload = {
+        "id": int(user.get("id") or 0),
+        "email": user.get("email") or "",
+        "name": user.get("name") or "",
+    }
+    token = _auth_serializer.dumps(payload)
+    resp.set_cookie(
+        CE_AUTH_COOKIE,
+        token,
+        max_age=CE_AUTH_MAX_AGE,
+        httponly=True,
+        secure=True,
+        samesite="Lax",
+        path="/",
+    )
+
+
+def _current_user():
+    """Return user dict from cookie or None. Validates signature + expiry."""
+    raw = request.cookies.get(CE_AUTH_COOKIE)
+    if not raw:
+        return None
+    try:
+        data = _auth_serializer.loads(raw, max_age=CE_AUTH_MAX_AGE)
+    except (BadSignature, SignatureExpired):
+        return None
+    if not isinstance(data, dict) or not data.get("id") or not data.get("email"):
+        return None
+    return {
+        "id": int(data["id"]),
+        "email": str(data["email"]),
+        "name": str(data.get("name") or ""),
+    }
 
 
 def _clean_small_str(v, max_len=120):
@@ -2439,6 +2581,71 @@ def gumroad_webhook():
         return jsonify({"success": True}), 200
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/auth/signup", methods=["POST"])
+def api_auth_signup():
+    """Create or update a user, then issue a signed session cookie.
+    Body: {"email":"...", "name":"...", "accepted_terms": true, "locale":"nl"}
+    """
+    try:
+        data = request.get_json(silent=True) or {}
+        email = _norm_email(data.get("email"))
+        name = _norm_name(data.get("name"))
+        accepted_terms = bool(data.get("accepted_terms"))
+        locale = _clean_small_str(data.get("locale"), 8) or "nl"
+        if not _valid_email(email):
+            return jsonify({"success": False, "error": "invalid_email"}), 400
+        if not accepted_terms:
+            return jsonify({"success": False, "error": "terms_required"}), 400
+        user = _get_or_create_user(email, name, locale=locale, accepted_terms=accepted_terms)
+        if not user:
+            return jsonify({"success": False, "error": "user_create_failed"}), 500
+        resp = make_response(jsonify({"success": True, "user": {
+            "id": user["id"], "email": user["email"], "name": user["name"],
+        }}))
+        _issue_auth_cookie(resp, user)
+        # Tag the signup event for the metrics dashboard.
+        try:
+            _insert_event({
+                "event_raw": "auth.signup",
+                "event_name": "auth.signup",
+                "language": locale,
+                "session_id": "",
+                "user_id": str(user["id"]),
+                "job_id": "",
+                "task_category": "",
+                "hazard_level": "",
+                "source_channel": "auth",
+                "meta_json": json.dumps({"email_domain": email.split("@")[-1]}, ensure_ascii=False),
+                "ip": _request_ip(),
+                "user_agent": _clean_small_str(request.headers.get("User-Agent"), 260),
+            })
+        except Exception:
+            pass
+        return resp
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/auth/me", methods=["GET"])
+def api_auth_me():
+    """Returns the current signed-in user (or null if not signed in)."""
+    user = _current_user()
+    if not user:
+        return jsonify({"success": True, "user": None}), 200
+    return jsonify({"success": True, "user": user}), 200
+
+
+@app.route("/api/auth/signout", methods=["POST"])
+def api_auth_signout():
+    """Clear the auth cookie. Frontend should reload after this."""
+    resp = make_response(jsonify({"success": True}))
+    resp.set_cookie(
+        CE_AUTH_COOKIE, "", max_age=0, path="/",
+        httponly=True, secure=True, samesite="Lax",
+    )
+    return resp
 
 
 @app.route("/api/license/verify", methods=["GET"])
