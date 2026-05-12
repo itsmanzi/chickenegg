@@ -800,14 +800,21 @@ def _increment_scan_session(fingerprint):
 
 
 def _user_is_pro(email):
-    """Look up active pro license by email."""
+    """Pro = active gumroad/license OR email is in the owner allow-list.
+    Set CE_OWNER_EMAILS on Vercel as a comma-separated list for free
+    unlimited access (e.g. admin/founder accounts)."""
     if not email:
         return False
+    e = email.strip().lower()
+    # Env-based owner allow-list (no DB write needed).
+    owners = (os.environ.get("CE_OWNER_EMAILS") or "").strip().lower()
+    if owners and e in {p.strip() for p in owners.split(",") if p.strip()}:
+        return True
     try:
         with _db() as conn:
             row = conn.execute(
                 "SELECT 1 FROM pro_licenses WHERE email = ? AND active = 1 LIMIT 1",
-                (email.strip().lower(),),
+                (e,),
             ).fetchone()
             return bool(row)
     except Exception:
