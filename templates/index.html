@@ -3831,10 +3831,12 @@
       visibility:hidden!important;
       pointer-events:none!important;
     }
-    #ce-welcome:not(.off){
-      display:flex!important;
-      visibility:visible!important;
-      pointer-events:auto!important;
+    /* v3.16: welcome modal permanently retired — superseded by the
+       category landing screen which is the new onboarding entry. */
+    #ce-welcome,#ce-welcome:not(.off){
+      display:none!important;
+      visibility:hidden!important;
+      pointer-events:none!important;
     }
     .ce-welcome-panel{width:100%;max-width:420px;border-radius:22px;border:1px solid rgba(255,255,255,.12);background:linear-gradient(165deg,rgba(34,30,26,.96),rgba(18,16,14,.98));box-shadow:0 24px 64px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06);padding:22px 18px 20px;text-align:left;color:var(--t1)}
     .ce-welcome-panel h1{font-size:24px;font-weight:900;letter-spacing:-.5px;margin:0 0 10px;line-height:1.15}
@@ -4676,35 +4678,37 @@
     if(s){try{s.scrollTop=0;}catch(_){}}
   };
 
-  /* URL escape hatch: /?cat=force clears saved state and forces the
-     screen to appear. Use this to test the flow when state is sticky. */
+  /* v3.16: ALWAYS start fresh on page load.
+     Sammy's design: every app open = category page → camera → scan
+     → results → finish, then reset. So we wipe persisted category
+     and skip flags on every load. The welcome intro is also killed
+     for good — it's a leftover from an older non-camera-first flow. */
   try{
-    var qs=(location.search||'').toLowerCase();
-    if(qs.indexOf('cat=force')!==-1 || qs.indexOf('cat=reset')!==-1){
-      try{
-        localStorage.removeItem(CAT_KEY);
-        localStorage.removeItem(CAT_LBL);
-        localStorage.removeItem(CAT_ICON);
-        localStorage.removeItem(CAT_COLOR);
-        localStorage.removeItem(SKIP);
-      }catch(_){}
-      /* Strip the param from URL so refresh doesn't re-trigger */
-      try{
-        var u=new URL(location.href);
-        u.searchParams.delete('cat');
-        history.replaceState(null,'',u.pathname+u.search+u.hash);
-      }catch(_){}
-      /* Force screen visible */
-      document.body.classList.remove('ce-cat-done');
-    }else{
-      /* Pre-skip on load if user already has a saved category */
-      var saved=localStorage.getItem(CAT_KEY)||'';
-      var skipped=localStorage.getItem(SKIP)==='1';
-      if(saved||skipped){
-        document.body.classList.add('ce-cat-done');
-      }
-    }
+    localStorage.removeItem(CAT_KEY);
+    localStorage.removeItem(CAT_LBL);
+    localStorage.removeItem(CAT_ICON);
+    localStorage.removeItem(CAT_COLOR);
+    localStorage.removeItem(SKIP);
+    /* Permanently dismiss the legacy welcome modal — pretend it was
+       seen so initWelcome() bails out + force-hide the element. */
+    localStorage.setItem('ce_welcome_seen','1');
   }catch(_){}
+  /* Hide welcome modal element ASAP if it exists in DOM by the time
+     this runs (it sits below the body open, so this needs to defer). */
+  function killWelcome(){
+    var w=document.getElementById('ce-welcome');
+    if(w){
+      w.classList.add('off');
+      w.setAttribute('aria-hidden','true');
+      w.style.cssText='display:none!important;visibility:hidden!important;pointer-events:none!important;';
+    }
+  }
+  killWelcome();
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',killWelcome);
+  }
+  /* Also expose so other parts of the code can re-kill it after init */
+  window.__ceKillWelcome=killWelcome;
 })();
 </script>
 
@@ -5230,7 +5234,7 @@
     </div>
     <div id="ce-compact-safety" class="ce-compact-safety off" role="note" aria-live="polite"></div>
     <div id="ce-low-conf-banner" role="note" aria-live="polite"></div>
-    <div id="all-done"><div class="ce-done-check-wrap"><svg class="ce-done-check" viewBox="0 0 64 64" aria-hidden="true"><circle class="ce-dc-circle" cx="32" cy="32" r="28" fill="none" stroke="#22C55E" stroke-width="2"/><path class="ce-dc-check" d="M20 34 L28 42 L44 24" fill="none" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 id="done-h3">Job Done!</h3><p id="done-p">You fixed it yourself. That win lasts for days.</p><div class="done-xp">⚡ +50 XP</div></div>
+    <div id="all-done"><div class="ce-done-check-wrap"><svg class="ce-done-check" viewBox="0 0 64 64" aria-hidden="true"><circle class="ce-dc-circle" cx="32" cy="32" r="28" fill="none" stroke="#22C55E" stroke-width="2"/><path class="ce-dc-check" d="M20 34 L28 42 L44 24" fill="none" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 id="done-h3">Job Done!</h3><p id="done-p">You fixed it yourself. That win lasts for days.</p><div class="done-xp">⚡ +50 XP</div><button type="button" id="ce-done-restart" onclick="window.location.href='/'" style="margin-top:18px;width:100%;max-width:320px;min-height:54px;border:none;border-radius:14px;background:linear-gradient(135deg,#60A5FA 0%,#3B82F6 100%);color:#0F1115;font-size:16px;font-weight:900;font-family:inherit;cursor:pointer;box-shadow:0 6px 18px rgba(96,165,250,.35);display:inline-flex;align-items:center;justify-content:center;gap:8px;">🔄 Nieuwe scan</button></div>
     <div id="task-locked"><h3>⛔ <span id="locked-ttl">Task Locked</span></h3><p id="locked-p">3 danger warnings triggered. Stop and contact a professional.</p><div class="ec-contacts"><p>Emergency (NL)</p><div class="ec-item"><span>Emergency</span><a href="tel:112">112</a></div><div class="ec-item"><span>Gas</span><a href="tel:0800-9009">0800-9009</a></div><div class="ec-item"><span>Water</span><a href="tel:0900-9994">0900-9994</a></div></div></div>
     <section id="decision-card" class="ce-card ce-decision-card" aria-live="polite" style="display:none">
       <div id="decision-confidence-pill" class="ce-confidence-pill ce-stagger-item" aria-live="polite"></div>
