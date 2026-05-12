@@ -3638,6 +3638,11 @@
     }
     .ce-home-empty.ce-home-empty--on{display:flex}
     body.cam-tiktok .ce-home-empty.ce-home-empty--on{pointer-events:auto}
+    /* v3.14: hide the bulky onboarding card whenever the camera is
+       live (capture focus mode) — the SCAN button is enough. The
+       card was a leftover from an older non-camera-first layout. */
+    body.ce-capture-focus .ce-home-empty,
+    body.cam-tiktok .ce-home-empty{display:none!important}
     .ce-home-empty h2{font-size:18px;font-weight:800;color:var(--text-primary);text-align:center;margin-bottom:8px}
     .ce-home-empty p{font-size:14px;color:var(--text-secondary);text-align:center;max-width:260px;line-height:1.45;margin-bottom:20px}
     .ce-home-empty .ce-empty-cta{
