@@ -10808,12 +10808,21 @@ function openResultScreen(){
   if(document.body.classList.contains('ce-stable-results')){
     ceSetResultsStagger('run');
   }
-  ceSetFlowFromScreen(ceCurrentScreen||'ce-screen-diagnosis');
+  /* v3.29: force the diagnosis screen on every result open. Was
+     sometimes landing on completion if walkthrough state was stale. */
+  try{
+    if(typeof showScreen==='function'){
+      showScreen('ce-screen-diagnosis',undefined,'pop-left');
+    }else{
+      ceCurrentScreen='ce-screen-diagnosis';
+    }
+  }catch(_){}
+  ceSetFlowFromScreen('ce-screen-diagnosis');
   ceNavPush('diagnose');
   ceSetUiOwner('results');
   ceSyncResultsFlowTrack();
   exitCaptureFocus();
-  updatePaywallStrip(ceCurrentScreen||'ce-screen-diagnosis',ceCurrentPaywallState());
+  updatePaywallStrip('ce-screen-diagnosis',ceCurrentPaywallState());
   if(typeof ceSyncOutcomePanelVeReady==='function')ceSyncOutcomePanelVeReady();
   if(typeof ceRefreshScanSoftHint==='function')ceRefreshScanSoftHint();
   /* v3.28: aggressively scroll EVERYTHING to top — window, scroll
@@ -11738,13 +11747,8 @@ function renderResults(r){
   UX.repair.checklistDone=false;
   UX.checklistDone=false;
   /* v3.27: populate the #r-steps list NOW so the Steps tab has
-     content even if the user never enters the repair walkthrough.
-     Was previously only filled inside renderRepairUI(). */
+     content even if the user never enters the repair walkthrough. */
   try{if(typeof ceFillTikTokResultsStepList==='function')ceFillTikTokResultsStepList();}catch(_){}
-  /* v3.28: also call renderRepairUI() now so Next/Back buttons get
-     enabled immediately on the diagnosis screen. They previously
-     stayed disabled until the user manually entered the walkthrough. */
-  try{if(typeof renderRepairUI==='function')renderRepairUI();}catch(_){}
   if(curVisualTips.length<curSteps.length){
     curVisualTips=curVisualTips.concat(Array(curSteps.length-curVisualTips.length).fill(''));
   }else if(curVisualTips.length>curSteps.length){
@@ -12125,6 +12129,27 @@ function renderResults(r){
   ceMaybeShowPostScanFlowCoach();
   ceMaybeCoachOnResult();
   UX.resultRendered=true;
+  /* v3.29: scroll the #results pane (it's a fixed-position scroll
+     container — window.scrollTo doesn't reach it) to the very top
+     after EVERYTHING has rendered. Fires multiple times to defeat
+     any layout settling. */
+  try{
+    var ceScrollResultsTop=function(){
+      var rs=document.getElementById('results');
+      if(rs)rs.scrollTop=0;
+      try{window.scrollTo(0,0);}catch(_){}
+      try{document.documentElement.scrollTop=0;document.body.scrollTop=0;}catch(_){}
+      var screens=document.querySelectorAll('.ce-screen');
+      for(var i=0;i<screens.length;i++){try{screens[i].scrollTop=0;}catch(_){}}
+    };
+    ceScrollResultsTop();
+    requestAnimationFrame(ceScrollResultsTop);
+    requestAnimationFrame(function(){requestAnimationFrame(ceScrollResultsTop);});
+    setTimeout(ceScrollResultsTop,80);
+    setTimeout(ceScrollResultsTop,200);
+    setTimeout(ceScrollResultsTop,500);
+    setTimeout(ceScrollResultsTop,900);
+  }catch(_){}
   return hz;
   }finally{
     UX.resultRendering=false;
