@@ -3905,7 +3905,10 @@
     }
     .ce-compact-safety.off{display:none!important}
     #ce-scan-guide,.ce-coach-root,#ce-faq-sheet,#ce-repair-survey{position:fixed;inset:0;z-index:10020;display:none;align-items:flex-end;justify-content:center;padding:0;box-sizing:border-box}
-    #ce-scan-guide.show,.ce-coach-root.show,#ce-faq-sheet.show,#ce-repair-survey.show{display:flex}
+    #ce-scan-guide.show,#ce-faq-sheet.show,#ce-repair-survey.show{display:flex}
+    /* v3.31: coach overlay permanently killed — was showing 'Sla intro
+       over →' at the top of the camera even after onboarding done. */
+    #ce-coach-root,#ce-coach-root.show{display:none!important;visibility:hidden!important;pointer-events:none!important}
     #ce-scan-guide .ce-modal-scrim,.ce-coach-root .ce-coach-scrim{position:absolute;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px)}
     .ce-scan-guide-sheet,.ce-coach-panel{
       position:relative;width:100%;max-width:520px;max-height:min(88vh,720px);overflow-y:auto;
@@ -8554,7 +8557,10 @@ async function startLiveScanSession(viewsTarget, initialBlob){
       if(_ceCatS1) fdStage1.append('category',_ceCatS1);
     }catch(_){}
     var _ceAb=new AbortController();
-    var _ceAbT=setTimeout(function(){try{_ceAb.abort();}catch(_){}},120000);
+    /* v3.31: reduced 120s → 50s. Vercel hobby tier kills functions at
+       60s anyway, and waiting >50s with a black 'Analyseren…' spinner
+       just looks broken. Earlier abort surfaces an error toast. */
+    var _ceAbT=setTimeout(function(){try{_ceAb.abort();}catch(_){}},50000);
     var deepPromise=ceRunAnalyzeFetch(fd,_ceAb.signal)
       .finally(function(){clearTimeout(_ceAbT);});
     var stage1Promise=fetch('/analyze-stage1',{method:'POST',body:fdStage1,credentials:'include'})
