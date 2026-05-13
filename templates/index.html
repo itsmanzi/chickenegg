@@ -4554,7 +4554,7 @@
 <body class="cam-tiktok" data-ce-deploy-sha="{{ ce_deploy_sha|default('', true) }}">
 
 <!-- v3.32 visible version stamp — top-right, persistent -->
-<div id="ce-ver-stamp" style="position:fixed;top:calc(env(safe-area-inset-top,0px) + 4px);right:6px;z-index:99999;background:rgba(0,0,0,.7);color:#9BFFC0;font:700 9px ui-monospace,monospace;padding:3px 6px;border-radius:6px;pointer-events:none;letter-spacing:.04em;">v3.33</div>
+<div id="ce-ver-stamp" style="position:fixed;top:calc(env(safe-area-inset-top,0px) + 4px);right:6px;z-index:99999;background:rgba(0,0,0,.7);color:#9BFFC0;font:700 9px ui-monospace,monospace;padding:3px 6px;border-radius:6px;pointer-events:none;letter-spacing:.04em;">v3.34</div>
 
 <!-- v3.17 — SIGN-IN GATE (always shown until user has valid cookie) -->
 <div id="ce-signin-screen" role="dialog" aria-modal="true" aria-labelledby="ce-signin-h1">
@@ -12195,12 +12195,15 @@ function ceBuildSimpleOutcomeLayout(r){
   if(!r||typeof r!=='object')return;
   var panel=document.getElementById('ce-panel-outcome');
   if(!panel)return;
-  /* Hide all legacy children — we'll show only our 2 new cards. */
-  for(var ci=0;ci<panel.children.length;ci++){
-    var ch=panel.children[ci];
-    if(!ch||!ch.id)continue;
+  /* v3.34 FIX: hide EVERY existing child (most have no id, so the
+     v3.33 id check skipped them — explaining why nothing visually
+     changed). Use setProperty with 'important' to beat inline styles. */
+  var kids=Array.prototype.slice.call(panel.children);
+  for(var ci=0;ci<kids.length;ci++){
+    var ch=kids[ci];
+    if(!ch)continue;
     if(ch.id==='ce-simple-diagnose-card'||ch.id==='ce-simple-tools-card')continue;
-    ch.style.display='none';
+    try{ch.style.setProperty('display','none','important');}catch(_){ch.style.display='none';}
   }
   /* DIAGNOSIS CARD */
   var diag=document.getElementById('ce-simple-diagnose-card');
