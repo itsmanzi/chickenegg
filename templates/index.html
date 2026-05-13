@@ -9613,6 +9613,20 @@ function ceSwitchTab(which){
   which=String(which||'outcome').toLowerCase();
   var tabId=which;
   var panelId=which;
+  /* v3.30: every tab switch resets the results scroll to top so
+     the user always reads the new section from its start. */
+  try{
+    var __ceScrollT=function(){
+      var rs=document.getElementById('results');
+      if(rs)rs.scrollTop=0;
+      try{window.scrollTo(0,0);}catch(_){}
+      try{document.documentElement.scrollTop=0;document.body.scrollTop=0;}catch(_){}
+    };
+    __ceScrollT();
+    requestAnimationFrame(__ceScrollT);
+    setTimeout(__ceScrollT,120);
+    setTimeout(__ceScrollT,300);
+  }catch(_){}
   if(which==='details'){
     setTimeout(function(){
       var rs=document.getElementById('results-summary');
@@ -10816,6 +10830,11 @@ function openResultScreen(){
     }else{
       ceCurrentScreen='ce-screen-diagnosis';
     }
+  }catch(_){}
+  /* v3.30: always start on the Outcome (diagnosis) tab — the user's
+     desired flow is Diagnosis → Steps → Finish. */
+  try{
+    if(typeof ceSwitchTab==='function'){ceSwitchTab('outcome');}
   }catch(_){}
   ceSetFlowFromScreen('ce-screen-diagnosis');
   ceNavPush('diagnose');
