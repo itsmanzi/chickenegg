@@ -4554,7 +4554,7 @@
 <body class="cam-tiktok" data-ce-deploy-sha="{{ ce_deploy_sha|default('', true) }}">
 
 <!-- v3.32 visible version stamp — top-right, persistent -->
-<div id="ce-ver-stamp" style="position:fixed;top:calc(env(safe-area-inset-top,0px) + 4px);right:6px;z-index:99999;background:rgba(0,0,0,.7);color:#9BFFC0;font:700 9px ui-monospace,monospace;padding:3px 6px;border-radius:6px;pointer-events:none;letter-spacing:.04em;">v3.32</div>
+<div id="ce-ver-stamp" style="position:fixed;top:calc(env(safe-area-inset-top,0px) + 4px);right:6px;z-index:99999;background:rgba(0,0,0,.7);color:#9BFFC0;font:700 9px ui-monospace,monospace;padding:3px 6px;border-radius:6px;pointer-events:none;letter-spacing:.04em;">v3.33</div>
 
 <!-- v3.17 — SIGN-IN GATE (always shown until user has valid cookie) -->
 <div id="ce-signin-screen" role="dialog" aria-modal="true" aria-labelledby="ce-signin-h1">
@@ -12157,17 +12157,19 @@ function renderResults(r){
   ceMaybeShowPostScanFlowCoach();
   ceMaybeCoachOnResult();
   UX.resultRendered=true;
-  /* v3.29: scroll the #results pane (it's a fixed-position scroll
-     container — window.scrollTo doesn't reach it) to the very top
-     after EVERYTHING has rendered. Fires multiple times to defeat
-     any layout settling. */
+  /* v3.33: build the simple linear layout the user wants:
+     Outcome tab → Diagnosis (top) → Tools (with store chips).
+     Steps tab → single-step card with Back/Next, no long list. */
+  try{if(typeof ceBuildSimpleOutcomeLayout==='function')ceBuildSimpleOutcomeLayout(r);}catch(_){}
+  try{if(typeof ceBuildSimpleStepsLayout==='function')ceBuildSimpleStepsLayout(r);}catch(_){}
+  /* Aggressive scroll-to-top — multiple containers, multiple timings */
   try{
     var ceScrollResultsTop=function(){
       var rs=document.getElementById('results');
       if(rs)rs.scrollTop=0;
       try{window.scrollTo(0,0);}catch(_){}
       try{document.documentElement.scrollTop=0;document.body.scrollTop=0;}catch(_){}
-      var screens=document.querySelectorAll('.ce-screen');
+      var screens=document.querySelectorAll('.ce-screen,.ce-tab-panel');
       for(var i=0;i<screens.length;i++){try{screens[i].scrollTop=0;}catch(_){}}
     };
     ceScrollResultsTop();
@@ -12182,6 +12184,112 @@ function renderResults(r){
   }finally{
     UX.resultRendering=false;
   }
+}
+
+/* ─────────────────────────────────────────────
+   v3.33 — clean linear result layout (one page, no confusion).
+   Builds two simple cards into the Outcome tab + a single-step
+   walkthrough card into the Steps tab. Reorders + hides legacy
+   elements that were making the page feel out-of-order. */
+function ceBuildSimpleOutcomeLayout(r){
+  if(!r||typeof r!=='object')return;
+  var panel=document.getElementById('ce-panel-outcome');
+  if(!panel)return;
+  /* Hide all legacy children — we'll show only our 2 new cards. */
+  for(var ci=0;ci<panel.children.length;ci++){
+    var ch=panel.children[ci];
+    if(!ch||!ch.id)continue;
+    if(ch.id==='ce-simple-diagnose-card'||ch.id==='ce-simple-tools-card')continue;
+    ch.style.display='none';
+  }
+  /* DIAGNOSIS CARD */
+  var diag=document.getElementById('ce-simple-diagnose-card');
+  if(!diag){
+    diag=document.createElement('div');
+    diag.id='ce-simple-diagnose-card';
+    diag.style.cssText='background:linear-gradient(165deg,rgba(28,30,38,.92),rgba(15,17,21,.96));border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px 16px 18px;margin-bottom:14px;color:#F0E8DC;box-shadow:0 4px 14px rgba(0,0,0,.25);';
+    panel.insertBefore(diag,panel.firstChild);
+  }
+  var hazardLevel=String(r.hazard_level||'').toLowerCase();
+  var decision=String(r.decision_outcome||'').toLowerCase().replace(/-/g,'_');
+  var sevColor='#34D399',sevBg='rgba(52,211,153,.10)',sevLabel='Veilig';
+  if(hazardLevel==='caution'||decision==='proceed_with_caution'){sevColor='#FBBF24';sevBg='rgba(251,191,36,.10)';sevLabel='Let op';}
+  if(hazardLevel==='warning'||hazardLevel==='danger'||hazardLevel==='emergency'||decision==='do_not_proceed'){sevColor='#F87171';sevBg='rgba(248,113,113,.10)';sevLabel='Risico';}
+  var task=(r.task||'').toString().trim();
+  var whatISee=(r.what_i_see||'').toString().trim();
+  var rationale=(r.decision_rationale||'').toString().trim();
+  var diff=(r.difficulty||'').toString();
+  var time=(r.time_needed||'').toString();
+  var cost=(r.estimated_cost||'').toString();
+  diag.innerHTML=''+
+    '<div style="font-size:10px;font-weight:800;letter-spacing:.10em;text-transform:uppercase;color:rgba(245,158,11,.85);margin-bottom:8px;">Diagnose</div>'+
+    (task?'<div style="font-size:19px;font-weight:900;letter-spacing:-.4px;line-height:1.2;margin-bottom:10px;">'+ceEsc(task)+'</div>':'')+
+    (whatISee?'<p style="margin:0 0 12px;font-size:14px;line-height:1.55;color:rgba(240,232,220,.84);">'+ceEsc(whatISee)+'</p>':'')+
+    '<div style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:'+sevBg+';border:1px solid '+sevColor+'40;color:'+sevColor+';font-size:12px;font-weight:800;letter-spacing:.04em;margin-bottom:'+(rationale?'10px':'0')+';"><span style="width:7px;height:7px;border-radius:50%;background:'+sevColor+';box-shadow:0 0 6px '+sevColor+';"></span>'+sevLabel+'</div>'+
+    (rationale?'<p style="margin:0 0 12px;font-size:13px;line-height:1.5;color:rgba(240,232,220,.7);">'+ceEsc(rationale)+'</p>':'')+
+    '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">'+
+      (diff?'<span style="padding:5px 10px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);font-size:11px;font-weight:700;color:rgba(240,232,220,.78);">⚙️ '+ceEsc(diff)+'</span>':'')+
+      (time?'<span style="padding:5px 10px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);font-size:11px;font-weight:700;color:rgba(240,232,220,.78);">⏱ '+ceEsc(time)+'</span>':'')+
+      (cost?'<span style="padding:5px 10px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);font-size:11px;font-weight:700;color:rgba(240,232,220,.78);">💶 '+ceEsc(cost)+'</span>':'')+
+    '</div>';
+  /* TOOLS CARD with shop chips */
+  var allTools=ceUniqueTextList((r.tools_needed||[]).concat(r.materials_needed||[]));
+  var tools=document.getElementById('ce-simple-tools-card');
+  if(allTools.length){
+    if(!tools){
+      tools=document.createElement('div');
+      tools.id='ce-simple-tools-card';
+      tools.style.cssText='background:linear-gradient(165deg,rgba(28,30,38,.92),rgba(15,17,21,.96));border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;margin-bottom:14px;color:#F0E8DC;box-shadow:0 4px 14px rgba(0,0,0,.25);';
+      panel.insertBefore(tools,diag.nextSibling);
+    }
+    tools.style.display='block';
+    var toolsHtml='<div style="font-size:10px;font-weight:800;letter-spacing:.10em;text-transform:uppercase;color:rgba(245,158,11,.85);margin-bottom:10px;">Wat heb je nodig</div>';
+    for(var ti=0;ti<allTools.length;ti++){
+      var tool=allTools[ti];
+      var store=(typeof bestShopFor==='function')?bestShopFor(tool):null;
+      toolsHtml+='<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06);"><span style="font-size:14px;font-weight:600;color:rgba(240,232,220,.92);">• '+ceEsc(tool)+'</span>';
+      if(store&&store.url){
+        toolsHtml+='<a href="'+store.url+'" target="_blank" rel="noopener" data-ce-shop="'+(store.key||'')+'" data-ce-tool="'+ceEsc(tool)+'" style="display:inline-flex;align-items:center;padding:5px 10px;border-radius:8px;background:'+(store.style?'':'#E47911')+';color:#fff;font-size:11px;font-weight:800;text-decoration:none;'+(store.style||'')+'">'+ceEsc(store.name||'Shop')+'</a>';
+      }
+      toolsHtml+='</div>';
+    }
+    /* All-stores row */
+    var query=allTools.slice(0,4).join(' ').slice(0,120);
+    var rowStores=[
+      {key:'gamma',name:'Gamma',url:(typeof gammaLink==='function')?gammaLink(query):'',color:'#CC0000'},
+      {key:'praxis',name:'Praxis',url:(typeof praxisLink==='function')?praxisLink(query):'',color:'#0066B3'},
+      {key:'karwei',name:'Karwei',url:(typeof ceKarweiLink==='function')?ceKarweiLink(query):'',color:'#6E32A0'},
+      {key:'bol',name:'Bol.com',url:(typeof bolLink==='function')?bolLink(query):'',color:'#E47911'},
+      {key:'ikea',name:'IKEA',url:(typeof ceIkeaLink==='function')?ceIkeaLink(query):'',color:'#0058A3'}
+    ];
+    toolsHtml+='<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);"><div style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(240,232,220,.5);margin-bottom:8px;">Waar koop je dit?</div><div style="display:flex;flex-wrap:wrap;gap:6px;">';
+    for(var si=0;si<rowStores.length;si++){
+      var s=rowStores[si];
+      if(!s.url)continue;
+      toolsHtml+='<a href="'+s.url+'" target="_blank" rel="noopener" data-ce-shop="'+s.key+'" data-ce-tool="'+ceEsc(query)+'" style="display:inline-flex;align-items:center;padding:7px 11px;border-radius:10px;background:'+s.color+';color:#fff;font-size:11px;font-weight:800;text-decoration:none;letter-spacing:-.1px;">'+ceEsc(s.name)+' →</a>';
+    }
+    toolsHtml+='</div></div>';
+    tools.innerHTML=toolsHtml;
+    /* Wire click tracking on shop links */
+    tools.querySelectorAll('a[data-ce-shop]').forEach(function(a){
+      a.addEventListener('click',function(){
+        var store=a.getAttribute('data-ce-shop')||'';
+        var tl=a.getAttribute('data-ce-tool')||'';
+        try{if(typeof ceTrackShopClick==='function')ceTrackShopClick(store,tl);}catch(_){}
+      });
+    });
+  }else if(tools){
+    tools.style.display='none';
+  }
+}
+
+function ceBuildSimpleStepsLayout(r){
+  /* The Steps panel keeps the existing single-step walk-pane logic
+     but we hide the redundant numbered list (#r-steps) and force
+     renderRepairUI to enable Back/Next buttons immediately. */
+  var rs=document.getElementById('r-steps');
+  if(rs)rs.style.display='none';
+  try{if(typeof renderRepairUI==='function')renderRepairUI();}catch(_){}
 }
 
 var hazardUnlockBtn=document.getElementById('hazard-step-unlock');
