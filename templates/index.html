@@ -4553,6 +4553,9 @@
 </head>
 <body class="cam-tiktok" data-ce-deploy-sha="{{ ce_deploy_sha|default('', true) }}">
 
+<!-- v3.32 visible version stamp — top-right, persistent -->
+<div id="ce-ver-stamp" style="position:fixed;top:calc(env(safe-area-inset-top,0px) + 4px);right:6px;z-index:99999;background:rgba(0,0,0,.7);color:#9BFFC0;font:700 9px ui-monospace,monospace;padding:3px 6px;border-radius:6px;pointer-events:none;letter-spacing:.04em;">v3.32</div>
+
 <!-- v3.17 — SIGN-IN GATE (always shown until user has valid cookie) -->
 <div id="ce-signin-screen" role="dialog" aria-modal="true" aria-labelledby="ce-signin-h1">
   <div class="ce-signin-bg"></div>
@@ -12586,7 +12589,7 @@ if(btnNlFab)btnNlFab.addEventListener('click',function(){setLang('nl');hideLangT
   }catch(_){}
 })();
 if('serviceWorker'in navigator){
-  navigator.serviceWorker.register('/static/sw.js?v=54').catch(function(){});
+  navigator.serviceWorker.register('/static/sw.js?v=55').catch(function(){});
   /* Auto-reload when a new SW takes over so users on stale HTML
      get the latest build without manually clearing Safari data. */
   navigator.serviceWorker.addEventListener('message',function(ev){
