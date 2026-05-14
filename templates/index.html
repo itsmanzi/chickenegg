@@ -4554,7 +4554,7 @@
 <body class="cam-tiktok" data-ce-deploy-sha="{{ ce_deploy_sha|default('', true) }}">
 
 <!-- v3.32 visible version stamp — top-right, persistent -->
-<div id="ce-ver-stamp" style="position:fixed;top:calc(env(safe-area-inset-top,0px) + 4px);right:6px;z-index:99999;background:rgba(0,0,0,.7);color:#9BFFC0;font:700 9px ui-monospace,monospace;padding:3px 6px;border-radius:6px;pointer-events:none;letter-spacing:.04em;">v3.36</div>
+<div id="ce-ver-stamp" style="position:fixed;top:calc(env(safe-area-inset-top,0px) + 4px);right:6px;z-index:99999;background:rgba(0,0,0,.7);color:#9BFFC0;font:700 9px ui-monospace,monospace;padding:3px 6px;border-radius:6px;pointer-events:none;letter-spacing:.04em;">v3.37</div>
 
 <!-- v3.17 — SIGN-IN GATE (always shown until user has valid cookie) -->
 <div id="ce-signin-screen" role="dialog" aria-modal="true" aria-labelledby="ce-signin-h1">
@@ -10797,6 +10797,17 @@ function renderCamStepOverlay(stepText){
 }
 
 function openResultScreen(){
+  /* v3.37 DEBUG: blue chip when openResultScreen runs */
+  try{
+    var dbg2=document.getElementById('ce-open-dbg');
+    if(!dbg2){
+      dbg2=document.createElement('div');
+      dbg2.id='ce-open-dbg';
+      dbg2.style.cssText='position:fixed;top:calc(env(safe-area-inset-top,0px) + 22px);left:6px;z-index:99999;background:#3B82F6;color:#fff;font:900 10px ui-monospace,monospace;padding:3px 8px;border-radius:6px;pointer-events:none;letter-spacing:.04em;';
+      document.body.appendChild(dbg2);
+    }
+    dbg2.textContent='OPEN_RESULT @'+new Date().toLocaleTimeString();
+  }catch(_){}
   var results=document.getElementById('results');
   if(!results)return;
   document.body.classList.add('result-open');
@@ -11720,6 +11731,18 @@ function renderDecisionCard(r,opts){
 }
 
 function renderResults(r){
+  /* v3.37 DEBUG: orange chip when renderResults runs */
+  try{
+    var dbg3=document.getElementById('ce-render-dbg');
+    if(!dbg3){
+      dbg3=document.createElement('div');
+      dbg3.id='ce-render-dbg';
+      dbg3.style.cssText='position:fixed;top:calc(env(safe-area-inset-top,0px) + 40px);left:6px;z-index:99999;background:#F59E0B;color:#0F0F0F;font:900 10px ui-monospace,monospace;padding:3px 8px;border-radius:6px;pointer-events:none;letter-spacing:.04em;';
+      document.body.appendChild(dbg3);
+    }
+    dbg3.textContent='RENDER @'+new Date().toLocaleTimeString();
+  }catch(_){}
+
   if(UX.resultRendered||UX.resultRendering){
     // #region agent log
     ceDbgSend({sessionId:'e91706',hypothesisId:'H1',location:'index.html:renderResults',message:'skipped',data:{resultRendered:!!UX.resultRendered,resultRendering:!!UX.resultRendering},timestamp:Date.now(),runId:'pre'});
