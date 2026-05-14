@@ -12197,13 +12197,6 @@ function ceBuildSimpleOutcomeLayout(r){
   if(!r||typeof r!=='object')return;
   var results=document.getElementById('results');
   if(!results)return;
-  /* v3.35 FIX: target #results — the actual scroll container —
-     not just the Outcome tab panel. Previous version only touched
-     the tab panel content, leaving a stack of legacy cards above
-     it (decision-card, hazard-hero, ce-visual-engine, paywall-teaser
-     etc.) all visible. That's why 'nothing changed' from user view.
-     Now we hide every direct child of #results except the chrome
-     bar and our new cards. */
   var KEEP_IDS={
     'mailbox-scrim':1,
     'results-screen-bar':1,
@@ -12212,15 +12205,33 @@ function ceBuildSimpleOutcomeLayout(r){
     'ce-simple-tools-card':1,
     'ce-results-shell':1
   };
-  var kids=Array.prototype.slice.call(results.children);
-  for(var ci=0;ci<kids.length;ci++){
-    var ch=kids[ci];
-    if(!ch)continue;
-    if(ch.id&&KEEP_IDS[ch.id])continue;
-    /* hide everything else (decision-card, hazard-hero, ce-visual-engine,
-       all-done, task-locked, ce-paywall-teaser, etc.) */
-    try{ch.style.setProperty('display','none','important');}catch(_){ch.style.display='none';}
-  }
+  /* v3.41: hide function — re-runs to beat any code that re-shows
+     legacy children after my insert (openResultScreen does
+     style.display='' on several IDs). */
+  var hideLegacy=function(){
+    var kids=Array.prototype.slice.call(results.children);
+    for(var ci=0;ci<kids.length;ci++){
+      var ch=kids[ci];
+      if(!ch)continue;
+      if(ch.id&&KEEP_IDS[ch.id])continue;
+      try{ch.style.setProperty('display','none','important');}catch(_){ch.style.display='none';}
+    }
+  };
+  hideLegacy();
+  /* Re-hide on a barrage of timings to catch any re-shows */
+  setTimeout(hideLegacy,50);
+  setTimeout(hideLegacy,200);
+  setTimeout(hideLegacy,500);
+  setTimeout(hideLegacy,1000);
+  /* MutationObserver watches #results and re-hides anything that
+     gets style cleared. Lifetime = until next scan/reset. */
+  try{
+    if(window.__ceLegacyObserver){window.__ceLegacyObserver.disconnect();}
+    window.__ceLegacyObserver=new MutationObserver(function(){hideLegacy();});
+    window.__ceLegacyObserver.observe(results,{attributes:true,subtree:true,attributeFilter:['style']});
+    /* Stop observing after 5s so we don't burn CPU forever */
+    setTimeout(function(){try{window.__ceLegacyObserver.disconnect();}catch(_){}},5000);
+  }catch(_){}
   var panel=results;
   /* v3.40: place cards INSIDE the results pane, in proper flow.
      No more fixed-position neon borders — those were debug only. */
