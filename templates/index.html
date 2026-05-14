@@ -4554,7 +4554,7 @@
 <body class="cam-tiktok" data-ce-deploy-sha="{{ ce_deploy_sha|default('', true) }}">
 
 <!-- v3.32 visible version stamp — top-right, persistent -->
-<div id="ce-ver-stamp" style="position:fixed;top:calc(env(safe-area-inset-top,0px) + 4px);right:6px;z-index:99999;background:rgba(0,0,0,.7);color:#9BFFC0;font:700 9px ui-monospace,monospace;padding:3px 6px;border-radius:6px;pointer-events:none;letter-spacing:.04em;">v3.34</div>
+<div id="ce-ver-stamp" style="position:fixed;top:calc(env(safe-area-inset-top,0px) + 4px);right:6px;z-index:99999;background:rgba(0,0,0,.7);color:#9BFFC0;font:700 9px ui-monospace,monospace;padding:3px 6px;border-radius:6px;pointer-events:none;letter-spacing:.04em;">v3.35</div>
 
 <!-- v3.17 — SIGN-IN GATE (always shown until user has valid cookie) -->
 <div id="ce-signin-screen" role="dialog" aria-modal="true" aria-labelledby="ce-signin-h1">
@@ -12193,26 +12193,49 @@ function renderResults(r){
    elements that were making the page feel out-of-order. */
 function ceBuildSimpleOutcomeLayout(r){
   if(!r||typeof r!=='object')return;
-  var panel=document.getElementById('ce-panel-outcome');
-  if(!panel)return;
-  /* v3.34 FIX: hide EVERY existing child (most have no id, so the
-     v3.33 id check skipped them — explaining why nothing visually
-     changed). Use setProperty with 'important' to beat inline styles. */
-  var kids=Array.prototype.slice.call(panel.children);
+  var results=document.getElementById('results');
+  if(!results)return;
+  /* v3.35 FIX: target #results — the actual scroll container —
+     not just the Outcome tab panel. Previous version only touched
+     the tab panel content, leaving a stack of legacy cards above
+     it (decision-card, hazard-hero, ce-visual-engine, paywall-teaser
+     etc.) all visible. That's why 'nothing changed' from user view.
+     Now we hide every direct child of #results except the chrome
+     bar and our new cards. */
+  var KEEP_IDS={
+    'mailbox-scrim':1,
+    'results-screen-bar':1,
+    'ce-results-sticky':1,
+    'ce-simple-diagnose-card':1,
+    'ce-simple-tools-card':1,
+    'ce-results-shell':1
+  };
+  var kids=Array.prototype.slice.call(results.children);
   for(var ci=0;ci<kids.length;ci++){
     var ch=kids[ci];
     if(!ch)continue;
-    if(ch.id==='ce-simple-diagnose-card'||ch.id==='ce-simple-tools-card')continue;
+    if(ch.id&&KEEP_IDS[ch.id])continue;
+    /* hide everything else (decision-card, hazard-hero, ce-visual-engine,
+       all-done, task-locked, ce-paywall-teaser, etc.) */
     try{ch.style.setProperty('display','none','important');}catch(_){ch.style.display='none';}
   }
-  /* DIAGNOSIS CARD */
+  var panel=results;
+  /* DIAGNOSIS CARD — insert right after the chrome bar so it's
+     the first piece of CONTENT the user sees on results open. */
+  var insertAfter=document.getElementById('results-screen-bar')||document.getElementById('mailbox-scrim');
   var diag=document.getElementById('ce-simple-diagnose-card');
   if(!diag){
     diag=document.createElement('div');
     diag.id='ce-simple-diagnose-card';
-    diag.style.cssText='background:linear-gradient(165deg,rgba(28,30,38,.92),rgba(15,17,21,.96));border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px 16px 18px;margin-bottom:14px;color:#F0E8DC;box-shadow:0 4px 14px rgba(0,0,0,.25);';
-    panel.insertBefore(diag,panel.firstChild);
+    diag.style.cssText='background:linear-gradient(165deg,rgba(28,30,38,.92),rgba(15,17,21,.96));border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px 16px 18px;margin:8px 0 14px;color:#F0E8DC;box-shadow:0 4px 14px rgba(0,0,0,.25);';
+    if(insertAfter&&insertAfter.nextSibling){
+      panel.insertBefore(diag,insertAfter.nextSibling);
+    }else{
+      panel.insertBefore(diag,panel.firstChild);
+    }
   }
+  /* Always force visible (in case earlier hide loop touched it) */
+  try{diag.style.setProperty('display','block','important');}catch(_){diag.style.display='block';}
   var hazardLevel=String(r.hazard_level||'').toLowerCase();
   var decision=String(r.decision_outcome||'').toLowerCase().replace(/-/g,'_');
   var sevColor='#34D399',sevBg='rgba(52,211,153,.10)',sevLabel='Veilig';
@@ -12242,10 +12265,10 @@ function ceBuildSimpleOutcomeLayout(r){
     if(!tools){
       tools=document.createElement('div');
       tools.id='ce-simple-tools-card';
-      tools.style.cssText='background:linear-gradient(165deg,rgba(28,30,38,.92),rgba(15,17,21,.96));border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;margin-bottom:14px;color:#F0E8DC;box-shadow:0 4px 14px rgba(0,0,0,.25);';
+      tools.style.cssText='background:linear-gradient(165deg,rgba(28,30,38,.92),rgba(15,17,21,.96));border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;margin:0 0 14px;color:#F0E8DC;box-shadow:0 4px 14px rgba(0,0,0,.25);';
       panel.insertBefore(tools,diag.nextSibling);
     }
-    tools.style.display='block';
+    try{tools.style.setProperty('display','block','important');}catch(_){tools.style.display='block';}
     var toolsHtml='<div style="font-size:10px;font-weight:800;letter-spacing:.10em;text-transform:uppercase;color:rgba(245,158,11,.85);margin-bottom:10px;">Wat heb je nodig</div>';
     for(var ti=0;ti<allTools.length;ti++){
       var tool=allTools[ti];
