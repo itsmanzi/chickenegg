@@ -4554,7 +4554,7 @@
 <body class="cam-tiktok" data-ce-deploy-sha="{{ ce_deploy_sha|default('', true) }}">
 
 <!-- v3.32 visible version stamp — top-right, persistent -->
-<div id="ce-ver-stamp" style="position:fixed;top:calc(env(safe-area-inset-top,0px) + 4px);right:6px;z-index:99999;background:rgba(0,0,0,.7);color:#9BFFC0;font:700 9px ui-monospace,monospace;padding:3px 6px;border-radius:6px;pointer-events:none;letter-spacing:.04em;">v3.38</div>
+<div id="ce-ver-stamp" style="position:fixed;top:calc(env(safe-area-inset-top,0px) + 4px);right:6px;z-index:99999;background:rgba(0,0,0,.7);color:#9BFFC0;font:700 9px ui-monospace,monospace;padding:3px 6px;border-radius:6px;pointer-events:none;letter-spacing:.04em;">v3.39</div>
 
 <!-- v3.17 — SIGN-IN GATE (always shown until user has valid cookie) -->
 <div id="ce-signin-screen" role="dialog" aria-modal="true" aria-labelledby="ce-signin-h1">
@@ -12278,22 +12278,16 @@ function ceBuildSimpleOutcomeLayout(r){
     try{ch.style.setProperty('display','none','important');}catch(_){ch.style.display='none';}
   }
   var panel=results;
-  /* DIAGNOSIS CARD — insert right after the chrome bar so it's
-     the first piece of CONTENT the user sees on results open. */
-  var insertAfter=document.getElementById('results-screen-bar')||document.getElementById('mailbox-scrim');
+  /* v3.39 NUCLEAR TEST: append the diagnosis card directly to body
+     with fixed positioning + neon green border so it CANNOT be
+     hidden by container CSS. If user STILL doesn't see it, my code
+     literally isn't running on their device. */
   var diag=document.getElementById('ce-simple-diagnose-card');
-  if(!diag){
-    diag=document.createElement('div');
-    diag.id='ce-simple-diagnose-card';
-    diag.style.cssText='background:linear-gradient(165deg,rgba(28,30,38,.92),rgba(15,17,21,.96));border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px 16px 18px;margin:8px 0 14px;color:#F0E8DC;box-shadow:0 4px 14px rgba(0,0,0,.25);';
-    if(insertAfter&&insertAfter.nextSibling){
-      panel.insertBefore(diag,insertAfter.nextSibling);
-    }else{
-      panel.insertBefore(diag,panel.firstChild);
-    }
-  }
-  /* Always force visible (in case earlier hide loop touched it) */
-  try{diag.style.setProperty('display','block','important');}catch(_){diag.style.display='block';}
+  if(diag&&diag.parentNode)diag.parentNode.removeChild(diag);
+  diag=document.createElement('div');
+  diag.id='ce-simple-diagnose-card';
+  diag.style.cssText='position:fixed!important;top:calc(env(safe-area-inset-top,0px) + 100px)!important;left:8px!important;right:8px!important;z-index:99998!important;background:linear-gradient(165deg,rgba(28,30,38,.98),rgba(15,17,21,.99))!important;border:3px solid #00FF7F!important;border-radius:16px!important;padding:16px!important;color:#F0E8DC!important;box-shadow:0 0 24px rgba(0,255,127,.55),0 4px 14px rgba(0,0,0,.6)!important;display:block!important;visibility:visible!important;';
+  document.body.appendChild(diag);
   var hazardLevel=String(r.hazard_level||'').toLowerCase();
   var decision=String(r.decision_outcome||'').toLowerCase().replace(/-/g,'_');
   var sevColor='#34D399',sevBg='rgba(52,211,153,.10)',sevLabel='Veilig';
@@ -12320,13 +12314,13 @@ function ceBuildSimpleOutcomeLayout(r){
   var allTools=ceUniqueTextList((r.tools_needed||[]).concat(r.materials_needed||[]));
   var tools=document.getElementById('ce-simple-tools-card');
   if(allTools.length){
-    if(!tools){
-      tools=document.createElement('div');
-      tools.id='ce-simple-tools-card';
-      tools.style.cssText='background:linear-gradient(165deg,rgba(28,30,38,.92),rgba(15,17,21,.96));border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;margin:0 0 14px;color:#F0E8DC;box-shadow:0 4px 14px rgba(0,0,0,.25);';
-      panel.insertBefore(tools,diag.nextSibling);
-    }
-    try{tools.style.setProperty('display','block','important');}catch(_){tools.style.display='block';}
+    /* v3.39 NUCLEAR: append tools card to body with fixed positioning
+       below the diagnosis card. Same reasoning. */
+    if(tools&&tools.parentNode)tools.parentNode.removeChild(tools);
+    tools=document.createElement('div');
+    tools.id='ce-simple-tools-card';
+    tools.style.cssText='position:fixed!important;top:calc(env(safe-area-inset-top,0px) + 380px)!important;left:8px!important;right:8px!important;z-index:99997!important;background:linear-gradient(165deg,rgba(28,30,38,.98),rgba(15,17,21,.99))!important;border:3px solid #FF6B35!important;border-radius:16px!important;padding:16px!important;color:#F0E8DC!important;box-shadow:0 0 24px rgba(255,107,53,.55),0 4px 14px rgba(0,0,0,.6)!important;display:block!important;visibility:visible!important;max-height:50vh!important;overflow-y:auto!important;';
+    document.body.appendChild(tools);
     var toolsHtml='<div style="font-size:10px;font-weight:800;letter-spacing:.10em;text-transform:uppercase;color:rgba(245,158,11,.85);margin-bottom:10px;">Wat heb je nodig</div>';
     for(var ti=0;ti<allTools.length;ti++){
       var tool=allTools[ti];
