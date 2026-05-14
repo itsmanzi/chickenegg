@@ -4553,8 +4553,7 @@
 </head>
 <body class="cam-tiktok" data-ce-deploy-sha="{{ ce_deploy_sha|default('', true) }}">
 
-<!-- v3.32 visible version stamp — top-right, persistent -->
-<div id="ce-ver-stamp" style="position:fixed;top:calc(env(safe-area-inset-top,0px) + 4px);right:6px;z-index:99999;background:rgba(0,0,0,.7);color:#9BFFC0;font:700 9px ui-monospace,monospace;padding:3px 6px;border-radius:6px;pointer-events:none;letter-spacing:.04em;">v3.39</div>
+<!-- v3.40: removed visible version stamp (was a debug aid) -->
 
 <!-- v3.17 — SIGN-IN GATE (always shown until user has valid cookie) -->
 <div id="ce-signin-screen" role="dialog" aria-modal="true" aria-labelledby="ce-signin-h1">
@@ -10797,17 +10796,6 @@ function renderCamStepOverlay(stepText){
 }
 
 function openResultScreen(){
-  /* v3.37 DEBUG: blue chip when openResultScreen runs */
-  try{
-    var dbg2=document.getElementById('ce-open-dbg');
-    if(!dbg2){
-      dbg2=document.createElement('div');
-      dbg2.id='ce-open-dbg';
-      dbg2.style.cssText='position:fixed;top:calc(env(safe-area-inset-top,0px) + 22px);left:6px;z-index:99999;background:#3B82F6;color:#fff;font:900 10px ui-monospace,monospace;padding:3px 8px;border-radius:6px;pointer-events:none;letter-spacing:.04em;';
-      document.body.appendChild(dbg2);
-    }
-    dbg2.textContent='OPEN_RESULT @'+new Date().toLocaleTimeString();
-  }catch(_){}
   var results=document.getElementById('results');
   if(!results)return;
   document.body.classList.add('result-open');
@@ -11731,33 +11719,8 @@ function renderDecisionCard(r,opts){
 }
 
 function renderResults(r){
-  /* v3.37 DEBUG: orange chip when renderResults runs */
-  try{
-    var dbg3=document.getElementById('ce-render-dbg');
-    if(!dbg3){
-      dbg3=document.createElement('div');
-      dbg3.id='ce-render-dbg';
-      dbg3.style.cssText='position:fixed;top:calc(env(safe-area-inset-top,0px) + 40px);left:6px;z-index:99999;background:#F59E0B;color:#0F0F0F;font:900 10px ui-monospace,monospace;padding:3px 8px;border-radius:6px;pointer-events:none;letter-spacing:.04em;';
-      document.body.appendChild(dbg3);
-    }
-    dbg3.textContent='RENDER @'+new Date().toLocaleTimeString();
-  }catch(_){}
-  /* v3.38: call layout function FIRST so early returns inside
-     renderResults can't bypass it. r might still be partial here
-     but the function only writes display:none on legacy children
-     and inserts cards — both safe to call repeatedly. */
-  try{if(typeof window.ceBuildSimpleOutcomeLayout==='function'){window.ceBuildSimpleOutcomeLayout(r);}else if(typeof ceBuildSimpleOutcomeLayout==='function'){ceBuildSimpleOutcomeLayout(r);}}catch(eX){
-    try{
-      var derr=document.getElementById('ce-err-dbg');
-      if(!derr){
-        derr=document.createElement('div');
-        derr.id='ce-err-dbg';
-        derr.style.cssText='position:fixed;top:calc(env(safe-area-inset-top,0px) + 76px);left:6px;right:6px;z-index:99999;background:#DC2626;color:#fff;font:700 10px ui-monospace,monospace;padding:5px 8px;border-radius:6px;line-height:1.3;word-break:break-word;';
-        document.body.appendChild(derr);
-      }
-      derr.textContent='LAYOUT_ERR: '+(eX&&eX.message?eX.message:String(eX)).slice(0,200);
-    }catch(_){}
-  }
+  /* v3.40: layout call at top — early returns can't skip it */
+  try{if(typeof window.ceBuildSimpleOutcomeLayout==='function')window.ceBuildSimpleOutcomeLayout(r);}catch(_){}
 
   if(UX.resultRendered||UX.resultRendering){
     // #region agent log
@@ -12231,28 +12194,9 @@ function renderResults(r){
    walkthrough card into the Steps tab. Reorders + hides legacy
    elements that were making the page feel out-of-order. */
 function ceBuildSimpleOutcomeLayout(r){
-  /* v3.36: HARD PROOF the function actually ran. Bright pink banner
-     in the top-left corner. If user doesn't see this after a scan,
-     the function is NOT being called from renderResults. */
-  try{
-    var dbg=document.getElementById('ce-build-dbg');
-    if(!dbg){
-      dbg=document.createElement('div');
-      dbg.id='ce-build-dbg';
-      dbg.style.cssText='position:fixed;top:calc(env(safe-area-inset-top,0px) + 4px);left:6px;z-index:99999;background:#ff007f;color:#fff;font:900 10px ui-monospace,monospace;padding:3px 8px;border-radius:6px;pointer-events:none;letter-spacing:.04em;';
-      document.body.appendChild(dbg);
-    }
-    dbg.textContent='LAYOUT v3.36 RAN @'+new Date().toLocaleTimeString();
-  }catch(_){}
-  if(!r||typeof r!=='object'){
-    try{document.getElementById('ce-build-dbg').textContent+=' (no r)';}catch(_){}
-    return;
-  }
+  if(!r||typeof r!=='object')return;
   var results=document.getElementById('results');
-  if(!results){
-    try{document.getElementById('ce-build-dbg').textContent+=' (no #results)';}catch(_){}
-    return;
-  }
+  if(!results)return;
   /* v3.35 FIX: target #results — the actual scroll container —
      not just the Outcome tab panel. Previous version only touched
      the tab panel content, leaving a stack of legacy cards above
@@ -12278,16 +12222,19 @@ function ceBuildSimpleOutcomeLayout(r){
     try{ch.style.setProperty('display','none','important');}catch(_){ch.style.display='none';}
   }
   var panel=results;
-  /* v3.39 NUCLEAR TEST: append the diagnosis card directly to body
-     with fixed positioning + neon green border so it CANNOT be
-     hidden by container CSS. If user STILL doesn't see it, my code
-     literally isn't running on their device. */
+  /* v3.40: place cards INSIDE the results pane, in proper flow.
+     No more fixed-position neon borders — those were debug only. */
+  var insertAfter=document.getElementById('results-screen-bar')||document.getElementById('mailbox-scrim');
   var diag=document.getElementById('ce-simple-diagnose-card');
   if(diag&&diag.parentNode)diag.parentNode.removeChild(diag);
   diag=document.createElement('div');
   diag.id='ce-simple-diagnose-card';
-  diag.style.cssText='position:fixed!important;top:calc(env(safe-area-inset-top,0px) + 100px)!important;left:8px!important;right:8px!important;z-index:99998!important;background:linear-gradient(165deg,rgba(28,30,38,.98),rgba(15,17,21,.99))!important;border:3px solid #00FF7F!important;border-radius:16px!important;padding:16px!important;color:#F0E8DC!important;box-shadow:0 0 24px rgba(0,255,127,.55),0 4px 14px rgba(0,0,0,.6)!important;display:block!important;visibility:visible!important;';
-  document.body.appendChild(diag);
+  diag.style.cssText='background:linear-gradient(165deg,rgba(28,30,38,.94),rgba(15,17,21,.97));border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px 16px 18px;margin:8px 0 14px;color:#F0E8DC;box-shadow:0 4px 14px rgba(0,0,0,.3);';
+  if(insertAfter&&insertAfter.nextSibling){
+    panel.insertBefore(diag,insertAfter.nextSibling);
+  }else{
+    panel.insertBefore(diag,panel.firstChild);
+  }
   var hazardLevel=String(r.hazard_level||'').toLowerCase();
   var decision=String(r.decision_outcome||'').toLowerCase().replace(/-/g,'_');
   var sevColor='#34D399',sevBg='rgba(52,211,153,.10)',sevLabel='Veilig';
@@ -12314,13 +12261,12 @@ function ceBuildSimpleOutcomeLayout(r){
   var allTools=ceUniqueTextList((r.tools_needed||[]).concat(r.materials_needed||[]));
   var tools=document.getElementById('ce-simple-tools-card');
   if(allTools.length){
-    /* v3.39 NUCLEAR: append tools card to body with fixed positioning
-       below the diagnosis card. Same reasoning. */
+    /* v3.40: place tools card INSIDE results, right after diagnosis */
     if(tools&&tools.parentNode)tools.parentNode.removeChild(tools);
     tools=document.createElement('div');
     tools.id='ce-simple-tools-card';
-    tools.style.cssText='position:fixed!important;top:calc(env(safe-area-inset-top,0px) + 380px)!important;left:8px!important;right:8px!important;z-index:99997!important;background:linear-gradient(165deg,rgba(28,30,38,.98),rgba(15,17,21,.99))!important;border:3px solid #FF6B35!important;border-radius:16px!important;padding:16px!important;color:#F0E8DC!important;box-shadow:0 0 24px rgba(255,107,53,.55),0 4px 14px rgba(0,0,0,.6)!important;display:block!important;visibility:visible!important;max-height:50vh!important;overflow-y:auto!important;';
-    document.body.appendChild(tools);
+    tools.style.cssText='background:linear-gradient(165deg,rgba(28,30,38,.94),rgba(15,17,21,.97));border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;margin:0 0 14px;color:#F0E8DC;box-shadow:0 4px 14px rgba(0,0,0,.3);';
+    panel.insertBefore(tools,diag.nextSibling);
     var toolsHtml='<div style="font-size:10px;font-weight:800;letter-spacing:.10em;text-transform:uppercase;color:rgba(245,158,11,.85);margin-bottom:10px;">Wat heb je nodig</div>';
     for(var ti=0;ti<allTools.length;ti++){
       var tool=allTools[ti];
